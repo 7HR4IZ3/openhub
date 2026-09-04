@@ -30,6 +30,7 @@
 - Realtime in the first release means comments, discussion replies, reactions, mentions, and notifications; direct messages remain deferred
 - Repository code is accessed live from the provider and may be cached only under the visibility and attribution rules in the architecture and security documents
 - The first public product is GitHub-only; additional providers follow validation of the GitHub experience
+- Public repository exploration may use a separately governed server-only GitHub credential; it is not a substitute for user-scoped private-repository authorization
 
 ## Recommended defaults
 

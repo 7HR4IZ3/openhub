@@ -35,6 +35,14 @@ A clean Next.js + Convex project with the OpenHub documents, design tokens, rout
 
 An authenticated user can sign in with GitHub, view an imported OpenHub profile, discover repositories, and browse a repository through a responsive read-only workspace.
 
+### Progress
+
+The initial public exploration slice is implemented: server-side GitHub
+repository search, public repository metadata, directory navigation, and
+commit-resolved read-only Monaco file viewing. The remaining M1 blockers are
+Convex cloud deployment, GitHub OAuth configuration, user-scoped private
+repository authorization, and the remaining repository surfaces.
+
 ### Scope
 
 - GitHub OAuth
@@ -61,6 +69,13 @@ An authenticated user can sign in with GitHub, view an imported OpenHub profile,
 ### Outcome
 
 Users can publish source-backed snippets, diffs, questions, reviews, and discussions and interact with them.
+
+### Progress
+
+The first source-aware composer and Convex post contract are implemented. A
+reader can select lines in the repository editor, open a focused composer, and
+preview the commit-pinned attributed snapshot. Publication and feed rendering
+remain gated on the linked Convex deployment and authenticated provider setup.
 
 ### Scope
 

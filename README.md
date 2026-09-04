@@ -10,7 +10,7 @@ OpenHub should make open-source exploration feel enjoyable and human. It must no
 
 ## Current status
 
-Milestone 0 is underway. The repository contains the product contract, a responsive landing/explore/home shell, GitHub-only Convex Auth wiring, the first Convex schema, and a server-only provider adapter contract. Live GitHub OAuth, private-repository token storage, Convex cloud deployment, and the repository workspace are intentionally next slices rather than pretending to be complete.
+Milestone 0 is complete and Milestone 1 is underway. The repository contains the product contract, a responsive landing/explore/home shell, GitHub-only Convex Auth wiring, the first Convex schema, a server-only provider adapter, live repository search wiring, a responsive read-only repository workspace with Monaco source viewing, and the first source-aware post composer. Live GitHub OAuth, private-repository token storage, and Convex cloud deployment still require external account configuration.
 
 The application is being built in vertical milestones using:
 
@@ -49,4 +49,19 @@ npm install
 npm run dev:frontend
 ```
 
-Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_CONVEX_URL` when a Convex deployment is available. GitHub OAuth credentials and callback setup are documented in [Setup](docs/SETUP.md) and [Architecture](docs/ARCHITECTURE.md). Run `npm run typecheck`, `npm run lint`, and `npm run build` before opening a change.
+Copy `.env.example` to `.env.local`. Set `GITHUB_PUBLIC_TOKEN` to enable server-side public repository search and browsing. Set `NEXT_PUBLIC_CONVEX_URL` when a Convex deployment is available. GitHub OAuth credentials and callback setup are documented in [Setup](docs/SETUP.md) and [Architecture](docs/ARCHITECTURE.md). Run `npm run typecheck`, `npm run lint`, and `npm run build` before opening a change.
+
+## Repository exploration slice
+
+- Search: `/explore` calls `/api/github/search` through the server-only GitHub adapter.
+- Workspace: `/repos/<owner>/<name>` loads public repository metadata and its default branch.
+- Source: directories can be browsed and files open at a commit-resolved ref in a read-only Monaco editor.
+- Attribution: source links point to the exact GitHub repository, commit, and path.
+- Privacy: public routes filter private results and never accept a provider token from the browser.
+
+## Source-backed composer slice
+
+- Selection: choose lines in the read-only editor and open a focused composer link.
+- Preview: the composer reloads the selected public source at its commit and preserves the original owner, repository, license, and line range.
+- Post contract: Convex now has an authenticated post mutation, a public indexed recent-post query, and immutable source snapshot storage.
+- Availability: publication becomes active after a Convex deployment is linked; without one, the full draft and source preview remain inspectable but the publish action is gated.

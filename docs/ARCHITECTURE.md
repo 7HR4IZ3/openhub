@@ -40,11 +40,27 @@ GitHub, GitLab, Bitbucket, and other providers remain the source of truth for re
 
 Provider tokens must never be sent to the browser. The browser should only receive the data needed to render the authorized view.
 
+The first exploration slice exposes two server-owned entry points:
+
+- `/api/github/search` accepts a bounded repository query and returns public
+  normalized results.
+- `/repos/<owner>/<name>` loads public metadata, a directory tree, and a
+  commit-resolved file through the server-only provider adapter.
+- `/compose` can reload a selected public source range at its commit and render
+  it in a read-only composer preview before publication.
+
+Both routes use `GITHUB_PUBLIC_TOKEN` for public browsing and filter private
+repositories at the public boundary. Authenticated private browsing must use a
+different user-scoped authorization path.
+
 ### GitHub credential boundary
 
 Convex Auth currently establishes the OpenHub session and normalized identity; it is not, by itself, the product’s durable private-repository credential store. Before private repository browsing is enabled, add an explicit same-GitHub provider connection flow or approved callback extension that stores a server-only, encrypted token reference with least-privilege scope. Do not put the provider token in a profile document, source reference, Convex query result, browser storage, or public cache.
 
 The provider adapter must receive credentials only inside a server-side action or other trusted execution boundary. Public discovery may use a separately governed public-access credential when rate limits and provider terms permit it; an authenticated user’s private access must always be checked against that user’s provider authorization.
+
+`GITHUB_PUBLIC_TOKEN` is an interim operational credential for public repository
+discovery only. It must not become the private-repository credential model.
 
 ## 4. Provider abstraction
 
@@ -102,6 +118,14 @@ Suggested module boundaries:
 - `subscriptions` — premium entitlement and usage limits
 
 Public functions should be minimal. Use internal functions for helpers and scheduled jobs. Every Convex function must use object-form syntax, runtime argument and return validators, indexed reads, and explicit authorization.
+
+The first `posts` module follows this boundary: `posts.recent` reads only the
+public visibility index, while `posts.create` requires the signed-in user and
+creates a source reference and post atomically. A source-backed post stores the
+selected snapshot, provider, original owner, repository, commit, path, line
+range, and canonical URL. The current mutation accepts a provider-normalized
+source draft; before broad launch, replace that trust boundary with a
+server-side provider verification action for every new source reference.
 
 ## 7. AI architecture
 
