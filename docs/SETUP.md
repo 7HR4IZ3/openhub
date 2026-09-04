@@ -22,6 +22,28 @@ npm run dev:frontend
 The public landing, explore, sign-in, and home shell can be inspected without a
 Convex URL. Authenticated flows require `NEXT_PUBLIC_CONVEX_URL`.
 
+## Enable public repository browsing
+
+The first repository exploration slice uses a server-only GitHub credential for
+public discovery. Set this in `.env.local` for local work and in the
+Vercel Preview/Production environments when deploying:
+
+```text
+GITHUB_PUBLIC_TOKEN=<server-only GitHub token>
+```
+
+The credential is read only by the Next.js server adapter. It is never exposed
+through a `NEXT_PUBLIC_` variable, returned to the browser, or used to authorize
+private repositories in the public search route. The public route filters any
+private result returned by a broadly scoped credential as a second boundary.
+
+With this value configured:
+
+- `/explore` can search public GitHub repositories.
+- `/repos/<owner>/<name>` can open repository metadata and the default branch.
+- Directory links load the corresponding tree.
+- File links open a commit-resolved, read-only Monaco view.
+
 ## Link Convex
 
 From the repository root, run:
@@ -69,8 +91,13 @@ npm run build
 
 ## Current external setup blockers
 
-1. Create an empty GitHub repository named `openhub` under the connected account.
-2. Link that repository to Vercel for preview deployments.
-3. Link a Convex deployment and regenerate `_generated/`.
-4. Create the GitHub OAuth App and set its credentials on Convex.
-5. Implement the separate server-side provider-token boundary before enabling private repositories; do not expose raw tokens or enable provider write operations.
+1. Authenticate a Convex account, create/link the OpenHub cloud deployment,
+   and regenerate `_generated/`.
+2. Create the GitHub OAuth App and set its credentials on Convex.
+3. Implement the separate authenticated server-side provider-token boundary
+   before enabling private repositories; do not expose raw tokens or enable
+   provider write operations.
+
+The GitHub repository and Vercel project already exist. The public repository
+workspace does not remove the separate authorization requirement for private
+repositories.

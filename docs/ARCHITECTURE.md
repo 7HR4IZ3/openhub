@@ -40,11 +40,25 @@ GitHub, GitLab, Bitbucket, and other providers remain the source of truth for re
 
 Provider tokens must never be sent to the browser. The browser should only receive the data needed to render the authorized view.
 
+The first exploration slice exposes two server-owned entry points:
+
+- `/api/github/search` accepts a bounded repository query and returns public
+  normalized results.
+- `/repos/<owner>/<name>` loads public metadata, a directory tree, and a
+  commit-resolved file through the server-only provider adapter.
+
+Both routes use `GITHUB_PUBLIC_TOKEN` for public browsing and filter private
+repositories at the public boundary. Authenticated private browsing must use a
+different user-scoped authorization path.
+
 ### GitHub credential boundary
 
 Convex Auth currently establishes the OpenHub session and normalized identity; it is not, by itself, the product’s durable private-repository credential store. Before private repository browsing is enabled, add an explicit same-GitHub provider connection flow or approved callback extension that stores a server-only, encrypted token reference with least-privilege scope. Do not put the provider token in a profile document, source reference, Convex query result, browser storage, or public cache.
 
 The provider adapter must receive credentials only inside a server-side action or other trusted execution boundary. Public discovery may use a separately governed public-access credential when rate limits and provider terms permit it; an authenticated user’s private access must always be checked against that user’s provider authorization.
+
+`GITHUB_PUBLIC_TOKEN` is an interim operational credential for public repository
+discovery only. It must not become the private-repository credential model.
 
 ## 4. Provider abstraction
 

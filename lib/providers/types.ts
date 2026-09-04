@@ -73,6 +73,7 @@ export interface RepositoryProvider {
     owner: string;
     name: string;
     ref: string;
+    path?: string;
   }): Promise<RepositoryTreeEntry[]>;
   getFile(input: {
     owner: string;

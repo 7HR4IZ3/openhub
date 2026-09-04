@@ -129,7 +129,7 @@ export function createGitHubProvider(accessToken: string): RepositoryProvider {
       return response.repository === null ? null : normalizeRepository(response.repository);
     },
 
-    async getTree({ owner, name, ref }) {
+    async getTree({ owner, name, ref, path = "" }) {
       const response = await githubGraphQL<{
         repository: {
           object: {
@@ -155,7 +155,7 @@ export function createGitHubProvider(accessToken: string): RepositoryProvider {
             }
           }
         }`,
-        { owner, name, expression: `${ref}:` },
+        { owner, name, expression: ref + ":" + path },
       );
 
       return (response.repository?.object?.entries ?? []).map((entry) => ({
