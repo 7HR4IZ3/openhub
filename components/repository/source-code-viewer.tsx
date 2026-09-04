@@ -1,6 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import type { editor } from "monaco-editor";
+import { useEffect, useState } from "react";
 
 import type { RepositoryFile } from "@/lib/providers/types";
 
@@ -19,16 +21,54 @@ const MonacoEditor = dynamic(
 export function SourceCodeViewer({
   file,
   primaryLanguage,
+  lineNumberOffset = 1,
+  onSelectionChange,
 }: {
   file: RepositoryFile;
   primaryLanguage: string | null;
+  lineNumberOffset?: number;
+  onSelectionChange?: (selection: CodeSelection | null) => void;
 }) {
+  const [editorInstance, setEditorInstance] =
+    useState<editor.IStandaloneCodeEditor | null>(null);
+
+  useEffect(() => {
+    if (editorInstance === null || onSelectionChange === undefined) return;
+
+    const disposable = editorInstance.onDidChangeCursorSelection((event) => {
+      if (event.selection.isEmpty()) {
+        onSelectionChange(null);
+        return;
+      }
+
+      onSelectionChange({
+        startLineNumber:
+          Math.min(
+            event.selection.startLineNumber,
+            event.selection.endLineNumber,
+          ) +
+          lineNumberOffset -
+          1,
+        endLineNumber:
+          Math.max(
+            event.selection.startLineNumber,
+            event.selection.endLineNumber,
+          ) +
+          lineNumberOffset -
+          1,
+      });
+    });
+
+    return () => disposable.dispose();
+  }, [editorInstance, lineNumberOffset, onSelectionChange]);
+
   return (
     <div className="overflow-hidden bg-[#1a1d1b]">
       <MonacoEditor
         height="min(68vh, 720px)"
         language={languageForPath(file.path, primaryLanguage)}
         value={file.text}
+        onMount={(instance) => setEditorInstance(instance)}
         theme="vs-dark"
         options={{
           automaticLayout: true,
@@ -40,7 +80,10 @@ export function SourceCodeViewer({
           fontSize: 13,
           glyphMargin: false,
           lineDecorationsWidth: 12,
-          lineNumbers: "on",
+          lineNumbers:
+            lineNumberOffset === 1
+              ? "on"
+              : (lineNumber) => String(lineNumber + lineNumberOffset - 1),
           minimap: { enabled: false },
           padding: { top: 18, bottom: 24 },
           readOnly: true,
@@ -55,6 +98,11 @@ export function SourceCodeViewer({
     </div>
   );
 }
+
+export type CodeSelection = {
+  startLineNumber: number;
+  endLineNumber: number;
+};
 
 function languageForPath(path: string, primaryLanguage: string | null) {
   const fileName = path.split("/").pop()?.toLowerCase() ?? "";

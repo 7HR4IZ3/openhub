@@ -107,5 +107,6 @@ export default defineSchema({
     repostCount: v.number(),
   })
     .index("by_created_at", ["createdAt"])
-    .index("by_author_created_at", ["authorId", "createdAt"]),
+    .index("by_author_created_at", ["authorId", "createdAt"])
+    .index("by_visibility_created_at", ["visibility", "createdAt"]),
 });

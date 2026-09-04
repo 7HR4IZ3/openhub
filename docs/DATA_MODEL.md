@@ -46,7 +46,7 @@ Explainable signal values and evidence: activity, release momentum, maintenance,
 
 ## 4. Source references
 
-### `codeReferences`
+### `sourceReferences`
 
 Immutable reference attached to posts, comments, AI citations, and saved selections.
 
@@ -64,10 +64,11 @@ Fields:
 - Canonical provider URL
 - Visibility at creation
 - Original owner metadata
+- Immutable source snapshot captured for the published selection
 
 ## 5. Social tables
 
-- `posts` — type, author, body, visibility, source reference, media, AI-assistance state, moderation state
+- `posts` — type, author, body, visibility, source reference, media, AI-assistance state, moderation state, interaction counters
 - `comments` — post or repository context, author, body, parent comment, source reference, moderation state
 - `reactions` — actor, target, reaction type
 - `follows` — actor, target type, target ID

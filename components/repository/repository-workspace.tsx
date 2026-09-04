@@ -21,12 +21,16 @@ import {
   Heart,
   LockKeyhole,
   Menu,
+  MessageSquare,
   Star,
   X,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-import { SourceCodeViewer } from "@/components/repository/source-code-viewer";
+import {
+  SourceCodeViewer,
+  type CodeSelection,
+} from "@/components/repository/source-code-viewer";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type {
@@ -50,9 +54,20 @@ export function RepositoryWorkspace({
 }) {
   const [isTreeOpen, setIsTreeOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [selectionState, setSelectionState] = useState<{
+    fileKey: string;
+    selection: CodeSelection | null;
+  }>({ fileKey: "", selection: null });
+  const fileKey = file ? `${file.commitSha}:${file.path}` : "";
+  const selection =
+    selectionState.fileKey === fileKey ? selectionState.selection : null;
+
   const sourceUrl = file
-    ? buildGitHubSourceUrl(repository, file.commitSha, file.path)
+    ? buildGitHubSourceUrl(repository, file.commitSha, file.path, selection)
     : repository.url;
+  const discussionHref = file
+    ? buildComposeHref(repository, file, selection)
+    : null;
 
   async function copySourceUrl() {
     try {
@@ -233,10 +248,40 @@ export function RepositoryWorkspace({
             </div>
 
             {file ? (
-              <SourceCodeViewer
-                file={file}
-                primaryLanguage={repository.primaryLanguage}
-              />
+              <>
+                <SourceCodeViewer
+                  file={file}
+                  primaryLanguage={repository.primaryLanguage}
+                  onSelectionChange={(nextSelection) =>
+                    setSelectionState({
+                      fileKey,
+                      selection: nextSelection,
+                    })
+                  }
+                />
+                <div className="flex flex-col gap-3 border-t border-black/[0.08] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5 dark:border-white/[0.08]">
+                  <div className="min-w-0 text-xs text-muted-foreground">
+                    {selection ? (
+                      <>
+                        <span className="font-semibold text-foreground">
+                          Lines {selection.startLineNumber}–{selection.endLineNumber}
+                        </span>{" "}
+                        selected for discussion.
+                      </>
+                    ) : (
+                      "Select lines in the editor to attach focused context."
+                    )}
+                  </div>
+                  {discussionHref ? (
+                    <Button asChild size="sm" className="shrink-0 rounded-full">
+                      <Link href={discussionHref}>
+                        <MessageSquare className="h-3.5 w-3.5" />
+                        {selection ? "Discuss lines" : "Discuss file"}
+                      </Link>
+                    </Button>
+                  ) : null}
+                </div>
+              </>
             ) : (
               <div className="flex min-h-[min(68vh,720px)] flex-col items-center justify-center px-6 text-center">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e9e6dc] dark:bg-white/[0.08]">
@@ -400,15 +445,40 @@ function buildGitHubSourceUrl(
   repository: NormalizedRepository,
   commitSha: string,
   path: string,
+  selection: CodeSelection | null = null,
 ) {
-  return (
+  const url =
     "https://github.com/" +
     repository.fullName +
     "/blob/" +
     commitSha +
     "/" +
-    encodeURI(path)
-  );
+    encodeURI(path);
+  if (selection === null) return url;
+  const anchor =
+    selection.startLineNumber === selection.endLineNumber
+      ? `#L${selection.startLineNumber}`
+      : `#L${selection.startLineNumber}-L${selection.endLineNumber}`;
+  return url + anchor;
+}
+
+function buildComposeHref(
+  repository: NormalizedRepository,
+  file: RepositoryFile,
+  selection: CodeSelection | null,
+) {
+  const totalLines = Math.max(1, file.text.split(/\r?\n/).length);
+  const startLine = selection?.startLineNumber ?? 1;
+  const endLine = selection?.endLineNumber ?? totalLines;
+  const params = new URLSearchParams({
+    owner: repository.ownerLogin,
+    name: repository.name,
+    path: file.path,
+    ref: file.commitSha,
+    startLine: String(startLine),
+    endLine: String(endLine),
+  });
+  return "/compose?" + params.toString();
 }
 
 function parentDirectory(path: string) {
