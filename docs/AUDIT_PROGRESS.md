@@ -55,7 +55,7 @@ The user's three requested skills were read. Minimalist is the primary style. Se
 - Vercel deployment `dpl_7Y1fyLfz5sbw4QWtnhmBBPgdRfK2` was rechecked as READY. It predates these audit changes. Browser access to `/home` redirects to Vercel sign-in, so visual acceptance was not completed. No protection settings were changed.
 - Previous health evidence showed missing Convex and public GitHub configuration. The health route reports configuration presence, not an authenticated dependency probe. Live OAuth/backend functionality remains unverified.
 - GitHub PR 1 and stacked PR 2 remain the delivery path. PR 2 is based on PR 1's feature branch, not main. Main does not contain all feature work. No PR was merged during this audit.
-- Linear: 3 issues In Review, 8 In Progress, 16 Backlog, 0 Done. OAuth THR-10 is Backlog. These reflect incomplete work, not three shipped milestones.
+- Linear: 7 issues In Review, 8 In Progress, 12 Backlog, 0 Done after the latest code slice. OAuth THR-10 remains In Progress. These reflect incomplete work, not three shipped milestones.
 
 ## Known remaining correctness risks
 
