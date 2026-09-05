@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { CurationEmptyState, CurationStatus } from "@/components/curation/curation-states";
 import { CurationRail, CurationShell } from "@/components/curation/curation-shell";
+import { ConnectedCommunitiesScreen } from "@/components/curation/connected-communities-screen";
 import { cn } from "@/lib/utils";
 import {
   ArrowUpRight,
@@ -27,6 +28,12 @@ const tabs = [
 type CommunityTab = (typeof tabs)[number]["value"];
 
 export function CommunitiesScreen({ convexConfigured }: { convexConfigured: boolean }) {
+  if (convexConfigured) return <ConnectedCommunitiesScreen />;
+
+  return <CommunitiesPreviewScreen />;
+}
+
+function CommunitiesPreviewScreen() {
   const [activeTab, setActiveTab] = useState<CommunityTab>("discover");
 
   return (
@@ -59,12 +66,10 @@ export function CommunitiesScreen({ convexConfigured }: { convexConfigured: bool
       </div>
 
       <div className="p-5 sm:p-7">
-        {(
-          <CurationStatus
-            title="Communities are a design preview"
-            body={convexConfigured ? "Community discovery, membership, and creation are not implemented yet." : "Community discovery, membership, and creation are not implemented yet. The backend is also not connected."}
-          />
-        )}
+        <CurationStatus
+          title="Communities are ready when GitHub is connected"
+          body="Connect GitHub to join public technical circles or create one with clear moderation ownership."
+        />
         {activeTab === "discover" ? <DiscoverCommunities /> : null}
         {activeTab === "following" ? <FollowingCommunities /> : null}
         {activeTab === "create" ? <CreateCommunity /> : null}

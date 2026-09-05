@@ -83,10 +83,16 @@ Users can publish source-backed snippets, diffs, questions, reviews, and discuss
 The source-aware composer and Convex post contract are implemented. A reader
 can select lines in the repository editor, open a focused composer, preview the
 commit-pinned attributed snapshot, publish, and open the resulting post detail.
-The first social backend and reader UI now cover comments/replies, reactions,
-bookmarks, reposts/quotes, notifications, and a public recent-post feed when a
-Convex deployment is linked. Provider-side source verification, diffs, media,
-mentions, and authenticated feed ranking remain open.
+Public source publication is now verified in a Convex action against the exact
+GitHub commit and file before an internal mutation stores the immutable
+snapshot. The first social backend and reader UI cover comments/replies,
+reactions, bookmarks, reposts/quotes, reading-list saves, notifications, and
+public/following/trending feed modes when a Convex deployment is linked. A
+repository workspace now surfaces its public OpenHub discussion trail. Public
+two-commit diffs are verified server-side, stored as immutable base/head
+snapshots, rendered in a read-only side-by-side editor, and available in posts,
+search, feeds, repository discussions, and comments. Arbitrary diff-line
+anchors, media, mentions, and full feed pagination remain open.
 
 ### Scope
 
@@ -110,10 +116,11 @@ mentions, and authenticated feed ranking remain open.
 
 ### Implementation note
 
-The current public mutation accepts a normalized source draft from the client
-and preserves it immutably. Before broad launch, replace that draft trust
-boundary with a server-side provider verification action so a client cannot
-forge repository ownership, commit, license, or canonical URL metadata.
+The public source path is an action plus internal mutation. The browser may
+request a source draft, but the server derives repository identity, ownership,
+license, canonical URL, line bounds, and snapshot content from a public exact
+commit request. Private provider access still requires a separate constrained
+user-scoped authorization boundary.
 
 ## Milestone 3 — Profiles, feeds, communities, and curation
 
@@ -123,12 +130,11 @@ OpenHub becomes a usable social discovery network rather than only a repository 
 
 ### Progress
 
-The first user-facing curation slice is implemented: profile context with
-GitHub identity framing, browsing-first For You/Following/Trending explanations,
-public/private list affordances, and public/private community discovery and
-creation entry points. Persistent follows, list documents, community
-membership/moderation, and ranked feed queries remain to be wired through
-Convex.
+The first user-facing curation slice is implemented: GitHub profile import and
+editing, public/private lists, public/private communities, persistent follows,
+topic follows, community membership/moderation, list item management, public
+profile trails, and public/following/trending feed queries. Private invitations,
+full repository activity feeds, and richer ranking controls remain open.
 
 ### Scope
 
@@ -148,6 +154,20 @@ Convex.
 - A user can create and manage a private list.
 - A user can create a public or private community.
 - Community content has separate moderation and visibility rules.
+
+## Milestone 4 progress
+
+Repository metadata is ingested only through server-side GitHub actions and
+stored as bounded evidence with an observation time. An hourly candidate seed
+and stale-signal refresh provide a public discovery pool. Explainable
+freshness, adoption, interest-match, license-presence, archive, and fork
+signals produce diversified recommendations with owner/language caps and
+dismissal support. Public GitHub contribution snapshots can populate a bounded
+contributor context score and evidence-backed achievement badge. Verified
+public GitHub owner endorsements are supported with a short expiry and
+provider evidence; collaborator-level endorsements remain deferred until
+user-scoped permission resolution exists. Duplicate trending post bodies are
+suppressed within the bounded candidate window.
 
 ## Milestone 4 — Discovery intelligence and reputation
 

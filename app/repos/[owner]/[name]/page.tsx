@@ -45,6 +45,7 @@ export default async function RepositoryPage({
 
   return (
     <RepositoryWorkspace
+      convexConfigured={Boolean(process.env.NEXT_PUBLIC_CONVEX_URL)}
       repository={result.repository}
       sourceRef={result.sourceRef}
       treePath={result.treePath}

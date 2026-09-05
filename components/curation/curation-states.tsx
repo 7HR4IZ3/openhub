@@ -73,10 +73,12 @@ export function CurationStatus({
   tone = "neutral",
   title,
   body,
+  className,
 }: {
   tone?: "neutral" | "accent";
   title: string;
   body: string;
+  className?: string;
 }) {
   return (
     <div
@@ -85,6 +87,7 @@ export function CurationStatus({
         tone === "accent"
           ? "border-[#b45e3c]/25 bg-[#b45e3c]/[0.06]"
           : "border-black/[0.08] dark:border-white/[0.08]",
+        className,
       )}
     >
       <p className="text-sm font-semibold">{title}</p>

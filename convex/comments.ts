@@ -20,6 +20,8 @@ const commentValidator = v.object({
   postId: v.id("posts"),
   authorId: v.id("users"),
   parentId: v.optional(v.id("comments")),
+  sourceReferenceId: v.optional(v.id("sourceReferences")),
+  diffReferenceId: v.optional(v.id("diffReferences")),
   body: v.string(),
   status: commentStatusValidator,
   createdAt: v.number(),
@@ -34,6 +36,46 @@ const commentAuthorValidator = v.object({
   avatarUrl: v.union(v.string(), v.null()),
 });
 
+const commentSourceValidator = v.object({
+  _id: v.id("sourceReferences"),
+  _creationTime: v.number(),
+  provider: v.string(),
+  repositoryId: v.string(),
+  repositoryFullName: v.string(),
+  originalOwner: v.string(),
+  path: v.string(),
+  commitSha: v.string(),
+  startLine: v.number(),
+  endLine: v.number(),
+  language: v.optional(v.string()),
+  canonicalUrl: v.string(),
+  licenseSpdxId: v.optional(v.string()),
+  visibility: v.union(v.literal("public"), v.literal("private")),
+  sourceSnapshot: v.string(),
+  verifiedAt: v.optional(v.number()),
+  createdAt: v.number(),
+});
+
+const commentDiffValidator = v.object({
+  _id: v.id("diffReferences"),
+  _creationTime: v.number(),
+  provider: v.string(),
+  repositoryId: v.string(),
+  repositoryFullName: v.string(),
+  originalOwner: v.string(),
+  path: v.string(),
+  baseCommitSha: v.string(),
+  headCommitSha: v.string(),
+  language: v.optional(v.string()),
+  canonicalUrl: v.string(),
+  licenseSpdxId: v.optional(v.string()),
+  visibility: v.literal("public"),
+  baseSnapshot: v.string(),
+  headSnapshot: v.string(),
+  verifiedAt: v.optional(v.number()),
+  createdAt: v.number(),
+});
+
 const commentViewValidator = v.object({
   _id: v.id("comments"),
   _creationTime: v.number(),
@@ -45,6 +87,8 @@ const commentViewValidator = v.object({
   createdAt: v.number(),
   updatedAt: v.number(),
   likeCount: v.number(),
+  sourceReference: v.union(commentSourceValidator, v.null()),
+  diffReference: v.union(commentDiffValidator, v.null()),
   author: commentAuthorValidator,
 });
 
@@ -58,7 +102,7 @@ export const list = query({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     const post = await ctx.db.get(args.postId);
-    if (post === null || !canViewPost(post, userId)) return [];
+    if (post === null || !(await canViewPost(ctx, post, userId))) return [];
 
     const limit = clampLimit(args.limit);
     const commentsQuery =
@@ -86,6 +130,8 @@ export const create = mutation({
     postId: v.id("posts"),
     body: v.string(),
     parentId: v.optional(v.id("comments")),
+    sourceReferenceId: v.optional(v.id("sourceReferences")),
+    diffReferenceId: v.optional(v.id("diffReferences")),
   },
   returns: commentViewValidator,
   handler: async (ctx, args) => {
@@ -93,11 +139,27 @@ export const create = mutation({
     if (userId === null) throw new Error("Not signed in");
 
     const post = await ctx.db.get(args.postId);
-    if (post === null || !canViewPost(post, userId)) {
+    if (post === null || !(await canViewPost(ctx, post, userId))) {
       throw new Error("Post is not available");
     }
     if (args.body.trim().length === 0) {
       throw new Error("A comment needs text");
+    }
+    if (new TextEncoder().encode(args.body).length > 64_000) {
+      throw new Error("Comment text exceeds storage limit");
+    }
+
+    if (args.sourceReferenceId !== undefined) {
+      const source = await ctx.db.get(args.sourceReferenceId);
+      if (!source || source.visibility !== "public" || post.sourceReferenceId !== source._id || !(await publicRepository(ctx, source.provider, source.repositoryId, source.repositoryFullName))) {
+        throw new Error("Source context is not available");
+      }
+    }
+    if (args.diffReferenceId !== undefined) {
+      const diff = await ctx.db.get(args.diffReferenceId);
+      if (!diff || diff.visibility !== "public" || post.diffReferenceId !== diff._id || !(await publicRepository(ctx, diff.provider, diff.repositoryId, diff.repositoryFullName))) {
+        throw new Error("Diff context is not available");
+      }
     }
 
     let parent: Doc<"comments"> | null = null;
@@ -117,6 +179,8 @@ export const create = mutation({
       postId: post._id,
       authorId: userId,
       parentId: args.parentId,
+      ...(args.sourceReferenceId === undefined ? {} : { sourceReferenceId: args.sourceReferenceId }),
+      ...(args.diffReferenceId === undefined ? {} : { diffReferenceId: args.diffReferenceId }),
       body: args.body,
       status: "visible",
       createdAt: now,
@@ -184,6 +248,12 @@ async function toCommentView(
     .query("profiles")
     .withIndex("by_user_id", (q) => q.eq("userId", comment.authorId))
     .unique();
+  const source = comment.sourceReferenceId === undefined ? null : await ctx.db.get(comment.sourceReferenceId);
+  const sourceReference = source && source.visibility === "public"
+    && await publicRepository(ctx, source.provider, source.repositoryId, source.repositoryFullName) ? source : null;
+  const diff = comment.diffReferenceId === undefined ? null : await ctx.db.get(comment.diffReferenceId);
+  const diffReference = diff && diff.visibility === "public"
+    && await publicRepository(ctx, diff.provider, diff.repositoryId, diff.repositoryFullName) ? diff : null;
 
   return {
     _id: comment._id,
@@ -191,6 +261,8 @@ async function toCommentView(
     postId: comment.postId,
     authorId: comment.authorId,
     ...(comment.parentId === undefined ? {} : { parentId: comment.parentId }),
+    sourceReference,
+    diffReference,
     body: comment.body,
     status: "visible" as const,
     createdAt: comment.createdAt,
@@ -211,6 +283,12 @@ async function toCommentView(
             avatarUrl: profile.avatarUrl ?? null,
           },
   };
+}
+
+async function publicRepository(ctx: QueryCtx | MutationCtx, provider: string, providerRepositoryId: string, fullName: string) {
+  const repository = await ctx.db.query("repositories")
+    .withIndex("by_provider_repository", (q) => q.eq("provider", provider).eq("providerRepositoryId", providerRepositoryId)).unique();
+  return repository?.visibility === "public" && repository.fullName.toLowerCase() === fullName.toLowerCase();
 }
 
 function clampLimit(value: number | undefined) {

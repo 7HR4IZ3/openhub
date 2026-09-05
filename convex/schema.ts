@@ -1,9 +1,13 @@
 import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
+import { curationTables } from "./curation-schema";
+import { discoveryTables } from "./discovery-schema";
 
 export default defineSchema({
   ...authTables,
+  ...curationTables,
+  ...discoveryTables,
   providerAccounts: defineTable({
     userId: v.id("users"),
     provider: v.string(),
@@ -38,7 +42,8 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index("by_user_id", ["userId"])
-    .index("by_handle", ["handle"]),
+    .index("by_handle", ["handle"])
+    .searchIndex("search_display_name", { searchField: "displayName" }),
   repositories: defineTable({
     provider: v.string(),
     providerRepositoryId: v.string(),
@@ -74,12 +79,32 @@ export default defineSchema({
     licenseSpdxId: v.optional(v.string()),
     visibility: v.union(v.literal("public"), v.literal("private")),
     sourceSnapshot: v.string(),
+    verifiedAt: v.optional(v.number()),
     createdAt: v.number(),
   }).index("by_repository_commit_path", [
     "repositoryId",
     "commitSha",
     "path",
   ]),
+  diffReferences: defineTable({
+    provider: v.string(),
+    repositoryId: v.string(),
+    repositoryFullName: v.string(),
+    originalOwner: v.string(),
+    path: v.string(),
+    baseCommitSha: v.string(),
+    headCommitSha: v.string(),
+    language: v.optional(v.string()),
+    canonicalUrl: v.string(),
+    licenseSpdxId: v.optional(v.string()),
+    visibility: v.literal("public"),
+    baseSnapshot: v.string(),
+    headSnapshot: v.string(),
+    verifiedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index("by_repository_created_at", ["repositoryId", "createdAt"])
+    .index("by_base_head_path", ["repositoryId", "baseCommitSha", "headCommitSha", "path"]),
   posts: defineTable({
     authorId: v.id("users"),
     type: v.union(
@@ -95,6 +120,7 @@ export default defineSchema({
     ),
     body: v.string(),
     sourceReferenceId: v.optional(v.id("sourceReferences")),
+    diffReferenceId: v.optional(v.id("diffReferences")),
     quoteOfId: v.optional(v.id("posts")),
     visibility: v.union(
       v.literal("public"),
@@ -109,8 +135,12 @@ export default defineSchema({
   })
     .index("by_created_at", ["createdAt"])
     .index("by_author_created_at", ["authorId", "createdAt"])
+    .index("by_author_visibility_created_at", ["authorId", "visibility", "createdAt"])
     .index("by_visibility_created_at", ["visibility", "createdAt"])
-    .index("by_quote_of_created_at", ["quoteOfId", "createdAt"]),
+    .index("by_source_reference_created_at", ["sourceReferenceId", "createdAt"])
+    .index("by_diff_reference_created_at", ["diffReferenceId", "createdAt"])
+    .index("by_quote_of_created_at", ["quoteOfId", "createdAt"])
+    .searchIndex("search_body", { searchField: "body", filterFields: ["visibility"] }),
   postReactions: defineTable({
     postId: v.id("posts"),
     userId: v.id("users"),
@@ -140,6 +170,8 @@ export default defineSchema({
     postId: v.id("posts"),
     authorId: v.id("users"),
     parentId: v.optional(v.id("comments")),
+    sourceReferenceId: v.optional(v.id("sourceReferences")),
+    diffReferenceId: v.optional(v.id("diffReferences")),
     body: v.string(),
     status: v.union(v.literal("visible"), v.literal("deleted")),
     createdAt: v.number(),

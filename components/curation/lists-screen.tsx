@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { CurationEmptyState, CurationStatus } from "@/components/curation/curation-states";
 import { CurationRail, CurationShell } from "@/components/curation/curation-shell";
+import { ConnectedListsScreen } from "@/components/curation/connected-lists-screen";
 import { cn } from "@/lib/utils";
 import {
   ArrowUpRight,
@@ -26,6 +27,12 @@ const tabs = [
 type ListTab = (typeof tabs)[number]["value"];
 
 export function ListsScreen({ convexConfigured }: { convexConfigured: boolean }) {
+  if (convexConfigured) return <ConnectedListsScreen />;
+
+  return <ListsPreviewScreen />;
+}
+
+function ListsPreviewScreen() {
   const [activeTab, setActiveTab] = useState<ListTab>("your");
 
   return (
@@ -58,12 +65,10 @@ export function ListsScreen({ convexConfigured }: { convexConfigured: boolean })
       </div>
 
       <div className="p-5 sm:p-7">
-        {(
-          <CurationStatus
-            title="Lists are a design preview"
-            body={convexConfigured ? "List storage, sharing, and creation are not implemented yet." : "List storage, sharing, and creation are not implemented yet. The backend is also not connected."}
-          />
-        )}
+        <CurationStatus
+          title="Lists are ready when GitHub is connected"
+          body="Connect a GitHub identity to save public trails or keep a private reading queue."
+        />
         {activeTab === "your" ? <YourLists /> : null}
         {activeTab === "shared" ? <SharedLists /> : null}
         {activeTab === "discover" ? <DiscoverLists /> : null}

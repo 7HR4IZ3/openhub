@@ -8,6 +8,14 @@ import Link from "next/link";
 import { useState } from "react";
 
 export default function SignInPage() {
+  if (!process.env.NEXT_PUBLIC_CONVEX_URL) {
+    return <SignInSetup />;
+  }
+
+  return <ConnectedSignIn />;
+}
+
+function ConnectedSignIn() {
   const { signIn } = useAuthActions();
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -89,6 +97,26 @@ export default function SignInPage() {
           </p>
         </div>
       </div>
+    </main>
+  );
+}
+
+function SignInSetup() {
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-[#f7f7f4] px-5 py-12 dark:bg-[#111310]">
+      <section className="w-full max-w-xl rounded-3xl border border-black/[0.1] bg-[#fbfbf9] p-7 dark:border-white/[0.1] dark:bg-[#151714] sm:p-10">
+        <OpenHubMark />
+        <p className="mt-10 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">GitHub connection</p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.05em]">The account layer is waiting to connect.</h1>
+        <p className="mt-4 text-sm leading-7 text-muted-foreground">
+          GitHub sign-in is ready in the app, but this environment has no Convex
+          deployment URL yet. Configure the backend before starting OAuth.
+        </p>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <Button asChild className="rounded-full"><Link href="/explore">Explore repositories</Link></Button>
+          <Button asChild variant="outline" className="rounded-full bg-transparent"><Link href="/">Back home</Link></Button>
+        </div>
+      </section>
     </main>
   );
 }

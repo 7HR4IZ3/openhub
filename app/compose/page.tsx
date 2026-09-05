@@ -1,6 +1,7 @@
 import { PostComposer } from "@/components/compose/post-composer";
 import { getPublicGitHubProvider } from "@/lib/providers/server";
-import type { SourceContext } from "@/lib/source-references";
+import type { RepositoryFile } from "@/lib/providers/types";
+import type { DiffContext, SourceContext } from "@/lib/source-references";
 
 export const dynamic = "force-dynamic";
 
@@ -12,15 +13,18 @@ export const metadata = { title: "Write a post" };
 
 export default async function ComposePage({ searchParams }: ComposePageProps) {
   const query = await searchParams;
-  const request = readSourceRequest(query);
-  const loaded =
-    request === null
-      ? { source: null, error: null }
-      : await loadSource(request);
+  const diffRequest = readDiffRequest(query);
+  const sourceRequest = diffRequest === null ? readSourceRequest(query) : null;
+  const loaded = diffRequest !== null
+    ? await loadDiff(diffRequest)
+    : sourceRequest === null
+      ? { source: null, diff: null, error: null }
+      : { ...(await loadSource(sourceRequest)), diff: null };
 
   return (
     <PostComposer
       source={loaded.source}
+      diff={loaded.diff}
       sourceError={loaded.error}
       convexConfigured={Boolean(process.env.NEXT_PUBLIC_CONVEX_URL)}
     />
@@ -35,6 +39,39 @@ type SourceRequest = {
   startLine?: number;
   endLine?: number;
 };
+
+type DiffRequest = {
+  owner: string;
+  name: string;
+  path: string;
+  baseCommitSha: string;
+  headCommitSha: string;
+};
+
+function readDiffRequest(
+  query: Record<string, string | string[] | undefined>,
+): DiffRequest | null {
+  const base = readParam(query.base);
+  const head = readParam(query.head);
+  if (base === undefined && head === undefined) return null;
+
+  const owner = readParam(query.owner);
+  const name = readParam(query.name);
+  const path = safePath(readParam(query.path));
+  if (
+    owner === undefined ||
+    name === undefined ||
+    !isRepositorySegment(owner) ||
+    !isRepositorySegment(name) ||
+    path === null ||
+    !safeCommit(base) ||
+    !safeCommit(head) ||
+    base === head
+  ) {
+    return { owner: "", name: "", path: "", baseCommitSha: "", headCommitSha: "" };
+  }
+  return { owner, name, path, baseCommitSha: base, headCommitSha: head };
+}
 
 function readSourceRequest(
   query: Record<string, string | string[] | undefined>,
@@ -158,6 +195,69 @@ async function loadSource(request: SourceRequest): Promise<{
   }
 }
 
+async function loadDiff(request: DiffRequest): Promise<{
+  source: null;
+  diff: DiffContext | null;
+  error: string | null;
+}> {
+  if (!request.owner || !request.name || !request.path || !request.baseCommitSha || !request.headCommitSha) {
+    return { source: null, diff: null, error: "The diff link is incomplete or invalid." };
+  }
+
+  const provider = getPublicGitHubProvider();
+  if (provider === null) {
+    return {
+      source: null,
+      diff: null,
+      error: "GitHub diff preview needs the server-side public provider to be configured.",
+    };
+  }
+
+  try {
+    const repository = await provider.getRepository({ owner: request.owner, name: request.name });
+    if (repository === null || repository.visibility !== "public") {
+      return { source: null, diff: null, error: "Only public repositories can be compared here." };
+    }
+
+    const [baseFile, headFile] = await Promise.all([
+      provider.getFile({ owner: request.owner, name: request.name, path: request.path, ref: request.baseCommitSha }),
+      provider.getFile({ owner: request.owner, name: request.name, path: request.path, ref: request.headCommitSha }),
+    ]);
+    if (baseFile === null && headFile === null) {
+      return { source: null, diff: null, error: "GitHub could not find that file at either commit." };
+    }
+    const baseSnapshot = boundedSnapshot(baseFile);
+    const headSnapshot = boundedSnapshot(headFile);
+    if (baseSnapshot === null || headSnapshot === null) {
+      return { source: null, diff: null, error: "This file is too large to compare in OpenHub." };
+    }
+
+    return {
+      source: null,
+      diff: {
+        provider: "github",
+        repositoryId: repository.providerRepositoryId,
+        repositoryFullName: repository.fullName,
+        repositoryName: repository.name,
+        originalOwner: repository.ownerLogin,
+        path: request.path,
+        baseCommitSha: baseFile?.commitSha ?? request.baseCommitSha,
+        headCommitSha: headFile?.commitSha ?? request.headCommitSha,
+        language: languageForPath(request.path, repository.primaryLanguage),
+        canonicalUrl: `https://github.com/${repository.fullName}/compare/${request.baseCommitSha}...${request.headCommitSha}`,
+        licenseSpdxId: repository.licenseSpdxId ?? undefined,
+        visibility: "public",
+        baseSnapshot,
+        headSnapshot,
+      },
+      error: null,
+    };
+  } catch (error) {
+    console.error("Diff attachment failed", error);
+    return { source: null, diff: null, error: "GitHub could not load that comparison right now. Try again." };
+  }
+}
+
 function readParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
@@ -177,6 +277,10 @@ function safeRef(value: string | undefined) {
     return null;
   }
   return value;
+}
+
+function safeCommit(value: string | undefined): value is string {
+  return value !== undefined && /^[a-f0-9]{40}$/i.test(value);
 }
 
 function safePath(value: string | undefined) {
@@ -207,6 +311,12 @@ function parseLine(value: string | undefined) {
 
 function clampLine(value: number, totalLines: number) {
   return Math.min(Math.max(1, value), Math.max(1, totalLines));
+}
+
+function boundedSnapshot(file: RepositoryFile | null) {
+  if (file === null) return "";
+  if (new TextEncoder().encode(file.text).length > 512_000) return null;
+  return file.text;
 }
 
 function languageForPath(path: string, primaryLanguage: string | null) {

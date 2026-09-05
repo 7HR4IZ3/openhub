@@ -1,7 +1,7 @@
 "use client";
 
 import { OpenHubMark } from "@/components/openhub-mark";
-import { RecentPostFeed } from "@/components/posts/recent-post-feed";
+import { RecentPostFeed, type FeedMode } from "@/components/posts/recent-post-feed";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -217,16 +217,11 @@ export function HomeScreen({ convexConfigured = false }: { convexConfigured?: bo
             </div>
           </section>
 
-          {convexConfigured && activeTab === "For you" ? (
+          {convexConfigured ? (
             <section className="border-b border-black/[0.08] p-5 dark:border-white/[0.08] lg:p-7" aria-label="Recent source-backed posts">
-              <RecentPostFeed convexConfigured={convexConfigured} />
+              <RecentPostFeed convexConfigured={convexConfigured} mode={feedMode(activeTab)} />
             </section>
           ) : null}
-          <p role="status" className="border-b px-5 py-4 text-sm text-muted-foreground lg:px-7">
-            {activeTab === "For you"
-              ? "Personalization is not available yet. Connected environments show recent public posts."
-              : `${activeTab} feed is not implemented yet. You can still explore repositories.`}
-          </p>
 
           <section className="p-5 lg:p-7">
             <div className="flex items-end justify-between">
@@ -318,6 +313,12 @@ export function HomeScreen({ convexConfigured = false }: { convexConfigured?: bo
       </nav>
     </div>
   );
+}
+
+function feedMode(tab: (typeof tabs)[number]): FeedMode {
+  if (tab === "Following") return "following";
+  if (tab === "Trending") return "trending";
+  return "forYou";
 }
 
 function NavItem({

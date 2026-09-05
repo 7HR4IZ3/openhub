@@ -3,22 +3,29 @@
 import { useState } from "react";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   ArrowUpRight,
   Bookmark,
   Check,
   Code2,
+  GitBranch,
   Heart,
+  ListPlus,
   MessageCircle,
+  Quote,
   Repeat2,
   Send,
+  Share2,
   UserRound,
 } from "lucide-react";
 
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { PostBody } from "@/components/posts/post-body";
+import { DiffCodeViewer } from "@/components/repository/diff-code-viewer";
+import { SourceCodeViewer } from "@/components/repository/source-code-viewer";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +44,7 @@ export function PostDetailScreen({
 }
 
 function ConnectedPostDetailScreen({ postId }: { postId: PostId }) {
+  const router = useRouter();
   const { isAuthenticated } = useConvexAuth();
   const post = useQuery(api.posts.byId, { postId });
   const comments = useQuery(api.comments.list, { postId, limit: 50 });
@@ -45,14 +53,24 @@ function ConnectedPostDetailScreen({ postId }: { postId: PostId }) {
   const toggleBookmark = useMutation(api.social.toggleBookmark);
   const toggleRepost = useMutation(api.social.toggleRepost);
   const createComment = useMutation(api.comments.create);
+  const createQuote = useMutation(api.posts.createQuote);
+  const lists = useQuery(api.curation.myLists, isAuthenticated ? { paginationOpts: { numItems: 30, cursor: null } } : "skip");
+  const addListItem = useMutation(api.curation.addListItem);
 
   const [commentDraft, setCommentDraft] = useState("");
+  const [quoteDraft, setQuoteDraft] = useState("");
   const [replyTo, setReplyTo] = useState<{
     id: Id<"comments">;
     handle: string;
   } | null>(null);
+  const [attachSource, setAttachSource] = useState(false);
+  const [quoteOpen, setQuoteOpen] = useState(false);
+  const [listOpen, setListOpen] = useState(false);
+  const [listSaving, setListSaving] = useState(false);
+  const [savedListId, setSavedListId] = useState<Id<"lists"> | null>(null);
+  const [shared, setShared] = useState(false);
   const [pendingAction, setPendingAction] = useState<
-    "like" | "bookmark" | "repost" | "comment" | null
+    "like" | "bookmark" | "repost" | "comment" | "quote" | null
   >(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -62,6 +80,8 @@ function ConnectedPostDetailScreen({ postId }: { postId: PostId }) {
 
   if (post === null) return <PostNotFoundState />;
 
+  const postSourceReferenceId = post.sourceReference?._id;
+  const postDiffReferenceId = post.diffReference?._id;
   const liked = viewer?.liked ?? post.viewer.liked;
   const bookmarked = viewer?.bookmarked ?? post.viewer.bookmarked;
   const reposted = viewer?.reposted ?? post.viewer.reposted;
@@ -90,21 +110,75 @@ function ConnectedPostDetailScreen({ postId }: { postId: PostId }) {
     setError(null);
     setPendingAction("comment");
     try {
+      const contextReference = attachSource
+        ? postSourceReferenceId
+          ? { sourceReferenceId: postSourceReferenceId }
+          : postDiffReferenceId
+            ? { diffReferenceId: postDiffReferenceId }
+            : {}
+        : {};
       if (replyTo === null) {
-        await createComment({ postId, body: commentDraft });
+        await createComment({ postId, body: commentDraft, ...contextReference });
       } else {
         await createComment({
           postId,
           body: commentDraft,
           parentId: replyTo.id,
+          ...contextReference,
         });
       }
       setCommentDraft("");
       setReplyTo(null);
+      setAttachSource(false);
     } catch (commentError) {
       setError(commentError instanceof Error ? commentError.message : "Comment could not be posted");
     } finally {
       setPendingAction(null);
+    }
+  }
+
+  async function submitQuote(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!isAuthenticated || quoteDraft.trim().length === 0) return;
+
+    setError(null);
+    setPendingAction("quote");
+    try {
+      const quote = await createQuote({ postId, body: quoteDraft, visibility: "public" });
+      router.push(`/posts/${quote._id}`);
+    } catch (quoteError) {
+      setError(quoteError instanceof Error ? quoteError.message : "Quote could not be posted");
+      setPendingAction(null);
+    }
+  }
+
+  async function sharePost() {
+    const url = window.location.href;
+    try {
+      if (typeof navigator.share === "function") {
+        await navigator.share({ title: "OpenHub discussion", url });
+      } else {
+        await navigator.clipboard.writeText(url);
+      }
+      setShared(true);
+      window.setTimeout(() => setShared(false), 1800);
+    } catch {
+      setShared(false);
+    }
+  }
+
+  async function saveToList(listId: Id<"lists">) {
+    if (!isAuthenticated) return;
+    setError(null);
+    setListSaving(true);
+    try {
+      await addListItem({ listId, target: { kind: "post", postId } });
+      setSavedListId(listId);
+      setListOpen(false);
+    } catch (listError) {
+      setError(listError instanceof Error ? listError.message : "Post could not be added to the list");
+    } finally {
+      setListSaving(false);
     }
   }
 
@@ -149,7 +223,7 @@ function ConnectedPostDetailScreen({ postId }: { postId: PostId }) {
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
                   <span className="font-semibold">{post.author.displayName}</span>
-                  <span className="text-muted-foreground">@{post.author.handle}</span>
+                  <Link href={`/profile/${encodeURIComponent(post.author.handle)}`} className="text-muted-foreground hover:text-foreground hover:underline">@{post.author.handle}</Link>
                   <span className="text-muted-foreground">·</span>
                   <time className="text-muted-foreground" dateTime={new Date(post.createdAt).toISOString()}>
                     {formatDate(post.createdAt)}
@@ -166,6 +240,8 @@ function ConnectedPostDetailScreen({ postId }: { postId: PostId }) {
             </div>
 
             {post.sourceReference ? <SourceReferenceCard source={post.sourceReference} /> : null}
+            {post.diffReference ? <DiffReferenceCard diff={post.diffReference} /> : null}
+            {post.quotedPost ? <QuotedPostCard quote={post.quotedPost} /> : null}
 
             <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-black/[0.08] pt-4 dark:border-white/[0.08]">
               <ActionButton
@@ -198,7 +274,68 @@ function ConnectedPostDetailScreen({ postId }: { postId: PostId }) {
                 disabled={!isAuthenticated || pendingAction !== null}
                 onClick={() => void runAction("bookmark", () => toggleBookmark({ postId }))}
               />
+              <ActionButton
+                icon={Quote}
+                label="Quote"
+                active={quoteOpen}
+                disabled={!isAuthenticated || pendingAction !== null}
+                onClick={() => setQuoteOpen((open) => !open)}
+              />
+              <ActionButton
+                icon={ListPlus}
+                label={savedListId ? "In list" : "List"}
+                active={listOpen || savedListId !== null}
+                disabled={!isAuthenticated || pendingAction !== null}
+                onClick={() => setListOpen((open) => !open)}
+              />
+              <ActionButton
+                icon={Share2}
+                label={shared ? "Copied" : "Share"}
+                onClick={() => void sharePost()}
+              />
             </div>
+
+            {listOpen ? (
+              <div className="mt-4 rounded-2xl border border-black/[0.1] bg-[#f7f7f4] p-4 dark:border-white/[0.1] dark:bg-[#111310]">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs font-semibold">Add to a reading trail</p>
+                  <Link href="/lists" className="text-xs font-semibold text-[#9b4d31] hover:underline dark:text-[#e99970]">Manage lists</Link>
+                </div>
+                {lists === undefined ? <p className="mt-3 text-xs text-muted-foreground">Loading your lists…</p> : lists.page.length > 0 ? (
+                  <div className="mt-3 grid gap-1 sm:grid-cols-2">
+                    {lists.page.map((list) => (
+                      <button key={list._id} type="button" className="flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-xs hover:bg-black/[0.05] disabled:opacity-50 dark:hover:bg-white/[0.06]" disabled={listSaving} onClick={() => void saveToList(list._id)}>
+                        <span className="truncate">{list.title}</span>
+                        <span className="shrink-0 text-[10px] text-muted-foreground">{list.visibility}</span>
+                      </button>
+                    ))}
+                  </div>
+                ) : <Link href="/lists" className="mt-3 block text-xs text-muted-foreground hover:text-foreground">Create a list to save this post.</Link>}
+              </div>
+            ) : null}
+
+            {quoteOpen ? (
+              <form onSubmit={submitQuote} className="mt-4 rounded-2xl border border-black/[0.1] bg-[#f7f7f4] p-4 dark:border-white/[0.1] dark:bg-[#111310]">
+                <label htmlFor="quote-box" className="text-xs font-semibold">Add your perspective</label>
+                <textarea
+                  id="quote-box"
+                  value={quoteDraft}
+                  onChange={(event) => setQuoteDraft(event.target.value)}
+                  placeholder="What should another developer notice about this?"
+                  maxLength={64_000}
+                  rows={4}
+                  disabled={pendingAction !== null}
+                  className="mt-3 w-full resize-y rounded-xl border border-black/[0.1] bg-transparent px-3 py-2 text-sm leading-6 outline-none focus:border-[#b45e3c] dark:border-white/[0.1]"
+                />
+                <div className="mt-3 flex items-center justify-between gap-3">
+                  <p className="text-xs text-muted-foreground">Quotes are public and keep the original post attached.</p>
+                  <Button type="submit" size="sm" className="rounded-full" disabled={quoteDraft.trim().length === 0 || pendingAction !== null}>
+                    {pendingAction === "quote" ? "Quoting…" : "Quote post"}
+                    <Quote className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              </form>
+            ) : null}
 
             {!isAuthenticated ? (
               <p className="mt-4 text-xs leading-5 text-muted-foreground">
@@ -229,6 +366,7 @@ function ConnectedPostDetailScreen({ postId }: { postId: PostId }) {
                 onChange={(event) => setCommentDraft(event.target.value)}
                 placeholder={isAuthenticated ? "Add useful context, a question, or a counterexample…" : "Sign in to add context…"}
                 disabled={!isAuthenticated || pendingAction !== null}
+                maxLength={64_000}
                 rows={3}
                 className="w-full resize-y bg-transparent text-sm leading-6 outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
               />
@@ -243,6 +381,7 @@ function ConnectedPostDetailScreen({ postId }: { postId: PostId }) {
                   <Button asChild size="sm" className="rounded-full"><Link href="/signin">Sign in</Link></Button>
                 )}
               </div>
+              {post.sourceReference || post.diffReference ? <label className="mt-3 flex items-center gap-2 text-xs text-muted-foreground"><input type="checkbox" checked={attachSource} onChange={(event) => setAttachSource(event.target.checked)} disabled={!isAuthenticated || pendingAction !== null} />Attach the post&apos;s {post.sourceReference ? `source context (${post.sourceReference.path}:${post.sourceReference.startLine}–${post.sourceReference.endLine})` : `diff context (${post.diffReference?.path})`}</label> : null}
             </form>
 
             {error ? (
@@ -266,11 +405,13 @@ function ConnectedPostDetailScreen({ postId }: { postId: PostId }) {
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
                           <span className="font-semibold">{comment.author.displayName}</span>
-                          <span className="text-muted-foreground">@{comment.author.handle}</span>
+                          <Link href={`/profile/${encodeURIComponent(comment.author.handle)}`} className="text-muted-foreground hover:text-foreground hover:underline">@{comment.author.handle}</Link>
                           <span className="text-muted-foreground">·</span>
                           <time className="text-muted-foreground" dateTime={new Date(comment.createdAt).toISOString()}>{formatDate(comment.createdAt)}</time>
                         </div>
                         <PostBody body={comment.body} />
+                        {comment.sourceReference ? <a href={comment.sourceReference.canonicalUrl} target="_blank" rel="noreferrer" className="mt-3 flex items-center gap-2 rounded-xl border border-black/[0.08] bg-[#f0efe9] px-3 py-2 text-xs text-muted-foreground hover:border-[#b45e3c]/50 dark:border-white/[0.08] dark:bg-[#0f120f]"><Code2 className="h-3.5 w-3.5 shrink-0 text-[#b45e3c] dark:text-[#e99970]" /><span className="truncate font-mono">{comment.sourceReference.path}</span><span className="shrink-0">L{comment.sourceReference.startLine}–L{comment.sourceReference.endLine}</span></a> : null}
+                        {comment.diffReference ? <a href={comment.diffReference.canonicalUrl} target="_blank" rel="noreferrer" className="mt-3 flex items-center gap-2 rounded-xl border border-black/[0.08] bg-[#f0efe9] px-3 py-2 text-xs text-muted-foreground hover:border-[#b45e3c]/50 dark:border-white/[0.08] dark:bg-[#0f120f]"><GitBranch className="h-3.5 w-3.5 shrink-0 text-[#b45e3c] dark:text-[#e99970]" /><span className="truncate font-mono">{comment.diffReference.path}</span><span className="shrink-0">{comment.diffReference.baseCommitSha.slice(0, 7)} → {comment.diffReference.headCommitSha.slice(0, 7)}</span></a> : null}
                         <button type="button" onClick={() => setReplyTo({ id: comment._id, handle: comment.author.handle })} className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground">
                           <MessageCircle className="h-3.5 w-3.5" /> Reply
                         </button>
@@ -295,6 +436,10 @@ function ConnectedPostDetailScreen({ postId }: { postId: PostId }) {
               {post.sourceReference ? (
                 <a href={post.sourceReference.canonicalUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#9b4d31] hover:underline dark:text-[#e99970]">
                   Open source <ArrowUpRight className="h-3.5 w-3.5" />
+                </a>
+              ) : post.diffReference ? (
+                <a href={post.diffReference.canonicalUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-[#9b4d31] hover:underline dark:text-[#e99970]">
+                  Open comparison <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
               ) : null}
             </section>
@@ -337,13 +482,110 @@ function SourceReferenceCard({
           GitHub <ArrowUpRight className="h-3.5 w-3.5" />
         </a>
       </div>
-      <pre className="max-h-[28rem] overflow-auto p-4 text-xs leading-6 sm:text-sm"><code>{source.sourceSnapshot}</code></pre>
+      <SourceCodeViewer
+        file={{
+          path: source.path,
+          commitSha: source.commitSha,
+          oid: "source-snapshot",
+          text: source.sourceSnapshot,
+          byteSize: new TextEncoder().encode(source.sourceSnapshot).byteLength,
+        }}
+        primaryLanguage={source.language ?? null}
+        lineNumberOffset={source.startLine}
+      />
       <div className="flex flex-wrap gap-x-4 gap-y-1 border-t border-black/[0.08] px-4 py-3 text-[11px] text-muted-foreground dark:border-white/[0.08]">
         <span>Original owner: @{source.originalOwner}</span>
         {source.language ? <span>Language: {source.language}</span> : null}
         {source.licenseSpdxId ? <span>License: {source.licenseSpdxId}</span> : null}
       </div>
     </section>
+  );
+}
+
+function DiffReferenceCard({
+  diff,
+}: {
+  diff: {
+    repositoryFullName: string;
+    originalOwner: string;
+    path: string;
+    baseCommitSha: string;
+    headCommitSha: string;
+    language?: string;
+    canonicalUrl: string;
+    licenseSpdxId?: string;
+    baseSnapshot: string;
+    headSnapshot: string;
+  };
+}) {
+  return (
+    <section className="mt-6 overflow-hidden rounded-2xl border border-black/[0.1] bg-[#f0efe9] dark:border-white/[0.1] dark:bg-[#0f120f]" aria-label="Diff reference">
+      <div className="flex flex-col gap-3 border-b border-black/[0.08] px-4 py-3 dark:border-white/[0.08] sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 text-xs font-semibold">
+            <Code2 className="h-3.5 w-3.5 text-[#b45e3c] dark:text-[#e99970]" />
+            <span className="truncate font-mono">{diff.path}</span>
+          </div>
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            {diff.repositoryFullName} · {diff.baseCommitSha.slice(0, 7)} → {diff.headCommitSha.slice(0, 7)}
+          </p>
+        </div>
+        <a href={diff.canonicalUrl} target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-[#9b4d31] hover:underline dark:text-[#e99970]">
+          GitHub <ArrowUpRight className="h-3.5 w-3.5" />
+        </a>
+      </div>
+      <DiffCodeViewer
+        path={diff.path}
+        language={diff.language}
+        baseSnapshot={diff.baseSnapshot}
+        headSnapshot={diff.headSnapshot}
+      />
+      <div className="flex flex-wrap gap-x-4 gap-y-1 border-t border-black/[0.08] px-4 py-3 text-[11px] text-muted-foreground dark:border-white/[0.08]">
+        <span>Original owner: @{diff.originalOwner}</span>
+        {diff.language ? <span>Language: {diff.language}</span> : null}
+        {diff.licenseSpdxId ? <span>License: {diff.licenseSpdxId}</span> : null}
+      </div>
+    </section>
+  );
+}
+
+function QuotedPostCard({
+  quote,
+}: {
+  quote: {
+    _id: Id<"posts">;
+    type: string;
+    body: string;
+    createdAt: number;
+    author: { handle: string; displayName: string };
+    sourceReference: { repositoryFullName: string; path: string; startLine: number; endLine: number } | null;
+    diffReference: { repositoryFullName: string; path: string; baseCommitSha: string; headCommitSha: string } | null;
+  };
+}) {
+  return (
+    <Link href={`/posts/${quote._id}`} className="mt-6 block rounded-2xl border border-black/[0.1] p-4 transition-colors hover:border-[#b45e3c]/50 dark:border-white/[0.1] dark:hover:border-[#e99970]/50">
+      <div className="flex items-center gap-2 text-xs">
+        <Quote className="h-3.5 w-3.5 text-[#b45e3c] dark:text-[#e99970]" />
+        <span className="font-semibold">{quote.author.displayName}</span>
+        <span className="text-muted-foreground">@{quote.author.handle}</span>
+        <span className="text-muted-foreground">·</span>
+        <span className="text-muted-foreground">{quote.type}</span>
+      </div>
+      <div className="mt-3 line-clamp-5">
+        <PostBody body={quote.body} />
+      </div>
+      {quote.sourceReference ? (
+        <p className="mt-3 truncate font-mono text-[11px] text-muted-foreground">
+          {quote.sourceReference.repositoryFullName} · {quote.sourceReference.path} · L{quote.sourceReference.startLine}–L{quote.sourceReference.endLine}
+        </p>
+      ) : null}
+      {quote.diffReference ? (
+        <p className="mt-3 truncate font-mono text-[11px] text-muted-foreground">
+          {quote.diffReference.repositoryFullName} · {quote.diffReference.path} · {quote.diffReference.baseCommitSha.slice(0, 7)} → {quote.diffReference.headCommitSha.slice(0, 7)}
+        </p>
+      ) : null}
+      <p className="mt-3 text-[11px] text-muted-foreground">Original post from {formatDate(quote.createdAt)}</p>
+    </Link>
   );
 }
 

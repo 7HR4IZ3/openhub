@@ -29,7 +29,9 @@ const capabilities: ProviderCapabilities = {
   pullRequests: true,
   releases: true,
   contributors: true,
-  authenticatedPrivateAccess: true,
+  // The adapter can be extended with a user-scoped token, but the current
+  // public route intentionally has no private-repository authorization path.
+  authenticatedPrivateAccess: false,
 };
 
 type GitHubGraphQLResponse<T> = {
@@ -439,13 +441,22 @@ async function githubGraphQL<T>(
     },
     body: JSON.stringify({ query, variables }),
     cache: "no-store",
+    redirect: "error",
+    signal: AbortSignal.timeout(15_000),
   });
 
   if (!response.ok) {
     throw new Error(`GitHub API request failed with status ${response.status}`);
   }
 
-  const payload = (await response.json()) as GitHubGraphQLResponse<T>;
+  const responseText = await response.text();
+  if (responseText.length > 5_000_000) throw new Error("GitHub API response is too large");
+  let payload: GitHubGraphQLResponse<T>;
+  try {
+    payload = JSON.parse(responseText) as GitHubGraphQLResponse<T>;
+  } catch {
+    throw new Error("GitHub API returned invalid data");
+  }
   if (payload.errors?.length) {
     throw new Error(`GitHub API error: ${payload.errors[0]?.message ?? "Unknown error"}`);
   }
@@ -485,6 +496,7 @@ function isRepositoryNode(node: RepositoryNode | null): node is RepositoryNode {
 }
 
 function clampPageSize(value: number) {
+  if (!Number.isFinite(value)) return 20;
   return Math.max(1, Math.min(Math.floor(value), 50));
 }
 

@@ -33,7 +33,7 @@ export const viewerState = query({
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     const post = await ctx.db.get(args.postId);
-    if (post === null || !canViewPost(post, userId)) return null;
+    if (post === null || !(await canViewPost(ctx, post, userId))) return null;
 
     const liked =
       userId === null
@@ -83,7 +83,7 @@ export const toggleLike = mutation({
     if (userId === null) throw new Error("Not signed in");
 
     const post = await ctx.db.get(args.postId);
-    if (post === null || !canInteractWithPost(post, userId)) {
+    if (post === null || !(await canInteractWithPost(ctx, post, userId))) {
       throw new Error("Post is not available");
     }
 
@@ -132,7 +132,7 @@ export const toggleBookmark = mutation({
     if (userId === null) throw new Error("Not signed in");
 
     const post = await ctx.db.get(args.postId);
-    if (post === null || !canInteractWithPost(post, userId)) {
+    if (post === null || !(await canInteractWithPost(ctx, post, userId))) {
       throw new Error("Post is not available");
     }
 
