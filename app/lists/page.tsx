@@ -1,13 +1,10 @@
-import { PlaceholderScreen } from "@/components/app/placeholder-screen";
+import { ListsScreen } from "@/components/curation/lists-screen";
 
-export const metadata = { title: "Lists" };
+export const metadata = {
+  title: "Lists",
+  description: "Curate repository and source trails with a point of view.",
+};
 
 export default function ListsPage() {
-  return (
-    <PlaceholderScreen
-      eyebrow="Curated trails"
-      title="Keep the projects worth returning to."
-      body="Public and private lists will make it easy to collect repositories, people, posts, snippets, communities, and bounties into a trail with a point of view."
-    />
-  );
+  return <ListsScreen convexConfigured={Boolean(process.env.NEXT_PUBLIC_CONVEX_URL)} />;
 }

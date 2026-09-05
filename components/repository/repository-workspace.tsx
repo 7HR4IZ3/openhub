@@ -31,11 +31,13 @@ import {
   SourceCodeViewer,
   type CodeSelection,
 } from "@/components/repository/source-code-viewer";
+import { RepositorySurfacePanel } from "@/components/repository/repository-surface-panel";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type {
   NormalizedRepository,
   RepositoryFile,
+  RepositorySurfaces,
   RepositoryTreeEntry,
 } from "@/lib/providers/types";
 
@@ -45,12 +47,14 @@ export function RepositoryWorkspace({
   treePath,
   entries,
   file,
+  surfaces,
 }: {
   repository: NormalizedRepository;
   sourceRef: string;
   treePath: string;
   entries: RepositoryTreeEntry[];
   file: RepositoryFile | null;
+  surfaces: RepositorySurfaces;
 }) {
   const [isTreeOpen, setIsTreeOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
@@ -320,6 +324,13 @@ export function RepositoryWorkspace({
             </p>
           </section>
         </div>
+
+        <RepositorySurfacePanel
+          repository={repository}
+          sourceRef={sourceRef}
+          currentPath={file?.path ?? treePath}
+          surfaces={surfaces}
+        />
       </div>
     </main>
   );

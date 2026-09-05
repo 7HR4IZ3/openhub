@@ -29,6 +29,12 @@ A clean Next.js + Convex project with the OpenHub documents, design tokens, rout
 - Design and architecture docs are committed.
 - Preview deployment path is documented.
 
+### Progress
+
+The web verification workflow and a non-secret `/api/health` endpoint are now
+committed. Convex codegen and cloud deployment remain blocked until a Convex
+account is authenticated and a deployment is linked.
+
 ## Milestone 1 — Identity and repository exploration
 
 ### Outcome
@@ -37,11 +43,13 @@ An authenticated user can sign in with GitHub, view an imported OpenHub profile,
 
 ### Progress
 
-The initial public exploration slice is implemented: server-side GitHub
-repository search, public repository metadata, directory navigation, and
-commit-resolved read-only Monaco file viewing. The remaining M1 blockers are
-Convex cloud deployment, GitHub OAuth configuration, user-scoped private
-repository authorization, and the remaining repository surfaces.
+The initial public exploration slice and the remaining read-only repository
+surface increment are implemented: server-side GitHub repository search,
+public repository metadata, directory navigation, commit-resolved Monaco file
+viewing, branch/tag selection, commit history, issues, pull requests, releases,
+contributors, and license context. The remaining M1 blockers are Convex cloud
+deployment, GitHub OAuth configuration, user-scoped private repository
+authorization, caching, and dependency/activity surfaces.
 
 ### Scope
 
@@ -72,10 +80,13 @@ Users can publish source-backed snippets, diffs, questions, reviews, and discuss
 
 ### Progress
 
-The first source-aware composer and Convex post contract are implemented. A
-reader can select lines in the repository editor, open a focused composer, and
-preview the commit-pinned attributed snapshot. Publication and feed rendering
-remain gated on the linked Convex deployment and authenticated provider setup.
+The source-aware composer and Convex post contract are implemented. A reader
+can select lines in the repository editor, open a focused composer, preview the
+commit-pinned attributed snapshot, publish, and open the resulting post detail.
+The first social backend and reader UI now cover comments/replies, reactions,
+bookmarks, reposts/quotes, notifications, and a public recent-post feed when a
+Convex deployment is linked. Provider-side source verification, diffs, media,
+mentions, and authenticated feed ranking remain open.
 
 ### Scope
 
@@ -97,11 +108,27 @@ remain gated on the linked Convex deployment and authenticated provider setup.
 - Comments support Markdown, code blocks, replies, and source references.
 - Feed interactions update in realtime.
 
+### Implementation note
+
+The current public mutation accepts a normalized source draft from the client
+and preserves it immutably. Before broad launch, replace that draft trust
+boundary with a server-side provider verification action so a client cannot
+forge repository ownership, commit, license, or canonical URL metadata.
+
 ## Milestone 3 — Profiles, feeds, communities, and curation
 
 ### Outcome
 
 OpenHub becomes a usable social discovery network rather than only a repository viewer.
+
+### Progress
+
+The first user-facing curation slice is implemented: profile context with
+GitHub identity framing, browsing-first For You/Following/Trending explanations,
+public/private list affordances, and public/private community discovery and
+creation entry points. Persistent follows, list documents, community
+membership/moderation, and ranked feed queries remain to be wired through
+Convex.
 
 ### Scope
 

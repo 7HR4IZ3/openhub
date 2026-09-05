@@ -95,6 +95,7 @@ export default defineSchema({
     ),
     body: v.string(),
     sourceReferenceId: v.optional(v.id("sourceReferences")),
+    quoteOfId: v.optional(v.id("posts")),
     visibility: v.union(
       v.literal("public"),
       v.literal("followers"),
@@ -108,5 +109,63 @@ export default defineSchema({
   })
     .index("by_created_at", ["createdAt"])
     .index("by_author_created_at", ["authorId", "createdAt"])
-    .index("by_visibility_created_at", ["visibility", "createdAt"]),
+    .index("by_visibility_created_at", ["visibility", "createdAt"])
+    .index("by_quote_of_created_at", ["quoteOfId", "createdAt"]),
+  postReactions: defineTable({
+    postId: v.id("posts"),
+    userId: v.id("users"),
+    kind: v.literal("like"),
+    createdAt: v.number(),
+  })
+    .index("by_post_user_kind", ["postId", "userId", "kind"])
+    .index("by_user_created_at", ["userId", "createdAt"]),
+  postBookmarks: defineTable({
+    postId: v.id("posts"),
+    userId: v.id("users"),
+    createdAt: v.number(),
+  })
+    .index("by_post_user", ["postId", "userId"])
+    .index("by_user_created_at", ["userId", "createdAt"]),
+  postReposts: defineTable({
+    postId: v.id("posts"),
+    userId: v.id("users"),
+    kind: v.union(v.literal("repost"), v.literal("quote")),
+    quotePostId: v.optional(v.id("posts")),
+    createdAt: v.number(),
+  })
+    .index("by_post_user_kind", ["postId", "userId", "kind"])
+    .index("by_user_created_at", ["userId", "createdAt"])
+    .index("by_quote_post", ["quotePostId"]),
+  comments: defineTable({
+    postId: v.id("posts"),
+    authorId: v.id("users"),
+    parentId: v.optional(v.id("comments")),
+    body: v.string(),
+    status: v.union(v.literal("visible"), v.literal("deleted")),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+    likeCount: v.number(),
+  })
+    .index("by_post_status_created_at", ["postId", "status", "createdAt"])
+    .index("by_post_author", ["postId", "authorId"])
+    .index("by_author_created_at", ["authorId", "createdAt"])
+    .index("by_parent_created_at", ["parentId", "createdAt"]),
+  notifications: defineTable({
+    recipientId: v.id("users"),
+    actorId: v.optional(v.id("users")),
+    type: v.union(
+      v.literal("like"),
+      v.literal("comment"),
+      v.literal("repost"),
+      v.literal("quote"),
+      v.literal("mention"),
+      v.literal("system"),
+    ),
+    postId: v.optional(v.id("posts")),
+    commentId: v.optional(v.id("comments")),
+    createdAt: v.number(),
+    readAt: v.optional(v.number()),
+  })
+    .index("by_recipient_created_at", ["recipientId", "createdAt"])
+    .index("by_recipient_read_created_at", ["recipientId", "readAt", "createdAt"]),
 });

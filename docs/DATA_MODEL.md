@@ -70,10 +70,12 @@ Fields:
 
 - `posts` — type, author, body, visibility, source reference, media, AI-assistance state, moderation state, interaction counters
 - `comments` — post or repository context, author, body, parent comment, source reference, moderation state
-- `reactions` — actor, target, reaction type
+- `postReactions` — actor, post, reaction type, creation time
+- `postBookmarks` — actor, post, creation time
+- `postReposts` — actor, original post, optional quote post, repost kind
 - `follows` — actor, target type, target ID
-- `bookmarks` — user, target, optional list
-- `reposts` — actor, original post, optional quote body
+- `bookmarks` and `reposts` remain the provider-neutral future names for
+  cross-entity targets; the first implementation is post-specific.
 - `mentions` — source content, mentioned entity, resolved state
 - `notifications` — recipient, event type, source, read state
 
@@ -134,5 +136,11 @@ Every frequently filtered or ordered access path needs an index. Examples:
 - Files by snapshot and path
 - Notifications by recipient and read state
 - Reports by status and creation time
+
+The first social schema adds indexes for post/user interaction uniqueness,
+post/status/time comment reads, comment parent traversal, quote lookup, and
+recipient/time notification reads. Convex-generated types must be regenerated
+after a real deployment is linked; the checked-in API declaration is currently
+kept in sync manually so the web project can typecheck without cloud access.
 
 Do not include `_creationTime` in a custom Convex index; Convex appends it automatically.

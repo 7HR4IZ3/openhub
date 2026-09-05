@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import type {
   NormalizedRepository,
   RepositoryFile,
+  RepositorySurfaces,
   RepositoryTreeEntry,
 } from "@/lib/providers/types";
 import { getPublicGitHubProvider } from "@/lib/providers/server";
@@ -49,6 +50,7 @@ export default async function RepositoryPage({
       treePath={result.treePath}
       entries={result.entries}
       file={result.file}
+      surfaces={result.surfaces}
     />
   );
 }
@@ -61,6 +63,7 @@ type RepositoryViewResult =
       treePath: string;
       entries: RepositoryTreeEntry[];
       file: RepositoryFile | null;
+      surfaces: RepositorySurfaces;
     }
   | { kind: "not-found" }
   | { kind: "error" };
@@ -77,10 +80,27 @@ async function loadRepositoryView(
       return { kind: "not-found" };
     }
 
-    const sourceRef = safeRef(
+    let sourceRef = safeRef(
       readParam(query.ref),
       repository.defaultBranch ?? "main",
     );
+    const fallbackRef = repository.defaultBranch ?? "main";
+    let surfaces = emptyRepositorySurfaces();
+
+    try {
+      surfaces = await provider.getRepositorySurfaces({ owner, name, ref: sourceRef });
+      if (surfaces.resolvedRefSha === null && sourceRef !== fallbackRef) {
+        sourceRef = fallbackRef;
+        surfaces = await provider.getRepositorySurfaces({
+          owner,
+          name,
+          ref: sourceRef,
+        });
+      }
+    } catch (error) {
+      console.error("Repository surfaces failed", error);
+    }
+
     const requestedPath = safePath(readParam(query.path));
     let entries: RepositoryTreeEntry[] = [];
     let file: RepositoryFile | null = null;
@@ -124,11 +144,25 @@ async function loadRepositoryView(
       treePath,
       entries,
       file,
+      surfaces,
     };
   } catch (error) {
     console.error("Repository workspace failed", error);
     return { kind: "error" };
   }
+}
+
+function emptyRepositorySurfaces(): RepositorySurfaces {
+  return {
+    refs: [],
+    commits: [],
+    issues: [],
+    pullRequests: [],
+    releases: [],
+    contributors: [],
+    license: null,
+    resolvedRefSha: null,
+  };
 }
 
 function RepositoryUnavailable() {

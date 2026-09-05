@@ -1,6 +1,7 @@
 "use client";
 
 import { OpenHubMark } from "@/components/openhub-mark";
+import { RecentPostFeed } from "@/components/posts/recent-post-feed";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -40,7 +41,55 @@ const navigation = [
 
 const tabs = ["For you", "Following", "Trending"] as const;
 
-export function HomeScreen() {
+const tabDetails: Record<(typeof tabs)[number], { label: string; headline: string; body: string }> = {
+  "For you": {
+    label: "A learning-first mix",
+    headline: "Find the next repository you want to understand.",
+    body: "For you combines your interests with readable source, meaningful activity, and conversations that add context—not just projects asking for attention.",
+  },
+  Following: {
+    label: "Your chosen trail",
+    headline: "Keep up with the people and projects you trust.",
+    body: "Following is the quiet lane: updates from developers, repositories, and communities you deliberately chose to learn from.",
+  },
+  Trending: {
+    label: "Meaningful momentum",
+    headline: "See what is moving software forward.",
+    body: "Trending will favor useful activity, clear documentation, and constructive discussion over raw volume or launch-day noise.",
+  },
+};
+
+const discoveryLanes: Array<{
+  icon: LucideIcon;
+  title: string;
+  body: string;
+  href: string;
+  action: string;
+}> = [
+  {
+    icon: Compass,
+    title: "For you",
+    body: "A personalized trail built from the layers of software you want to understand.",
+    href: "/explore",
+    action: "Start exploring",
+  },
+  {
+    icon: Users,
+    title: "Following",
+    body: "The repositories, people, and communities you choose—without a noisy default feed.",
+    href: "/profile",
+    action: "Build your trail",
+  },
+  {
+    icon: TrendingUp,
+    title: "Trending",
+    body: "Projects and discussions with meaningful momentum, source context, and a reason to look closer.",
+    href: "/explore?sort=trending",
+    action: "See what is moving",
+  },
+];
+
+export function HomeScreen({ convexConfigured = false }: { convexConfigured?: boolean }) {
   const [activeTab, setActiveTab] = useState<(typeof tabs)[number]>("For you");
 
   return (
@@ -117,6 +166,19 @@ export function HomeScreen() {
             </div>
           </div>
 
+          <section className="border-b border-black/[0.08] px-5 py-4 dark:border-white/[0.08] lg:px-7" aria-live="polite">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8b513d] dark:text-[#e6a07c]">{tabDetails[activeTab].label}</p>
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">{tabDetails[activeTab].body}</p>
+              </div>
+              <div className="flex shrink-0 flex-wrap gap-2 text-[11px] font-semibold text-muted-foreground">
+                <span className="rounded-full border border-black/[0.1] px-2.5 py-1.5 dark:border-white/[0.1]">Source context</span>
+                <span className="rounded-full border border-black/[0.1] px-2.5 py-1.5 dark:border-white/[0.1]">Learning value</span>
+              </div>
+            </div>
+          </section>
+
           <section className="border-b border-black/[0.08] p-5 dark:border-white/[0.08] lg:p-7">
             <div className="relative overflow-hidden rounded-[1.6rem] bg-[#e9e6dc] p-6 dark:bg-[#20251f] sm:p-8">
               <div className="absolute -right-12 -top-16 h-48 w-48 rounded-full border-[28px] border-[#d9d4c6] dark:border-[#2b332c]" />
@@ -126,10 +188,10 @@ export function HomeScreen() {
                   <span>{activeTab} trail</span>
                 </div>
                 <h2 className="mt-5 text-3xl font-semibold leading-[1.05] tracking-[-0.045em] sm:text-4xl">
-                  Find the next repository you want to understand.
+                  {tabDetails[activeTab].headline}
                 </h2>
                 <p className="mt-4 max-w-md text-sm leading-6 text-muted-foreground">
-                  OpenHub will turn GitHub activity, technical writing, and thoughtful discussion into a calmer way to discover software.
+                  {tabDetails[activeTab].body}
                 </p>
                 <Button asChild variant="outline" className="mt-7 rounded-full bg-transparent">
                   <Link href="/explore">
@@ -139,6 +201,27 @@ export function HomeScreen() {
               </div>
             </div>
           </section>
+
+          <section className="border-b border-black/[0.08] p-5 dark:border-white/[0.08] lg:p-7" aria-labelledby="discovery-lanes-heading">
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Choose your lens</p>
+                <h2 id="discovery-lanes-heading" className="mt-2 text-xl font-semibold tracking-[-0.035em]">Three ways into the source</h2>
+              </div>
+              <span className="hidden text-xs text-muted-foreground sm:inline">Browse before you post</span>
+            </div>
+            <div className="mt-6 grid gap-3">
+              {discoveryLanes.map((lane) => (
+                <DiscoveryLaneCard key={lane.title} {...lane} />
+              ))}
+            </div>
+          </section>
+
+          {convexConfigured ? (
+            <section className="border-b border-black/[0.08] p-5 dark:border-white/[0.08] lg:p-7" aria-label="Recent source-backed posts">
+              <RecentPostFeed convexConfigured={convexConfigured} />
+            </section>
+          ) : null}
 
           <section className="p-5 lg:p-7">
             <div className="flex items-end justify-between">
@@ -153,6 +236,15 @@ export function HomeScreen() {
               <StarterCard icon={FileCode2} title="Source-backed posts" body="Share a function or line range without losing where it came from." />
               <StarterCard icon={BookOpen} title="Learning signals" body="See what is active, documented, and approachable before you dive in." />
               <StarterCard icon={MessageCircle} title="Technical discussion" body="Ask a real question with the relevant code already attached." />
+            </div>
+            <div className="mt-5 flex flex-col gap-2 rounded-2xl border border-dashed border-black/[0.14] p-4 text-sm dark:border-white/[0.14] sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-semibold">Your feed starts with a point of view.</p>
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">Connect GitHub or follow a trail when you are ready. OpenHub will not fill the room with promotional noise.</p>
+              </div>
+              <Link href="/lists" className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-[#9b4d31] hover:underline dark:text-[#e99970]">
+                Curate a list <ArrowUpRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
           </section>
 
@@ -174,14 +266,10 @@ export function HomeScreen() {
 
         <aside className="hidden px-5 py-6 xl:block">
           <div className="sticky top-6 space-y-5">
-            <label className="relative block">
+            <Link href="/explore" className="relative flex h-10 items-center rounded-full border border-black/[0.08] bg-transparent pl-10 pr-4 text-sm text-muted-foreground transition hover:border-[#b45e3c] dark:border-white/[0.08]">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                type="search"
-                placeholder="Search OpenHub"
-                className="h-10 w-full rounded-full border border-black/[0.08] bg-transparent pl-10 pr-4 text-sm outline-none transition focus:border-[#b45e3c] dark:border-white/[0.08]"
-              />
-            </label>
+              Search repositories, posts, and people
+            </Link>
 
             <aside className="rounded-2xl border border-black/[0.08] p-5 dark:border-white/[0.08]">
               <div className="flex items-center gap-2">
@@ -269,6 +357,37 @@ function StarterCard({
       </div>
       <h3 className="mt-8 text-sm font-semibold">{title}</h3>
       <p className="mt-2 text-sm leading-6 text-muted-foreground">{body}</p>
+    </article>
+  );
+}
+
+function DiscoveryLaneCard({
+  icon: Icon,
+  title,
+  body,
+  href,
+  action,
+}: {
+  icon: LucideIcon;
+  title: string;
+  body: string;
+  href: string;
+  action: string;
+}) {
+  return (
+    <article className="group flex flex-col gap-4 rounded-2xl border border-black/[0.08] p-5 transition-colors hover:border-[#b45e3c]/50 dark:border-white/[0.08] sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex min-w-0 gap-4">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#e9e6dc] dark:bg-[#20251f]">
+          <Icon className="h-4 w-4 text-[#b45e3c] dark:text-[#e99970]" />
+        </div>
+        <div className="min-w-0">
+          <h3 className="text-sm font-semibold">{title}</h3>
+          <p className="mt-1 text-sm leading-6 text-muted-foreground">{body}</p>
+        </div>
+      </div>
+      <Link href={href} className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-[#9b4d31] hover:underline dark:text-[#e99970]">
+        {action} <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+      </Link>
     </article>
   );
 }

@@ -69,8 +69,8 @@ function ConnectedPostComposer({
     setPublishError(null);
     setIsPublishing(true);
     try {
-      await createPost(input);
-      router.push("/home?posted=1");
+      const post = await createPost(input);
+      router.push(`/posts/${post._id}`);
     } catch (error) {
       console.error(error);
       setPublishError("OpenHub could not publish this post. Check the source and try again.");

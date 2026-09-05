@@ -89,6 +89,10 @@ npm run lint
 npm run build
 ```
 
+After deployment, use `GET /api/health` as a lightweight smoke check. It returns
+only the web status and boolean readiness flags for the Convex URL and public
+GitHub credential; it never returns secret values.
+
 ## Current external setup blockers
 
 1. Authenticate a Convex account, create/link the OpenHub cloud deployment,
@@ -97,6 +101,8 @@ npm run build
 3. Implement the separate authenticated server-side provider-token boundary
    before enabling private repositories; do not expose raw tokens or enable
    provider write operations.
+4. Regenerate `convex/_generated/` from the linked deployment and run a full
+   browser verification pass for authenticated post interactions.
 
 The GitHub repository and Vercel project already exist. The public repository
 workspace does not remove the separate authorization requirement for private

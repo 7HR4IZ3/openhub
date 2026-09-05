@@ -3,9 +3,17 @@ import "server-only";
 import {
   NormalizedRepository,
   ProviderCapabilities,
+  RepositoryCommit,
+  RepositoryContributor,
   RepositoryFile,
+  RepositoryIssue,
+  RepositoryLicense,
   RepositoryProvider,
+  RepositoryPullRequest,
+  RepositoryRelease,
+  RepositoryRef,
   RepositorySearchResult,
+  RepositorySurfaces,
   RepositoryTreeEntry,
 } from "./types";
 
@@ -44,7 +52,68 @@ type RepositoryNode = {
   licenseInfo: { spdxId: string | null } | null;
   repositoryTopics: { nodes: Array<{ topic: { name: string } }> };
   updatedAt: string;
+  createdAt: string;
+  pushedAt: string | null;
+  homepageUrl: string | null;
+  isArchived: boolean;
+  isFork: boolean;
+  watchers: { totalCount: number };
   owner: { login: string };
+};
+
+type GitHubActor = {
+  login: string;
+  avatarUrl: string;
+};
+
+type GitHubCommitNode = {
+  oid: string;
+  abbreviatedOid: string;
+  messageHeadline: string;
+  committedDate: string;
+  url: string;
+  author: {
+    name: string | null;
+    user: GitHubActor | null;
+  } | null;
+};
+
+type GitHubIssueNode = {
+  number: number;
+  title: string;
+  url: string;
+  updatedAt: string;
+  author: GitHubActor | null;
+};
+
+type GitHubPullRequestNode = GitHubIssueNode & {
+  isDraft: boolean;
+  mergedAt: string | null;
+};
+
+type GitHubReleaseNode = {
+  name: string | null;
+  tagName: string;
+  url: string;
+  description: string | null;
+  publishedAt: string | null;
+  isDraft: boolean;
+  isPrerelease: boolean;
+};
+
+type GitHubRefNode = {
+  name: string;
+  prefix: string;
+  target: { oid: string } | null;
+};
+
+type GitHubHistoryObject = {
+  oid: string;
+  history?: { nodes: GitHubCommitNode[] };
+  target?: {
+    oid: string;
+    history?: { nodes: GitHubCommitNode[] };
+  } | null;
 };
 
 export function createGitHubProvider(accessToken: string): RepositoryProvider {
@@ -83,6 +152,12 @@ export function createGitHubProvider(accessToken: string): RepositoryProvider {
                 licenseInfo { spdxId }
                 repositoryTopics(first: 20) { nodes { topic { name } } }
                 updatedAt
+                createdAt
+                pushedAt
+                homepageUrl
+                isArchived
+                isFork
+                watchers { totalCount }
                 owner { login }
               }
             }
@@ -120,6 +195,12 @@ export function createGitHubProvider(accessToken: string): RepositoryProvider {
             licenseInfo { spdxId }
             repositoryTopics(first: 20) { nodes { topic { name } } }
             updatedAt
+            createdAt
+            pushedAt
+            homepageUrl
+            isArchived
+            isFork
+            watchers { totalCount }
             owner { login }
           }
         }`,
@@ -176,19 +257,21 @@ export function createGitHubProvider(accessToken: string): RepositoryProvider {
             byteSize: number | null;
             text: string | null;
           } | null;
-          ref: {
+          sourceObject: {
+            oid: string;
             target: { oid: string } | null;
           } | null;
         } | null;
       }>(
         accessToken,
-        `query GetFile($owner: String!, $name: String!, $expression: String!, $qualifiedRef: String!) {
+        `query GetFile($owner: String!, $name: String!, $expression: String!, $sourceRef: String!) {
           repository(owner: $owner, name: $name) {
             object(expression: $expression) {
               ... on Blob { __typename oid byteSize text }
             }
-            ref(qualifiedName: $qualifiedRef) {
-              target { oid }
+            sourceObject: object(expression: $sourceRef) {
+              oid
+              ... on Tag { target { oid } }
             }
           }
         }`,
@@ -196,7 +279,7 @@ export function createGitHubProvider(accessToken: string): RepositoryProvider {
           owner,
           name,
           expression: `${ref}:${path}`,
-          qualifiedRef: qualifyRef(ref),
+          sourceRef: ref,
         },
       );
 
@@ -204,7 +287,7 @@ export function createGitHubProvider(accessToken: string): RepositoryProvider {
       if (object === null || object?.text === null || object === undefined) return null;
       const commitSha = isCommitSha(ref)
         ? ref
-        : response.repository?.ref?.target?.oid;
+        : resolveCommitSha(response.repository?.sourceObject);
       if (commitSha === undefined || commitSha === null) {
         throw new Error("GitHub did not return a commit for this source reference");
       }
@@ -216,6 +299,126 @@ export function createGitHubProvider(accessToken: string): RepositoryProvider {
         text: object.text,
         byteSize: object.byteSize,
       } satisfies RepositoryFile;
+    },
+
+    async getRepositorySurfaces({ owner, name, ref }) {
+      const response = await githubGraphQL<{
+        repository: {
+          branches: {
+            nodes: GitHubRefNode[];
+          };
+          tags: {
+            nodes: GitHubRefNode[];
+          };
+          object: GitHubHistoryObject | null;
+          issues: { nodes: GitHubIssueNode[] };
+          pullRequests: { nodes: GitHubPullRequestNode[] };
+          releases: { nodes: GitHubReleaseNode[] };
+          licenseInfo: {
+            name: string;
+            spdxId: string | null;
+            url: string | null;
+          } | null;
+        } | null;
+      }>(
+        accessToken,
+        `query GetRepositorySurfaces(
+          $owner: String!,
+          $name: String!,
+          $ref: String!,
+          $refFirst: Int!,
+          $itemFirst: Int!,
+          $releaseFirst: Int!,
+          $commitFirst: Int!
+        ) {
+          repository(owner: $owner, name: $name) {
+            branches: refs(refPrefix: "refs/heads/", first: $refFirst) {
+              nodes { name prefix target { oid } }
+            }
+            tags: refs(refPrefix: "refs/tags/", first: $refFirst) {
+              nodes { name prefix target { oid } }
+            }
+            object(expression: $ref) {
+              oid
+              ... on Commit {
+                history(first: $commitFirst) {
+                  nodes {
+                    oid
+                    abbreviatedOid
+                    messageHeadline
+                    committedDate
+                    url
+                    author { name user { login avatarUrl } }
+                  }
+                }
+              }
+              ... on Tag {
+                target {
+                  oid
+                  ... on Commit {
+                    history(first: $commitFirst) {
+                      nodes {
+                        oid
+                        abbreviatedOid
+                        messageHeadline
+                        committedDate
+                        url
+                        author { name user { login avatarUrl } }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            issues(first: $itemFirst, states: OPEN) {
+              nodes { number title url updatedAt author { login avatarUrl } }
+            }
+            pullRequests(first: $itemFirst, states: OPEN) {
+              nodes { number title url updatedAt isDraft mergedAt author { login avatarUrl } }
+            }
+            releases(first: $releaseFirst) {
+              nodes {
+                name
+                tagName
+                url
+                description
+                publishedAt
+                isDraft
+                isPrerelease
+              }
+            }
+            licenseInfo { name spdxId url }
+          }
+        }`,
+        {
+          owner,
+          name,
+          ref,
+          refFirst: 24,
+          itemFirst: 8,
+          releaseFirst: 6,
+          commitFirst: 12,
+        },
+      );
+
+      const repository = response.repository;
+      if (repository === null) return emptyRepositorySurfaces();
+
+      const commitNodes = historyNodes(repository.object);
+      return {
+        refs: [...repository.branches.nodes, ...repository.tags.nodes].map(normalizeRef),
+        commits: commitNodes.map(normalizeCommit),
+        issues: repository.issues.nodes.map(normalizeIssue),
+        pullRequests: repository.pullRequests.nodes.map(normalizePullRequest),
+        releases: repository.releases.nodes
+          .map(normalizeRelease)
+          .sort(sortByReleaseDate),
+        contributors: normalizeContributors(commitNodes),
+        license: repository.licenseInfo === null
+          ? null
+          : normalizeLicense(repository.licenseInfo),
+        resolvedRefSha: resolveCommitSha(repository.object),
+      } satisfies RepositorySurfaces;
     },
   };
 }
@@ -267,6 +470,12 @@ function normalizeRepository(repository: RepositoryNode): NormalizedRepository {
     licenseSpdxId: repository.licenseInfo?.spdxId ?? null,
     topics: repository.repositoryTopics.nodes.map(({ topic }) => topic.name),
     updatedAt: repository.updatedAt,
+    createdAt: repository.createdAt,
+    pushedAt: repository.pushedAt,
+    homepageUrl: repository.homepageUrl,
+    isArchived: repository.isArchived,
+    isFork: repository.isFork,
+    watchers: repository.watchers.totalCount,
   };
 }
 
@@ -282,7 +491,131 @@ function isCommitSha(value: string) {
   return /^[a-f0-9]{40}$/i.test(value);
 }
 
-function qualifyRef(value: string) {
-  if (value.startsWith("refs/")) return value;
-  return `refs/heads/${value}`;
+function resolveCommitSha(
+  object:
+    | { oid: string; target?: { oid: string } | null }
+    | null
+    | undefined,
+) {
+  if (object === null || object === undefined) return null;
+  return object.target?.oid ?? object.oid;
+}
+
+function historyNodes(object: GitHubHistoryObject | null) {
+  return object?.history?.nodes ?? object?.target?.history?.nodes ?? [];
+}
+
+function normalizeRef(ref: GitHubRefNode): RepositoryRef {
+  return {
+    name: ref.name,
+    ref: ref.prefix + ref.name,
+    kind: ref.prefix === "refs/tags/" ? "tag" : "branch",
+    targetSha: ref.target?.oid ?? null,
+  };
+}
+
+function normalizeCommit(commit: GitHubCommitNode): RepositoryCommit {
+  return {
+    sha: commit.oid,
+    abbreviatedSha: commit.abbreviatedOid,
+    message: commit.messageHeadline,
+    committedAt: commit.committedDate,
+    authorName: commit.author?.name ?? null,
+    authorLogin: commit.author?.user?.login ?? null,
+    authorAvatarUrl: commit.author?.user?.avatarUrl ?? null,
+    url: commit.url,
+  };
+}
+
+function normalizeIssue(issue: GitHubIssueNode): RepositoryIssue {
+  return {
+    number: issue.number,
+    title: issue.title,
+    url: issue.url,
+    updatedAt: issue.updatedAt,
+    authorLogin: issue.author?.login ?? null,
+    authorAvatarUrl: issue.author?.avatarUrl ?? null,
+  };
+}
+
+function normalizePullRequest(
+  pullRequest: GitHubPullRequestNode,
+): RepositoryPullRequest {
+  return {
+    ...normalizeIssue(pullRequest),
+    isDraft: pullRequest.isDraft,
+    mergedAt: pullRequest.mergedAt,
+  };
+}
+
+function normalizeRelease(release: GitHubReleaseNode): RepositoryRelease {
+  return {
+    name: release.name,
+    tagName: release.tagName,
+    url: release.url,
+    description: release.description,
+    publishedAt: release.publishedAt,
+    isDraft: release.isDraft,
+    isPrerelease: release.isPrerelease,
+  };
+}
+
+function normalizeLicense(license: {
+  name: string;
+  spdxId: string | null;
+  url: string | null;
+}): RepositoryLicense {
+  return {
+    name: license.name,
+    spdxId: license.spdxId,
+    url: license.url,
+  };
+}
+
+function normalizeContributors(commits: GitHubCommitNode[]): RepositoryContributor[] {
+  const contributors = new Map<string, RepositoryContributor>();
+
+  for (const commit of commits) {
+    const login = commit.author?.user?.login ?? null;
+    const name = commit.author?.name ?? null;
+    const key = login ?? `name:${name ?? "anonymous"}`;
+    const existing = contributors.get(key);
+
+    if (existing === undefined) {
+      contributors.set(key, {
+        login,
+        name,
+        avatarUrl: commit.author?.user?.avatarUrl ?? null,
+        commitCount: 1,
+      });
+    } else {
+      existing.commitCount += 1;
+    }
+  }
+
+  return [...contributors.values()]
+    .sort((a, b) => b.commitCount - a.commitCount)
+    .slice(0, 12);
+}
+
+function sortByReleaseDate(a: RepositoryRelease, b: RepositoryRelease) {
+  return dateValue(b.publishedAt) - dateValue(a.publishedAt);
+}
+
+function dateValue(value: string | null) {
+  const parsed = value === null ? Number.NaN : Date.parse(value);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function emptyRepositorySurfaces(): RepositorySurfaces {
+  return {
+    refs: [],
+    commits: [],
+    issues: [],
+    pullRequests: [],
+    releases: [],
+    contributors: [],
+    license: null,
+    resolvedRefSha: null,
+  };
 }

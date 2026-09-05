@@ -14,9 +14,12 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as auth from "../auth.js";
+import type * as comments from "../comments.js";
 import type * as http from "../http.js";
+import type * as notifications from "../notifications.js";
 import type * as posts from "../posts.js";
 import type * as profiles from "../profiles.js";
+import type * as social from "../social.js";
 import type * as users from "../users.js";
 
 /**
@@ -29,9 +32,12 @@ import type * as users from "../users.js";
  */
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  comments: typeof comments;
   http: typeof http;
+  notifications: typeof notifications;
   posts: typeof posts;
   profiles: typeof profiles;
+  social: typeof social;
   users: typeof users;
 }>;
 export declare const api: FilterApi<
