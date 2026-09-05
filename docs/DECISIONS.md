@@ -30,6 +30,7 @@
 - Realtime in the first release means comments, discussion replies, reactions, mentions, and notifications; direct messages remain deferred
 - Repository code is accessed live from the provider and may be cached only under the visibility and attribution rules in the architecture and security documents
 - The first public product is GitHub-only; additional providers follow validation of the GitHub experience
+- Public repository exploration may use a separately governed server-only GitHub credential; it is not a substitute for user-scoped private-repository authorization. The current callback encrypts a user-scoped GitHub token for read-only OpenHub actions, while the broad classic OAuth `repo` scope remains a production-hardening item.
 
 ## Recommended defaults
 
@@ -43,4 +44,4 @@
 
 1. Which premium billing provider should be used when subscriptions are implemented?
 2. What is the preferred launch domain and whether OpenHub requires a trademark review before public promotion?
-3. Whether a GitHub App, OAuth token exchange, or another approved server-side connection should provide private-repository access after identity sign-in.
+3. Whether to replace the current classic OAuth `repo` grant with a GitHub App or another constrained server-side connection before public launch.

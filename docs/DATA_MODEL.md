@@ -30,15 +30,11 @@ OpenHub-specific biography, interests, portfolio links, availability, featured r
 
 ### `repositories`
 
-Normalized provider repository metadata: provider, provider repository ID, owner, name, URL, visibility, default branch, description, language, topics, license, stars, forks, and last fetched time.
-
-### `repositorySnapshots`
-
-Commit-addressed metadata and fetch state. Fields include repository ID, commit SHA, ref, fetched time, file count, tree status, and cache status.
-
-### `repositoryFiles`
-
-Commit-addressed file metadata and optionally cached content. Fields include snapshot ID, path, blob SHA, language, size, content reference, and fetch status.
+Normalized provider repository metadata: provider, provider repository ID, an
+optional private owner user ID, owner, name, URL, visibility, default branch,
+description, language, topics, license, stars, forks, open issues, and fetch
+timestamps. Repository files and trees are currently read live through provider
+adapters; no general repository snapshot/file cache table is enabled yet.
 
 ### `repositorySignals`
 
@@ -46,7 +42,7 @@ Explainable signal values and evidence: activity, release momentum, maintenance,
 
 ## 4. Source references
 
-### `codeReferences`
+### `sourceReferences`
 
 Immutable reference attached to posts, comments, AI citations, and saved selections.
 
@@ -64,16 +60,19 @@ Fields:
 - Canonical provider URL
 - Visibility at creation
 - Original owner metadata
+- Immutable source snapshot captured for the published selection
 
 ## 5. Social tables
 
-- `posts` — type, author, body, visibility, source reference, media, AI-assistance state, moderation state
+- `posts` — type, author, body, visibility, source reference, media, AI-assistance state, optional soft-deletion time, moderation state, interaction counters
 - `comments` — post or repository context, author, body, parent comment, source reference, moderation state
-- `reactions` — actor, target, reaction type
+- `postReactions` — actor, post, reaction type, creation time
+- `postBookmarks` — actor, post, creation time
+- `postReposts` — actor, original post, optional quote post, repost kind
 - `follows` — actor, target type, target ID
-- `bookmarks` — user, target, optional list
-- `reposts` — actor, original post, optional quote body
-- `mentions` — source content, mentioned entity, resolved state
+- `bookmarks` and `reposts` remain the provider-neutral future names for
+  cross-entity targets; the first implementation is post-specific.
+- `mentions` — source content, mentioned user, actor, and resolved source IDs; post rows have a dedicated cleanup index
 - `notifications` — recipient, event type, source, read state
 
 ## 6. Community and curation tables
@@ -85,32 +84,38 @@ Fields:
 - `lists`
 - `listItems`
 
+The current curation schema also stores follows and community memberships. List
+items can target public repositories, posts, people, or communities; target
+labels and links are resolved at read time so deleted or private targets do not
+leak through a public list.
+
 Communities and lists each have explicit visibility and membership rules.
 
 ## 7. Trust and reputation tables
 
-- `endorsements` — verified maintainer endorsement of a user
+- `reputationSnapshots` — bounded GitHub public-activity samples with evidence URL and expiry
+- `reputationEndorsements` — verified maintainer endorsement of a user, repository, permission level, and optional note
 - `badges` — badge definition and award record
 - `reports` — reporter, target, reason, evidence, status
 - `moderationActions` — actor, target, action, reason, provider, timestamp
 - `blocks`
 - `mutes`
 - `keywordFilters`
+- `analyticsEvents` — authenticated aggregate reading events; no raw IP or
+  provider token is recorded
 
 ## 8. AI tables and components
 
-Use the Convex agent component for conversation and message persistence. OpenHub-owned records should include:
-
-- `aiSessions`
-- `aiUsage`
-- `aiCitations`
-- `aiArtifacts`
-
-AI citations must reference a commit-addressed `codeReference`.
+Use the Convex Agent component for conversation and message persistence. The
+OpenHub-owned `aiUsage` table stores a bounded per-user daily request/input
+budget. Current AI action results carry citations directly; durable OpenHub AI
+artifact tables are deferred. AI citations must reference a commit-addressed
+code reference.
 
 ## 9. Tasks and business tables
 
-- `bounties`
+- `bounties` — public task context with an external issue/reward URL; OpenHub
+  does not hold funds or implement escrow
 - `sponsorshipLinks`
 - `subscriptions`
 - `sponsoredPlacements`
@@ -133,5 +138,11 @@ Every frequently filtered or ordered access path needs an index. Examples:
 - Files by snapshot and path
 - Notifications by recipient and read state
 - Reports by status and creation time
+
+The first social schema adds indexes for post/user interaction uniqueness,
+post/status/time comment reads, comment parent traversal, quote lookup, and
+recipient/time notification reads. Convex-generated types must be regenerated
+after a real deployment is linked; the checked-in API declaration is currently
+kept in sync manually so the web project can typecheck without cloud access.
 
 Do not include `_creationTime` in a custom Convex index; Convex appends it automatically.

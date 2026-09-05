@@ -22,6 +22,28 @@ npm run dev:frontend
 The public landing, explore, sign-in, and home shell can be inspected without a
 Convex URL. Authenticated flows require `NEXT_PUBLIC_CONVEX_URL`.
 
+## Enable public repository browsing
+
+The first repository exploration slice uses a server-only GitHub credential for
+public discovery. Set this in `.env.local` for local work and in the
+Vercel Preview/Production environments when deploying:
+
+```text
+GITHUB_PUBLIC_TOKEN=<server-only GitHub token>
+```
+
+The credential is read only by the Next.js server adapter. It is never exposed
+through a `NEXT_PUBLIC_` variable, returned to the browser, or used to authorize
+private repositories in the public search route. The public route filters any
+private result returned by a broadly scoped credential as a second boundary.
+
+With this value configured:
+
+- `/explore` can search public GitHub repositories.
+- `/repos/<owner>/<name>` can open repository metadata and the default branch.
+- Directory links load the corresponding tree.
+- File links open a commit-resolved, read-only Monaco view.
+
 ## Link Convex
 
 From the repository root, run:
@@ -38,6 +60,7 @@ Set the following variables on the Convex deployment, not in committed files:
 
 - `AUTH_GITHUB_ID` — GitHub OAuth App client ID
 - `AUTH_GITHUB_SECRET` — GitHub OAuth App client secret
+- `OPENHUB_TOKEN_ENCRYPTION_KEY` — base64-encoded 32-byte AES-GCM key for the encrypted GitHub access token used by private browsing
 
 ## GitHub OAuth App
 
@@ -48,10 +71,11 @@ https://<your-convex-deployment>.convex.site/api/auth/callback/github
 ```
 
 The initial authorization request is GitHub-only and requests identity, email,
-and organization context. Private repository access is a separate product
-boundary: GitHub’s classic OAuth `repo` permission is broad and can include
-write capability, so private browsing remains disabled until OpenHub has a
-read-only GitHub App or an equivalently constrained server-side token flow.
+organization context, and the classic `repo` scope for repositories the user is
+authorized to read. GitHub’s classic OAuth `repo` permission is broad and can
+include write capability; OpenHub never exposes that token to the browser and
+never calls write endpoints. Replace this with a GitHub App or an equivalently
+constrained authorization model before broad production rollout.
 
 ## Vercel
 
@@ -67,10 +91,20 @@ npm run lint
 npm run build
 ```
 
+After deployment, use `GET /api/health` as a lightweight smoke check. It returns
+only the web status and boolean readiness flags for the Convex URL and public
+GitHub credential; it never returns secret values.
+
 ## Current external setup blockers
 
-1. Create an empty GitHub repository named `openhub` under the connected account.
-2. Link that repository to Vercel for preview deployments.
-3. Link a Convex deployment and regenerate `_generated/`.
-4. Create the GitHub OAuth App and set its credentials on Convex.
-5. Implement the separate server-side provider-token boundary before enabling private repositories; do not expose raw tokens or enable provider write operations.
+1. Authenticate a Convex account, create/link the OpenHub cloud deployment,
+   and regenerate `_generated/`.
+2. Create the GitHub OAuth App and set its credentials on Convex.
+3. Configure `OPENHUB_TOKEN_ENCRYPTION_KEY` before enabling private repository
+   browsing; do not expose raw tokens or enable provider write operations.
+4. Regenerate `convex/_generated/` from the linked deployment and run a full
+   browser verification pass for authenticated post interactions.
+
+The GitHub repository and Vercel project already exist. The public repository
+workspace does not remove the separate authorization requirement for private
+repositories.

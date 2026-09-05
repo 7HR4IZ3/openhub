@@ -5,9 +5,15 @@
 - GitHub OAuth is handled server-side.
 - Access tokens never reach client JavaScript.
 - Store only encrypted token references or encrypted secrets in the backend.
-- Request the smallest provider scopes needed for the current feature.
-- Keep GitHub identity login separate from private-repository authorization; do not treat a broad classic OAuth `repo` grant as a read-only permission.
-- Revalidate provider access before serving private repository content.
+- Request the smallest provider scopes needed for the current feature. The
+  current GitHub OAuth implementation requests the classic `repo` scope for
+  authorized private browsing; this remains a production risk because GitHub
+  classic scopes can include write capability.
+- Keep provider identity and access authorization conceptually separate even
+  though the first implementation captures the access token during the same
+  OAuth callback. OpenHub never calls provider write endpoints.
+- Revalidate provider access before serving private repository content through
+  the authenticated Convex action; public routes never use the user token.
 - Revoke and delete provider credentials when a user disconnects an account.
 - Never log access tokens, private file contents, or authorization headers.
 
@@ -21,7 +27,8 @@ Therefore:
 - Private repositories are excluded from global search and public recommendations.
 - Private files are excluded from public AI context.
 - Private-source snippets cannot be published publicly in the initial release.
-- Private content is never included in another user’s feed, cache, analytics, or search response.
+- Private content is never included in another user’s feed, public cache,
+  analytics, or search response.
 - If access is lost, the user loses access through OpenHub.
 - Unauthorized repository responses should not reveal whether a private repository exists.
 
@@ -48,6 +55,9 @@ OpenHub should display the license but avoid interrupting normal reading with un
 - Rate-limit account creation, publishing, reactions, and reports.
 - Protect mutation endpoints with authenticated identity checks.
 - Prevent users from impersonating provider maintainers.
+- Maintainer endorsements validate the signed-in provider's immutable user ID
+  and use that same encrypted token to verify `admin` or `maintain` permission
+  on the target repository; a matching login string is not enough.
 - Record moderation actions in an audit trail.
 
 ## 5. AI trust rules

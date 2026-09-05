@@ -40,11 +40,39 @@ GitHub, GitLab, Bitbucket, and other providers remain the source of truth for re
 
 Provider tokens must never be sent to the browser. The browser should only receive the data needed to render the authorized view.
 
+The first exploration slice exposes two server-owned entry points:
+
+- `/api/github/search` accepts a bounded repository query and returns public
+  normalized results.
+- `/repos/<owner>/<name>` loads public metadata, a directory tree, and a
+  commit-resolved file through the server-only provider adapter.
+- `/repos/<owner>/<name>` also loads bounded repository context surfaces for
+  refs, commits, issues, pull requests, releases, contributors, and license
+  metadata; these are rendered as read-only tabs and link back to GitHub.
+- `/compose` can reload a selected public source range at its commit and render
+  it in a read-only composer preview before publication.
+- `/posts/<id>` reads an access-checked post, immutable source snapshot, and
+  threaded comments through Convex; `/notifications` reads recipient-scoped
+  realtime notifications.
+
+Both public routes use `GITHUB_PUBLIC_TOKEN` and filter private repositories at
+the public boundary. An authenticated private route uses the encrypted
+user-scoped GitHub token stored by Convex Auth and never shares it with the
+browser, public cache, source composer, or AI action.
+
 ### GitHub credential boundary
 
-Convex Auth currently establishes the OpenHub session and normalized identity; it is not, by itself, the product’s durable private-repository credential store. Before private repository browsing is enabled, add an explicit same-GitHub provider connection flow or approved callback extension that stores a server-only, encrypted token reference with least-privilege scope. Do not put the provider token in a profile document, source reference, Convex query result, browser storage, or public cache.
+Convex Auth establishes the OpenHub session and captures the OAuth access token
+only inside the server callback. OpenHub encrypts it with the deployment-level
+`OPENHUB_TOKEN_ENCRYPTION_KEY` before storing it in `providerAccounts`. The raw
+provider token is never returned by a query, put in a profile document, source
+reference, browser storage, or public cache. If the encryption key is absent,
+identity sign-in remains possible but private repository browsing fails closed.
 
 The provider adapter must receive credentials only inside a server-side action or other trusted execution boundary. Public discovery may use a separately governed public-access credential when rate limits and provider terms permit it; an authenticated user’s private access must always be checked against that user’s provider authorization.
+
+`GITHUB_PUBLIC_TOKEN` is an interim operational credential for public repository
+discovery only. It must not become the private-repository credential model.
 
 ## 4. Provider abstraction
 
@@ -103,6 +131,17 @@ Suggested module boundaries:
 
 Public functions should be minimal. Use internal functions for helpers and scheduled jobs. Every Convex function must use object-form syntax, runtime argument and return validators, indexed reads, and explicit authorization.
 
+The first `posts` module follows this boundary: `posts.recent` reads only the
+public visibility index and enriches bounded results with author/source context,
+while `posts.create` requires the signed-in user and text posts are persisted
+atomically. Source and diff posts go through server-side provider verification
+actions before an internal mutation stores the attributed snapshot. `social`,
+`comments`, and `notifications` add access-checked interactions, threaded
+replies, and recipient-scoped updates. Authors can edit post text or soft-delete
+their own posts; deleted posts fail closed from every post access path. A
+source-backed post stores the selected snapshot, provider, original owner,
+repository, commit, path, line range, and canonical URL.
+
 ## 7. AI architecture
 
 Use the Convex agent component for AI threads, history, streaming, retries, and tool use. Repository explanations should use a retrieval layer that returns chunks with file path, line range, commit SHA, and provider URL.
@@ -146,6 +185,8 @@ Repository code should not be treated as user-uploaded media. Cache only the min
 - Environment variables must be configured separately for preview and production.
 - Provider secrets, AI keys, and deployment credentials must never be committed.
 - Use Vercel observability and runtime logs after the first live deployment.
+- Use `/api/health` as a lightweight deployment smoke endpoint; it reports only
+  boolean readiness flags and never returns credentials.
 
 ## 11. Missing supporting decisions
 

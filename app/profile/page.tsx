@@ -1,14 +1,10 @@
-import { PlaceholderScreen } from "@/components/app/placeholder-screen";
+import { ProfileScreen } from "@/components/curation/profile-screen";
 
-export const metadata = { title: "Profile" };
+export const metadata = {
+  title: "Profile",
+  description: "Build a developer profile around the repositories and source you want to understand.",
+};
 
 export default function ProfilePage() {
-  return (
-    <PlaceholderScreen
-      eyebrow="Developer identity"
-      title="Let your work explain what you care about."
-      body="Your OpenHub profile will combine imported GitHub context with your interests, source-backed posts, curated lists, portfolio, availability, reputation, and achievements."
-      action="See the discovery map"
-    />
-  );
+  return <ProfileScreen convexConfigured={Boolean(process.env.NEXT_PUBLIC_CONVEX_URL)} />;
 }

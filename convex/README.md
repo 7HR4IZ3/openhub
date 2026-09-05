@@ -10,6 +10,9 @@ Backend conventions:
 - Use `getAuthUserId(ctx)` or `ctx.auth.getUserIdentity()` for authorization.
 - Use indexes and pagination for recurring or growing reads.
 - Keep provider access in server-side actions; never return provider tokens.
+- Encrypt user-scoped GitHub OAuth tokens with `OPENHUB_TOKEN_ENCRYPTION_KEY`
+  before persisting them; identity-only sign-in remains available if the key is
+  absent, while private browsing fails closed.
 - Keep private repository data out of public queries and indexes.
 - Use internal functions for helpers and scheduled jobs.
 

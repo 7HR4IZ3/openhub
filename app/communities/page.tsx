@@ -1,13 +1,10 @@
-import { PlaceholderScreen } from "@/components/app/placeholder-screen";
+import { CommunitiesScreen } from "@/components/curation/communities-screen";
 
-export const metadata = { title: "Communities" };
+export const metadata = {
+  title: "Communities",
+  description: "Find technical circles organized around repositories and source-backed discussion.",
+};
 
 export default function CommunitiesPage() {
-  return (
-    <PlaceholderScreen
-      eyebrow="Technical circles"
-      title="Find people who are curious about the same layer."
-      body="Communities will be public or private spaces for repository collections, rules, thoughtful questions, and discussion—not another group chat."
-    />
-  );
+  return <CommunitiesScreen convexConfigured={Boolean(process.env.NEXT_PUBLIC_CONVEX_URL)} />;
 }

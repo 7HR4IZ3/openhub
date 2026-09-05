@@ -29,11 +29,28 @@ A clean Next.js + Convex project with the OpenHub documents, design tokens, rout
 - Design and architecture docs are committed.
 - Preview deployment path is documented.
 
+### Progress
+
+The web verification workflow, non-secret `/api/health` endpoint, Convex
+component wiring, and deployment environment contract are committed. Cloud
+codegen and production verification remain blocked until a Convex deployment
+is linked.
+
 ## Milestone 1 — Identity and repository exploration
 
 ### Outcome
 
 An authenticated user can sign in with GitHub, view an imported OpenHub profile, discover repositories, and browse a repository through a responsive read-only workspace.
+
+### Progress
+
+The public exploration slice, read-only repository surfaces, and an encrypted
+user-scoped private browsing path are implemented: server-side GitHub search,
+public metadata, directory navigation, commit-resolved Monaco viewing,
+branch/tag selection, commit history, issues, pull requests, releases,
+contributors, license context, and authenticated private file browsing. The
+remaining M1 blockers are Convex cloud deployment, live OAuth configuration,
+rate-aware caching, and dependency/activity surfaces.
 
 ### Scope
 
@@ -62,6 +79,16 @@ An authenticated user can sign in with GitHub, view an imported OpenHub profile,
 
 Users can publish source-backed snippets, diffs, questions, reviews, and discussions and interact with them.
 
+### Progress
+
+The source-aware composer and Convex post contract are implemented. A reader
+can select lines in the repository editor, open a focused composer, re-fetch
+the commit-pinned attributed snapshot, publish, and open the resulting post
+detail. The social backend and reader UI cover comments/replies, reactions,
+bookmarks, reposts/quotes, notifications, diffs, mentions, Markdown-ish body
+rendering, and public/following/trending feed reads when Convex is linked.
+Media and richer attachment types remain open.
+
 ### Scope
 
 - Post composer
@@ -82,11 +109,28 @@ Users can publish source-backed snippets, diffs, questions, reviews, and discuss
 - Comments support Markdown, code blocks, replies, and source references.
 - Feed interactions update in realtime.
 
+### Implementation note
+
+Source and diff mutations accept only a bounded request draft, then verify the
+public GitHub repository, commit, blob, line range, license, owner, and
+canonical URL in a server-side action before an internal mutation stores the
+immutable snapshot. Provider expansion still needs equivalent verification
+implementations.
+
 ## Milestone 3 — Profiles, feeds, communities, and curation
 
 ### Outcome
 
 OpenHub becomes a usable social discovery network rather than only a repository viewer.
+
+### Progress
+
+The first curation slice is implemented: GitHub-imported profiles, bounded
+repository sync and public profile repository/post trails, editable profile
+context, public/private lists, people/repository/topic/category follows,
+following and trending feed queries, public/private community discovery and
+creation, membership controls, list target resolution, and public community
+detail routes. Private list sharing and community post streams remain open.
 
 ### Scope
 
@@ -126,6 +170,14 @@ OpenHub helps users find worthwhile projects using explainable signals and trust
 - Achievement badges
 - Anti-gaming safeguards
 
+### Progress
+
+Public repository observation, evidence-backed freshness/adoption/license
+signals, diversity-aware recommendations, dismissal controls, trending post
+ranking, GitHub public-activity sampling, reputation scores, achievement
+badges, and same-user GitHub `admin`/`maintain` endorsement verification are
+implemented.
+
 ### Acceptance criteria
 
 - Every repository signal has evidence and a calculation date.
@@ -152,6 +204,13 @@ The platform can safely handle public technical conversation at meaningful scale
 - Malware and unsafe-content handling
 - Appeals and audit log
 - Account and post deletion/export
+
+### Progress
+
+Reports, blocks, mutes, keyword filters, source/repository suppression,
+author/maintainer post and comment moderation, and moderation history are
+implemented. Automated/external moderation, appeals, secret scanning, malware
+classification, and deletion/export remain open.
 
 ### Acceptance criteria
 
@@ -180,6 +239,14 @@ Users can learn from repositories with cited explanations and visual architectur
 - Free limits and premium entitlements
 - Maintainer opt-in for background analysis
 
+### Progress
+
+The Convex Agent component and Vercel AI SDK are wired for a read-only source
+guide and bounded repository orientation. Explain, summary, and Mermaid diagram
+modes re-verify public source and return commit/file/line citations with a
+shared free quota. Premium entitlements, diff/commit summaries, and maintainer
+opt-in background analysis remain open.
+
 ### Acceptance criteria
 
 - Answers cite repository, commit, file, and line range.
@@ -204,6 +271,13 @@ Maintainers and organizations can measure discovery and responsibly monetize att
 - Contextual advertising framework
 - Sponsorship links
 - Promoted collections and bounties
+
+### Progress
+
+External-link task/bounty listings and a privacy-conscious aggregate maintainer
+analytics slice are implemented. Stripe subscriptions, sponsorship links,
+ads, promoted placements, and organization-level permission verification remain
+open.
 
 ### Acceptance criteria
 

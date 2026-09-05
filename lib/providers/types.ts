@@ -32,6 +32,12 @@ export type NormalizedRepository = {
   licenseSpdxId: string | null;
   topics: string[];
   updatedAt: string;
+  createdAt: string;
+  pushedAt: string | null;
+  homepageUrl: string | null;
+  isArchived: boolean;
+  isFork: boolean;
+  watchers: number;
 };
 
 export type RepositorySearchResult = {
@@ -56,6 +62,72 @@ export type RepositoryFile = {
   byteSize: number | null;
 };
 
+export type RepositoryRef = {
+  name: string;
+  ref: string;
+  kind: "branch" | "tag";
+  targetSha: string | null;
+};
+
+export type RepositoryCommit = {
+  sha: string;
+  abbreviatedSha: string;
+  message: string;
+  committedAt: string;
+  authorName: string | null;
+  authorLogin: string | null;
+  authorAvatarUrl: string | null;
+  url: string;
+};
+
+export type RepositoryIssue = {
+  number: number;
+  title: string;
+  url: string;
+  updatedAt: string;
+  authorLogin: string | null;
+  authorAvatarUrl: string | null;
+};
+
+export type RepositoryPullRequest = RepositoryIssue & {
+  isDraft: boolean;
+  mergedAt: string | null;
+};
+
+export type RepositoryRelease = {
+  name: string | null;
+  tagName: string;
+  url: string;
+  description: string | null;
+  publishedAt: string | null;
+  isDraft: boolean;
+  isPrerelease: boolean;
+};
+
+export type RepositoryContributor = {
+  login: string | null;
+  name: string | null;
+  avatarUrl: string | null;
+  commitCount: number;
+};
+
+export type RepositoryLicense = {
+  name: string;
+  spdxId: string | null;
+  url: string | null;
+};
+
+export type RepositorySurfaces = {
+  refs: RepositoryRef[];
+  commits: RepositoryCommit[];
+  issues: RepositoryIssue[];
+  pullRequests: RepositoryPullRequest[];
+  releases: RepositoryRelease[];
+  contributors: RepositoryContributor[];
+  license: RepositoryLicense | null;
+  resolvedRefSha: string | null;
+};
+
 export interface RepositoryProvider {
   readonly id: ProviderId;
   readonly displayName: string;
@@ -73,6 +145,7 @@ export interface RepositoryProvider {
     owner: string;
     name: string;
     ref: string;
+    path?: string;
   }): Promise<RepositoryTreeEntry[]>;
   getFile(input: {
     owner: string;
@@ -80,4 +153,9 @@ export interface RepositoryProvider {
     path: string;
     ref: string;
   }): Promise<RepositoryFile | null>;
+  getRepositorySurfaces(input: {
+    owner: string;
+    name: string;
+    ref: string;
+  }): Promise<RepositorySurfaces>;
 }
