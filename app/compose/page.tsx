@@ -236,5 +236,5 @@ function buildGitHubSourceUrl(
 ) {
   const anchor =
     startLine === endLine ? `#L${startLine}` : `#L${startLine}-L${endLine}`;
-  return `https://github.com/${fullName}/blob/${commitSha}/${encodeURI(path)}${anchor}`;
+  return `https://github.com/${fullName}/blob/${commitSha}/${path.split("/").map(encodeURIComponent).join("/")}${anchor}`;
 }

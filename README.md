@@ -10,7 +10,7 @@ OpenHub should make open-source exploration feel enjoyable and human. It must no
 
 ## Current status
 
-Milestone 0 is complete. The first slices of Milestones 1–3 are now implemented: repository surface tabs for refs, commits, issues, pull requests, releases, contributors, and license context; source-backed post detail with comments, replies, reactions, bookmarks, reposts, quotes, notifications, and a public recent-post feed; and browsing-first profile, lists, communities, and feed entry points. Live GitHub OAuth, private-repository token storage, Convex cloud deployment, persisted follows/lists/communities, and recommendation ranking still require external setup or later vertical slices.
+OpenHub is an early implementation, not a launch-ready platform. Foundation and partial repository/social/curation slices exist in code; cloud setup, authentication and several core vertical flows remain incomplete. See [the audit report](docs/AUDIT_PROGRESS.md) for verified status and limitations. Source publishing is intentionally disabled until server-side source verification exists; previews remain available.
 
 The application is being built in vertical milestones using:
 
@@ -26,6 +26,8 @@ The application is being built in vertical milestones using:
 - [Setup guide](docs/SETUP.md)
 - [Product specification](docs/PRODUCT_SPEC.md)
 - [UX and design specification](docs/UX_SPEC.md)
+- [Current UI guidance and audit](docs/UI_GUIDANCE.md)
+- [Progress audit](docs/AUDIT_PROGRESS.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Data model](docs/DATA_MODEL.md)
 - [Security and trust](docs/SECURITY_AND_TRUST.md)
@@ -66,7 +68,7 @@ Copy `.env.example` to `.env.local`. Set `GITHUB_PUBLIC_TOKEN` to enable server-
 - Post contract: Convex now has an authenticated post mutation, a public indexed recent-post query, and immutable source snapshot storage.
 - Conversation: `/posts/<id>` renders the attributed snapshot and supports authenticated likes, saves, reposts, comments, and threaded replies; `/notifications` reads the realtime notification stream.
 - Discovery: when Convex is configured, `/home` includes recent public source-backed posts with links back to their source context.
-- Availability: publication becomes active after a Convex deployment is linked; without one, the full draft and source preview remain inspectable but the publish action is gated.
+- Availability: text publication requires a configured authenticated Convex backend. Source-attached publication remains disabled even when connected until server verification is implemented.
 
 ## Quality and deployment checks
 

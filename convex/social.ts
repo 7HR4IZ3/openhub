@@ -61,12 +61,6 @@ export const viewerState = query({
             .withIndex("by_post_user_kind", (q) =>
               q.eq("postId", post._id).eq("userId", userId).eq("kind", "repost"),
             )
-            .unique()) !== null ||
-          (await ctx.db
-            .query("postReposts")
-            .withIndex("by_post_user_kind", (q) =>
-              q.eq("postId", post._id).eq("userId", userId).eq("kind", "quote"),
-            )
             .unique()) !== null;
 
     return {
@@ -172,8 +166,8 @@ export const toggleRepost = mutation({
     if (userId === null) throw new Error("Not signed in");
 
     const post = await ctx.db.get(args.postId);
-    if (post === null || !canInteractWithPost(post, userId)) {
-      throw new Error("Post is not available");
+    if (post === null || post.visibility !== "public") {
+      throw new Error("Only public posts can be reposted");
     }
 
     const existing = await ctx.db

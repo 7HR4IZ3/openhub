@@ -267,7 +267,8 @@ export function createGitHubProvider(accessToken: string): RepositoryProvider {
         `query GetFile($owner: String!, $name: String!, $expression: String!, $sourceRef: String!) {
           repository(owner: $owner, name: $name) {
             object(expression: $expression) {
-              ... on Blob { __typename oid byteSize text }
+              __typename
+              ... on Blob { oid byteSize text }
             }
             sourceObject: object(expression: $sourceRef) {
               oid
@@ -284,7 +285,7 @@ export function createGitHubProvider(accessToken: string): RepositoryProvider {
       );
 
       const object = response.repository?.object;
-      if (object === null || object?.text === null || object === undefined) return null;
+      if (object?.__typename !== "Blob" || typeof object.text !== "string") return null;
       const commitSha = isCommitSha(ref)
         ? ref
         : resolveCommitSha(response.repository?.sourceObject);

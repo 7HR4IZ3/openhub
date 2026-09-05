@@ -106,7 +106,7 @@ function PostComposerForm({
   const [body, setBody] = useState("");
   const [visibility, setVisibility] = useState<PostVisibility>("public");
   const selectedType = postTypes.find((item) => item.value === postType) ?? postTypes[0];
-  const canPublish = body.trim().length > 0 || source !== null;
+  const canPublish = body.trim().length > 0 && source === null;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -138,6 +138,13 @@ function PostComposerForm({
         </header>
 
         <div className="mx-auto max-w-5xl py-12 sm:py-16">
+          {source !== null ? (
+            <p role="status" className="mb-6 rounded-md border p-4 text-sm">
+              Source preview only. Publishing code is paused until OpenHub verifies
+              the snapshot, attribution, and repository visibility on the server.
+              <Link href="/compose" className="ml-1 underline">Write a text post</Link>
+            </p>
+          ) : null}
           <div className="max-w-2xl">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b513d] dark:text-[#e6a07c]">
               OpenHub composer

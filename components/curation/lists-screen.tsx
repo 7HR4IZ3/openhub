@@ -58,12 +58,12 @@ export function ListsScreen({ convexConfigured }: { convexConfigured: boolean })
       </div>
 
       <div className="p-5 sm:p-7">
-        {!convexConfigured ? (
+        {(
           <CurationStatus
-            title="Lists are ready for your first trail"
-            body="Connect the Convex deployment to load and persist lists. Until then, OpenHub keeps every create action out of the browser."
+            title="Lists are a design preview"
+            body={convexConfigured ? "List storage, sharing, and creation are not implemented yet." : "List storage, sharing, and creation are not implemented yet. The backend is also not connected."}
           />
-        ) : null}
+        )}
         {activeTab === "your" ? <YourLists /> : null}
         {activeTab === "shared" ? <SharedLists /> : null}
         {activeTab === "discover" ? <DiscoverLists /> : null}

@@ -53,7 +53,7 @@ export function CurationShell({
 }) {
   return (
     <div className="min-h-screen bg-[#f7f7f4] text-foreground dark:bg-[#111310]">
-      <div className="mx-auto grid min-h-screen w-full max-w-[1440px] lg:grid-cols-[232px_minmax(0,1fr)_280px]">
+      <div className="mx-auto grid min-h-screen w-full max-w-[1440px] lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,1fr)_280px]">
         <aside className="sticky top-0 hidden h-screen flex-col justify-between px-5 py-6 lg:flex">
           <div>
             <Link href="/home" className="inline-flex" aria-label="OpenHub home">
@@ -86,7 +86,7 @@ export function CurationShell({
           </div>
         </aside>
 
-        <main className="min-h-screen border-x border-black/[0.08] bg-[#fbfbf9] dark:border-white/[0.08] dark:bg-[#151714]">
+        <main className="min-h-screen min-w-0 border-x border-black/[0.08] bg-[#fbfbf9] pb-24 dark:border-white/[0.08] dark:bg-[#151714] lg:pb-0">
           <header className="sticky top-0 z-10 border-b border-black/[0.08] bg-[#fbfbf9]/90 px-5 py-4 backdrop-blur dark:border-white/[0.08] dark:bg-[#151714]/90 sm:px-7">
             <div className="flex items-center justify-between gap-4">
               <div className="flex min-w-0 items-center gap-4">
@@ -131,12 +131,12 @@ export function CurationShell({
         className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-around border-t border-black/[0.1] bg-[#fbfbf9]/95 px-3 py-2 backdrop-blur dark:border-white/[0.1] dark:bg-[#151714]/95 lg:hidden"
         aria-label="Mobile navigation"
       >
-        {navigation.slice(0, 5).map((item) => (
+        {navigation.map((item) => (
           <Link
             key={item.label}
             href={item.href}
             className={cn(
-              "flex min-w-12 flex-col items-center gap-1 rounded-xl px-2 py-1.5 text-[10px] text-muted-foreground",
+              "flex min-h-11 min-w-0 flex-1 flex-col items-center gap-1 rounded-md px-0.5 py-1.5 text-[9px] text-muted-foreground",
               item.label === active && "text-foreground",
             )}
           >

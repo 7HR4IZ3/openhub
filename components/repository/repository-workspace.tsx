@@ -464,7 +464,7 @@ function buildGitHubSourceUrl(
     "/blob/" +
     commitSha +
     "/" +
-    encodeURI(path);
+    path.split("/").map(encodeURIComponent).join("/");
   if (selection === null) return url;
   const anchor =
     selection.startLineNumber === selection.endLineNumber

@@ -94,7 +94,7 @@ export function HomeScreen({ convexConfigured = false }: { convexConfigured?: bo
 
   return (
     <div className="min-h-screen bg-[#f7f7f4] text-foreground dark:bg-[#111310]">
-      <div className="mx-auto grid min-h-screen w-full max-w-[1440px] lg:grid-cols-[232px_minmax(0,680px)_304px]">
+      <div className="mx-auto grid min-h-screen w-full max-w-[1440px] lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,680px)_304px]">
         <aside className="sticky top-0 hidden h-screen flex-col justify-between px-5 py-6 lg:flex">
           <div>
             <Link href="/home" className="inline-flex" aria-label="OpenHub home">
@@ -126,12 +126,12 @@ export function HomeScreen({ convexConfigured = false }: { convexConfigured?: bo
           </div>
         </aside>
 
-        <main className="min-h-screen border-x border-black/[0.08] bg-[#fbfbf9] dark:border-white/[0.08] dark:bg-[#151714]">
+        <main className="min-h-screen min-w-0 border-x border-black/[0.08] bg-[#fbfbf9] pb-24 dark:border-white/[0.08] dark:bg-[#151714] lg:pb-0">
           <header className="sticky top-0 z-10 flex items-center justify-between border-b border-black/[0.08] bg-[#fbfbf9]/90 px-5 py-4 backdrop-blur dark:border-white/[0.08] dark:bg-[#151714]/90 lg:px-7">
             <div className="flex items-center gap-3">
-              <button className="rounded-full p-1.5 text-muted-foreground hover:bg-black/[0.05] lg:hidden" aria-label="Open menu">
+              <Link href="/profile" className="rounded-md p-1.5 text-muted-foreground hover:bg-black/[0.05] lg:hidden" aria-label="Open profile">
                 <Menu className="h-5 w-5" />
-              </button>
+              </Link>
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">OpenHub / home</p>
                 <h1 className="mt-1 text-xl font-semibold tracking-[-0.035em]">Discover</h1>
@@ -217,11 +217,16 @@ export function HomeScreen({ convexConfigured = false }: { convexConfigured?: bo
             </div>
           </section>
 
-          {convexConfigured ? (
+          {convexConfigured && activeTab === "For you" ? (
             <section className="border-b border-black/[0.08] p-5 dark:border-white/[0.08] lg:p-7" aria-label="Recent source-backed posts">
               <RecentPostFeed convexConfigured={convexConfigured} />
             </section>
           ) : null}
+          <p role="status" className="border-b px-5 py-4 text-sm text-muted-foreground lg:px-7">
+            {activeTab === "For you"
+              ? "Personalization is not available yet. Connected environments show recent public posts."
+              : `${activeTab} feed is not implemented yet. You can still explore repositories.`}
+          </p>
 
           <section className="p-5 lg:p-7">
             <div className="flex items-end justify-between">
@@ -304,8 +309,8 @@ export function HomeScreen({ convexConfigured = false }: { convexConfigured?: bo
       </div>
 
       <nav className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-around border-t border-black/[0.1] bg-[#fbfbf9]/95 px-3 py-2 backdrop-blur dark:border-white/[0.1] dark:bg-[#151714]/95 lg:hidden" aria-label="Mobile navigation">
-        {navigation.slice(0, 5).map((item) => (
-          <Link key={item.label} href={item.href} className={cn("flex min-w-12 flex-col items-center gap-1 rounded-xl px-2 py-1.5 text-[10px] text-muted-foreground", item.label === "Home" && "text-foreground")}>
+        {navigation.map((item) => (
+          <Link key={item.label} href={item.href} className={cn("flex min-h-11 min-w-0 flex-1 flex-col items-center gap-1 rounded-md px-0.5 py-1.5 text-[9px] text-muted-foreground", item.label === "Home" && "text-foreground")}>
             <item.icon className="h-4 w-4" />
             <span>{item.label}</span>
           </Link>

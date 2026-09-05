@@ -59,12 +59,12 @@ export function CommunitiesScreen({ convexConfigured }: { convexConfigured: bool
       </div>
 
       <div className="p-5 sm:p-7">
-        {!convexConfigured ? (
+        {(
           <CurationStatus
-            title="Community discovery is intentionally quiet"
-            body="Public community reads and creation actions will connect through Convex. No unauthenticated community can be created from this screen."
+            title="Communities are a design preview"
+            body={convexConfigured ? "Community discovery, membership, and creation are not implemented yet." : "Community discovery, membership, and creation are not implemented yet. The backend is also not connected."}
           />
-        ) : null}
+        )}
         {activeTab === "discover" ? <DiscoverCommunities /> : null}
         {activeTab === "following" ? <FollowingCommunities /> : null}
         {activeTab === "create" ? <CreateCommunity /> : null}

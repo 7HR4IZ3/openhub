@@ -159,22 +159,15 @@ export const create = mutation({
 
     if (args.sourceReference !== undefined) {
       validateSourceReference(args.sourceReference, args.visibility);
+      // Client-supplied visibility and attribution are not trustworthy.
+      throw new Error("Source publishing requires server-side verification, which is not implemented yet");
     }
 
     const now = Date.now();
-    const sourceReferenceId =
-      args.sourceReference === undefined
-        ? undefined
-        : await ctx.db.insert("sourceReferences", {
-            ...args.sourceReference,
-            createdAt: now,
-          });
-
     const postId = await ctx.db.insert("posts", {
       authorId: userId,
       type: args.type,
       body: args.body,
-      sourceReferenceId,
       visibility: args.visibility,
       createdAt: now,
       updatedAt: now,
@@ -206,6 +199,9 @@ export const createQuote = mutation({
     const original = await ctx.db.get(args.postId);
     if (original === null || original.visibility !== "public") {
       throw new Error("Only public posts can be quoted");
+    }
+    if (args.visibility !== "public") {
+      throw new Error("Non-public quotes are not supported yet");
     }
 
     const now = Date.now();
@@ -288,12 +284,6 @@ async function toPostDetail(
           .query("postReposts")
           .withIndex("by_post_user_kind", (q) =>
             q.eq("postId", post._id).eq("userId", userId).eq("kind", "repost"),
-          )
-          .unique()) !== null ||
-        (await ctx.db
-          .query("postReposts")
-          .withIndex("by_post_user_kind", (q) =>
-            q.eq("postId", post._id).eq("userId", userId).eq("kind", "quote"),
           )
           .unique()) !== null;
 
