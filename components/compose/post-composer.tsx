@@ -1,13 +1,14 @@
 "use client";
 
 import { api } from "@/convex/_generated/api";
+import { DiffCodeViewer } from "@/components/repository/diff-code-viewer";
 import { SourceCodeViewer } from "@/components/repository/source-code-viewer";
 import { Button } from "@/components/ui/button";
 import type { RepositoryFile } from "@/lib/providers/types";
 import type { CreatePostInput, PostType, PostVisibility } from "@/lib/post-types";
-import type { SourceContext } from "@/lib/source-references";
+import type { DiffContext, SourceContext } from "@/lib/source-references";
 import { cn } from "@/lib/utils";
-import { useMutation } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -31,20 +32,23 @@ const postTypes: Array<{ value: PostType; label: string; hint: string }> = [
 
 export function PostComposer({
   source,
+  diff,
   sourceError,
   convexConfigured,
 }: {
   source: SourceContext | null;
+  diff: DiffContext | null;
   sourceError: string | null;
   convexConfigured: boolean;
 }) {
   if (convexConfigured) {
-    return <ConnectedPostComposer source={source} sourceError={sourceError} />;
+    return <ConnectedPostComposer source={source} diff={diff} sourceError={sourceError} />;
   }
 
   return (
     <PostComposerForm
       source={source}
+      diff={diff}
       sourceError={sourceError}
       onPublish={undefined}
       publishError={null}
@@ -55,13 +59,17 @@ export function PostComposer({
 
 function ConnectedPostComposer({
   source,
+  diff,
   sourceError,
 }: {
   source: SourceContext | null;
+  diff: DiffContext | null;
   sourceError: string | null;
 }) {
   const router = useRouter();
   const createPost = useMutation(api.posts.create);
+  const createSource = useAction(api.posts.createSource);
+  const createDiff = useAction(api.posts.createDiff);
   const [publishError, setPublishError] = useState<string | null>(null);
   const [isPublishing, setIsPublishing] = useState(false);
 
@@ -69,8 +77,12 @@ function ConnectedPostComposer({
     setPublishError(null);
     setIsPublishing(true);
     try {
-      await createPost(input);
-      router.push("/home?posted=1");
+      const post = input.diffReference
+        ? await createDiff({ type: input.type, body: input.body, visibility: input.visibility, diffReference: input.diffReference })
+        : input.sourceReference
+          ? await createSource({ type: input.type, body: input.body, visibility: input.visibility, sourceReference: input.sourceReference })
+          : await createPost({ type: input.type, body: input.body, visibility: input.visibility });
+      router.push(`/posts/${post._id}`);
     } catch (error) {
       console.error(error);
       setPublishError("OpenHub could not publish this post. Check the source and try again.");
@@ -81,6 +93,7 @@ function ConnectedPostComposer({
   return (
     <PostComposerForm
       source={source}
+      diff={diff}
       sourceError={sourceError}
       onPublish={publish}
       publishError={publishError}
@@ -91,22 +104,24 @@ function ConnectedPostComposer({
 
 function PostComposerForm({
   source,
+  diff,
   sourceError,
   onPublish,
   publishError,
   isPublishing,
 }: {
   source: SourceContext | null;
+  diff: DiffContext | null;
   sourceError: string | null;
   onPublish: ((input: CreatePostInput) => Promise<void>) | undefined;
   publishError: string | null;
   isPublishing: boolean;
 }) {
-  const [postType, setPostType] = useState<PostType>(source ? "snippet" : "text");
+  const [postType, setPostType] = useState<PostType>(source ? "snippet" : diff ? "review" : "text");
   const [body, setBody] = useState("");
   const [visibility, setVisibility] = useState<PostVisibility>("public");
   const selectedType = postTypes.find((item) => item.value === postType) ?? postTypes[0];
-  const canPublish = body.trim().length > 0 || source !== null;
+  const canPublish = body.trim().length > 0 || source !== null || diff !== null;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -117,6 +132,7 @@ function PostComposerForm({
       body,
       visibility,
       sourceReference: source === null ? undefined : toSourceReference(source),
+      diffReference: diff === null ? undefined : diff,
     });
   }
 
@@ -138,6 +154,12 @@ function PostComposerForm({
         </header>
 
         <div className="mx-auto max-w-5xl py-12 sm:py-16">
+          {source !== null || diff !== null ? (
+            <p role="status" className="mb-6 rounded-md border p-4 text-sm">
+              OpenHub will re-check this public repository, commit pair, file,
+              attribution, and license on the server before publishing.
+            </p>
+          ) : null}
           <div className="max-w-2xl">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#8b513d] dark:text-[#e6a07c]">
               OpenHub composer
@@ -182,16 +204,18 @@ function PostComposerForm({
                   value={body}
                   onChange={(event) => setBody(event.target.value)}
                   placeholder={placeholderFor(postType)}
+                  maxLength={64_000}
                   rows={8}
                   className="mt-4 min-h-48 w-full resize-y rounded-2xl border border-black/[0.1] bg-transparent px-4 py-4 text-base leading-7 outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-[#b45e3c] dark:border-white/[0.1]"
                 />
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
                   <span>Markdown and code blocks are supported.</span>
-                  <span>No character limit.</span>
+                  <span>Up to 64 KB of text.</span>
                 </div>
               </div>
 
               {source ? <SourceAttachment source={source} /> : null}
+              {diff ? <DiffAttachment diff={diff} /> : null}
 
               {sourceError ? (
                 <div className="mt-6 rounded-2xl border border-[#b45e3c]/30 bg-[#b45e3c]/[0.06] p-4 text-sm leading-6">
@@ -293,6 +317,41 @@ function SourceAttachment({ source }: { source: SourceContext }) {
       />
       <div className="border-t border-black/[0.08] px-4 py-3 text-xs leading-5 text-muted-foreground dark:border-white/[0.08]">
         Source attribution will be stored with this post so the snapshot remains understandable even if the repository moves on.
+      </div>
+    </div>
+  );
+}
+
+function DiffAttachment({ diff }: { diff: DiffContext }) {
+  return (
+    <div className="mt-7 overflow-hidden rounded-2xl border border-black/[0.1] dark:border-white/[0.1]">
+      <div className="flex flex-col gap-3 border-b border-black/[0.08] px-4 py-3 dark:border-white/[0.08] sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 text-sm font-semibold">
+            <FileCode2 className="h-4 w-4 shrink-0 text-[#b45e3c] dark:text-[#e99970]" />
+            <span className="truncate font-mono">{diff.path}</span>
+          </div>
+          <p className="mt-1 truncate pl-6 text-xs text-muted-foreground">
+            {diff.repositoryFullName} · {shortSha(diff.baseCommitSha)} → {shortSha(diff.headCommitSha)}
+          </p>
+        </div>
+        <a
+          href={diff.canonicalUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-[#9b4d31] hover:underline dark:text-[#e99970]"
+        >
+          View comparison <ArrowUpRight className="h-3.5 w-3.5" />
+        </a>
+      </div>
+      <DiffCodeViewer
+        path={diff.path}
+        language={diff.language}
+        baseSnapshot={diff.baseSnapshot}
+        headSnapshot={diff.headSnapshot}
+      />
+      <div className="border-t border-black/[0.08] px-4 py-3 text-xs leading-5 text-muted-foreground dark:border-white/[0.08]">
+        This comparison is pinned to both commits and will be verified again before publication.
       </div>
     </div>
   );

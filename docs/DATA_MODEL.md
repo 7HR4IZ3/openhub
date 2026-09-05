@@ -20,7 +20,7 @@ Fields include provider subject, username, display name, avatar, bio, onboarding
 
 Connected source accounts. Initial provider is GitHub.
 
-Fields include user ID, provider, provider user ID, login, an encrypted token reference (never a raw token), scopes, last validation time, and status.
+Fields include user ID, provider, provider user ID, login, an optional encrypted token reference (never a raw token), scopes, last validation time, and status. The current GitHub login callback imports identity and profile data but does not yet persist a user-scoped repository token, so private repository access is intentionally unavailable.
 
 ### `profiles`
 
@@ -30,7 +30,7 @@ OpenHub-specific biography, interests, portfolio links, availability, featured r
 
 ### `repositories`
 
-Normalized provider repository metadata: provider, provider repository ID, owner, name, URL, visibility, default branch, description, language, topics, license, stars, forks, and last fetched time.
+Normalized provider repository metadata: provider, provider repository ID, owner, name, URL, visibility, default branch, description, language, topics, license, stars, forks, open issues, and indexed/updated times. The current write path only persists verified public GitHub metadata.
 
 ### `repositorySnapshots`
 
@@ -40,9 +40,9 @@ Commit-addressed metadata and fetch state. Fields include repository ID, commit 
 
 Commit-addressed file metadata and optionally cached content. Fields include snapshot ID, path, blob SHA, language, size, content reference, and fetch status.
 
-### `repositorySignals`
+### `discoverySignals`
 
-Explainable signal values and evidence: activity, release momentum, maintenance, documentation, contributor diversity, learning suitability, and possible inactivity.
+Explainable public GitHub signal snapshots: observed metadata evidence, availability, refresh generation, observation time, and a calculated rank with version and explanations. Current evidence covers freshness, capped adoption, topics/language, license presence, bounded documentation context, archive state, and fork state. It does not claim maintenance quality, responsiveness, learning quality, or contributor quality.
 
 ## 4. Source references
 
@@ -50,48 +50,62 @@ Explainable signal values and evidence: activity, release momentum, maintenance,
 
 Immutable reference attached to posts, comments, AI citations, and saved selections.
 
-Fields:
+Current fields:
 
 - Provider
 - Repository ID
 - Commit SHA
-- Ref name
 - File path
 - Start line
 - End line
-- Symbol name when available
 - Language
 - Canonical provider URL
 - Visibility at creation
-- Original owner metadata
+- SPDX license when available
+- Original owner login
 - Immutable source snapshot captured for the published selection
+- Verification time when written by the server-side public-source action
+
+The current publication path accepts only a public GitHub exact commit and text-file range. The server derives repository, owner, license, URL, visibility, and snapshot fields; browser-supplied metadata is not authoritative.
+
+### `diffReferences`
+
+Immutable public GitHub two-commit file comparisons attached to posts or
+comments. A record stores the repository, original owner, path, base and head
+commit SHAs, optional language/license context, canonical compare URL, public
+visibility, both bounded text snapshots (an empty side represents an added or
+deleted file), and server verification time. The server verifies both exact
+commits and the file at each commit before publication; the browser cannot
+write a diff reference directly.
 
 ## 5. Social tables
 
-- `posts` — type, author, body, visibility, source reference, media, AI-assistance state, moderation state, interaction counters
-- `comments` — post or repository context, author, body, parent comment, source reference, moderation state
-- `reactions` — actor, target, reaction type
+- `posts` — type, author, body, visibility, source or diff reference, media, AI-assistance state, moderation state, interaction counters
+- `comments` — post or repository context, author, body, parent comment, source or diff reference, moderation state
+- `postReactions` — actor, post, reaction type, creation time
+- `postBookmarks` — actor, post, creation time
+- `postReposts` — actor, original post, optional quote post, repost kind
 - `follows` — actor, target type, target ID
-- `bookmarks` — user, target, optional list
-- `reposts` — actor, original post, optional quote body
+- `bookmarks` and `reposts` remain the provider-neutral future names for
+  cross-entity targets; the first implementation is post-specific.
 - `mentions` — source content, mentioned entity, resolved state
 - `notifications` — recipient, event type, source, read state
 
 ## 6. Community and curation tables
 
 - `communities`
-- `communityMembers`
-- `communityModerators`
-- `communityPosts`
+- `communityMemberships` — active or banned membership with owner, moderator, and member roles
 - `lists`
 - `listItems`
+- `follows` — people, public repositories, topics, and categories
 
-Communities and lists each have explicit visibility and membership rules.
+Communities and lists each have explicit visibility and membership rules. Private list invitations, community posts, rules, and richer moderation records remain planned.
 
 ## 7. Trust and reputation tables
 
-- `endorsements` — verified maintainer endorsement of a user
-- `badges` — badge definition and award record
+- `contributorReputations` — bounded public GitHub contribution snapshot with evidence and calculation version
+- `achievements` — evidence-backed achievement awards
+- `discoveryEndorsements` — short-lived verified maintainer endorsement with provider identity, permission, evidence URL, credential kind (`owner_public` today; `user_scoped` reserved for a future least-privilege connection), and audit timestamps
 - `reports` — reporter, target, reason, evidence, status
 - `moderationActions` — actor, target, action, reason, provider, timestamp
 - `blocks`
@@ -107,7 +121,7 @@ Use the Convex agent component for conversation and message persistence. OpenHub
 - `aiCitations`
 - `aiArtifacts`
 
-AI citations must reference a commit-addressed `codeReference`.
+AI citations must reference a commit-addressed source reference. AI persistence is planned; no model or code-execution path is enabled in the current slice.
 
 ## 9. Tasks and business tables
 
@@ -134,5 +148,13 @@ Every frequently filtered or ordered access path needs an index. Examples:
 - Files by snapshot and path
 - Notifications by recipient and read state
 - Reports by status and creation time
+
+The current schema also includes full-text search indexes for public post bodies and profile display names. The first social schema adds indexes for post/user interaction uniqueness,
+source- and diff-backed repository discussion lookup, post/status/time comment
+reads, comment parent traversal, quote lookup, and recipient/time notification
+reads.
+Convex-generated types must be regenerated
+after a real deployment is linked; the checked-in API declaration is currently
+kept in sync manually so the web project can typecheck without cloud access.
 
 Do not include `_creationTime` in a custom Convex index; Convex appends it automatically.

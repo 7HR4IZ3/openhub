@@ -1,4 +1,4 @@
-import type { SourceReferenceDraft } from "@/lib/source-references";
+import type { DiffContext, SourceReferenceDraft } from "@/lib/source-references";
 
 export type PostType =
   | "text"
@@ -18,4 +18,5 @@ export type CreatePostInput = {
   body: string;
   visibility: PostVisibility;
   sourceReference?: SourceReferenceDraft;
+  diffReference?: DiffContext;
 };

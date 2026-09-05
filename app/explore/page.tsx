@@ -1,6 +1,9 @@
 "use client";
 
 import { OpenHubMark } from "@/components/openhub-mark";
+import { DiscoveryRecommendations } from "@/components/discovery/discovery-recommendations";
+import { TrendingRepositories } from "@/components/discovery/trending-repositories";
+import { OpenHubSearchResults } from "@/components/discovery/openhub-search-results";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
@@ -137,6 +140,10 @@ export default function ExplorePage() {
             ) : null}
           </section>
         ) : null}
+
+        {process.env.NEXT_PUBLIC_CONVEX_URL ? <OpenHubSearchResults query={submittedQuery} /> : null}
+
+        {process.env.NEXT_PUBLIC_CONVEX_URL ? <><DiscoveryRecommendations /><TrendingRepositories /></> : null}
 
         <section className="mt-20">
           <div className="flex items-end justify-between gap-4">

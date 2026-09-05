@@ -80,6 +80,34 @@ export const ensure = mutation({
   },
 });
 
+export const update = mutation({
+  args: { displayName: v.string(), bio: v.string(), interests: v.array(v.string()),
+    portfolioUrl: v.string(), availability: v.string() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not signed in");
+    if (!args.displayName.trim() || args.displayName.length > 100 || args.bio.length > 4000 ||
+        args.interests.length > 30 || args.interests.some(x => x.length > 60) || args.availability.length > 200)
+      throw new Error("Profile fields exceed supported sizes");
+    if (args.portfolioUrl) {
+      const url = new URL(args.portfolioUrl);
+      if (url.protocol !== "https:" && url.protocol !== "http:") throw new Error("Use an HTTP or HTTPS portfolio URL");
+    }
+    const profile = await ctx.db.query("profiles").withIndex("by_user_id", q => q.eq("userId", userId)).unique();
+    if (!profile) throw new Error("Create your profile first");
+    await ctx.db.patch(profile._id, { ...args, displayName: args.displayName.trim(),
+      interests: [...new Set(args.interests.map(x => x.trim().toLowerCase()).filter(Boolean))], updatedAt: Date.now() });
+    return null;
+  },
+});
+
+export const byHandle = query({
+  args: { handle: v.string() }, returns: v.union(profileValidator, v.null()),
+  handler: async (ctx, args) => await ctx.db.query("profiles")
+    .withIndex("by_handle", q => q.eq("handle", args.handle.toLowerCase())).unique(),
+});
+
 function normalizeHandle(value: string) {
   const normalized = value
     .toLowerCase()

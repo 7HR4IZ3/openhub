@@ -16,6 +16,8 @@ Prioritize repository discovery, code understanding, and high-quality technical 
 
 ## Engineering rules
 
+- Before any UI work, read `docs/UI_GUIDANCE.md` and the three linked taste skills in full. The user's minimalist skill is the primary visual direction; product usability and accessibility override marketing-only rules. Audit before redesigning. Preserve routes and the OpenHub wordmark.
+
 - Keep the application buildable after every milestone.
 - Use Next.js App Router and server components by default; isolate interactive surfaces as client components.
 - Keep GitHub and other provider calls behind server-side adapters.

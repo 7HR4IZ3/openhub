@@ -32,10 +32,11 @@ Vercel Preview/Production environments when deploying:
 GITHUB_PUBLIC_TOKEN=<server-only GitHub token>
 ```
 
-The credential is read only by the Next.js server adapter. It is never exposed
-through a `NEXT_PUBLIC_` variable, returned to the browser, or used to authorize
-private repositories in the public search route. The public route filters any
-private result returned by a broadly scoped credential as a second boundary.
+The credential is read by the Next.js server adapter and the Convex public
+source/reputation actions. It is never exposed through a `NEXT_PUBLIC_` variable,
+returned to the browser, or used to authorize private repositories. The public
+route filters any private result returned by a broadly scoped credential as a
+second boundary.
 
 With this value configured:
 
@@ -60,6 +61,9 @@ Set the following variables on the Convex deployment, not in committed files:
 
 - `AUTH_GITHUB_ID` — GitHub OAuth App client ID
 - `AUTH_GITHUB_SECRET` — GitHub OAuth App client secret
+- `GITHUB_PUBLIC_TOKEN` — server-only token for GitHub GraphQL source/diff
+  verification, public repository sync, bounded contribution signals, and
+  current public owner checks for maintainer endorsements
 
 ## GitHub OAuth App
 
@@ -89,14 +93,20 @@ npm run lint
 npm run build
 ```
 
+After deployment, use `GET /api/health` as a lightweight smoke check. It returns
+only the web status and boolean readiness flags for the Convex URL and public
+GitHub credential; it never returns secret values.
+
 ## Current external setup blockers
 
 1. Authenticate a Convex account, create/link the OpenHub cloud deployment,
-   and regenerate `_generated/`.
+   set its server environment variables, and regenerate `_generated/`.
 2. Create the GitHub OAuth App and set its credentials on Convex.
 3. Implement the separate authenticated server-side provider-token boundary
    before enabling private repositories; do not expose raw tokens or enable
    provider write operations.
+4. Regenerate `convex/_generated/` from the linked deployment and run a full
+   browser verification pass for authenticated post interactions.
 
 The GitHub repository and Vercel project already exist. The public repository
 workspace does not remove the separate authorization requirement for private

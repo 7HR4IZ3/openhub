@@ -1,13 +1,10 @@
-import { PlaceholderScreen } from "@/components/app/placeholder-screen";
+import { NotificationsScreen } from "@/components/posts/notifications-screen";
 
-export const metadata = { title: "Notifications" };
+export const metadata = {
+  title: "Notifications",
+  description: "Keep useful replies, mentions, and source-backed activity close.",
+};
 
 export default function NotificationsPage() {
-  return (
-    <PlaceholderScreen
-      eyebrow="Your trail"
-      title="The useful updates belong here."
-      body="Realtime mentions, replies, reactions, repository activity, and discussion updates will collect here without turning the app into an attention treadmill."
-    />
-  );
+  return <NotificationsScreen convexConfigured={Boolean(process.env.NEXT_PUBLIC_CONVEX_URL)} />;
 }

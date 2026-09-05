@@ -6,7 +6,7 @@ import {
 import { NextResponse } from "next/server";
 
 const isSignInPage = createRouteMatcher(["/signin"]);
-const isProtectedRoute = createRouteMatcher(["/home(.*)", "/compose(.*)"]);
+const isProtectedRoute = createRouteMatcher(["/compose(.*)"]);
 
 const authMiddleware = convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
   if (isSignInPage(request) && (await convexAuth.isAuthenticated())) {

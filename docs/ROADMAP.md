@@ -29,6 +29,12 @@ A clean Next.js + Convex project with the OpenHub documents, design tokens, rout
 - Design and architecture docs are committed.
 - Preview deployment path is documented.
 
+### Progress
+
+The web verification workflow and a non-secret `/api/health` endpoint are now
+committed. Convex codegen and cloud deployment remain blocked until a Convex
+account is authenticated and a deployment is linked.
+
 ## Milestone 1 — Identity and repository exploration
 
 ### Outcome
@@ -37,11 +43,13 @@ An authenticated user can sign in with GitHub, view an imported OpenHub profile,
 
 ### Progress
 
-The initial public exploration slice is implemented: server-side GitHub
-repository search, public repository metadata, directory navigation, and
-commit-resolved read-only Monaco file viewing. The remaining M1 blockers are
-Convex cloud deployment, GitHub OAuth configuration, user-scoped private
-repository authorization, and the remaining repository surfaces.
+The initial public exploration slice and the remaining read-only repository
+surface increment are implemented: server-side GitHub repository search,
+public repository metadata, directory navigation, commit-resolved Monaco file
+viewing, branch/tag selection, commit history, issues, pull requests, releases,
+contributors, and license context. The remaining M1 blockers are Convex cloud
+deployment, GitHub OAuth configuration, user-scoped private repository
+authorization, caching, and dependency/activity surfaces.
 
 ### Scope
 
@@ -72,10 +80,19 @@ Users can publish source-backed snippets, diffs, questions, reviews, and discuss
 
 ### Progress
 
-The first source-aware composer and Convex post contract are implemented. A
-reader can select lines in the repository editor, open a focused composer, and
-preview the commit-pinned attributed snapshot. Publication and feed rendering
-remain gated on the linked Convex deployment and authenticated provider setup.
+The source-aware composer and Convex post contract are implemented. A reader
+can select lines in the repository editor, open a focused composer, preview the
+commit-pinned attributed snapshot, publish, and open the resulting post detail.
+Public source publication is now verified in a Convex action against the exact
+GitHub commit and file before an internal mutation stores the immutable
+snapshot. The first social backend and reader UI cover comments/replies,
+reactions, bookmarks, reposts/quotes, reading-list saves, notifications, and
+public/following/trending feed modes when a Convex deployment is linked. A
+repository workspace now surfaces its public OpenHub discussion trail. Public
+two-commit diffs are verified server-side, stored as immutable base/head
+snapshots, rendered in a read-only side-by-side editor, and available in posts,
+search, feeds, repository discussions, and comments. Arbitrary diff-line
+anchors, media, mentions, and full feed pagination remain open.
 
 ### Scope
 
@@ -97,11 +114,27 @@ remain gated on the linked Convex deployment and authenticated provider setup.
 - Comments support Markdown, code blocks, replies, and source references.
 - Feed interactions update in realtime.
 
+### Implementation note
+
+The public source path is an action plus internal mutation. The browser may
+request a source draft, but the server derives repository identity, ownership,
+license, canonical URL, line bounds, and snapshot content from a public exact
+commit request. Private provider access still requires a separate constrained
+user-scoped authorization boundary.
+
 ## Milestone 3 — Profiles, feeds, communities, and curation
 
 ### Outcome
 
 OpenHub becomes a usable social discovery network rather than only a repository viewer.
+
+### Progress
+
+The first user-facing curation slice is implemented: GitHub profile import and
+editing, public/private lists, public/private communities, persistent follows,
+topic follows, community membership/moderation, list item management, public
+profile trails, and public/following/trending feed queries. Private invitations,
+full repository activity feeds, and richer ranking controls remain open.
 
 ### Scope
 
@@ -121,6 +154,20 @@ OpenHub becomes a usable social discovery network rather than only a repository 
 - A user can create and manage a private list.
 - A user can create a public or private community.
 - Community content has separate moderation and visibility rules.
+
+## Milestone 4 progress
+
+Repository metadata is ingested only through server-side GitHub actions and
+stored as bounded evidence with an observation time. An hourly candidate seed
+and stale-signal refresh provide a public discovery pool. Explainable
+freshness, adoption, interest-match, license-presence, archive, and fork
+signals produce diversified recommendations with owner/language caps and
+dismissal support. Public GitHub contribution snapshots can populate a bounded
+contributor context score and evidence-backed achievement badge. Verified
+public GitHub owner endorsements are supported with a short expiry and
+provider evidence; collaborator-level endorsements remain deferred until
+user-scoped permission resolution exists. Duplicate trending post bodies are
+suppressed within the bounded candidate window.
 
 ## Milestone 4 — Discovery intelligence and reputation
 

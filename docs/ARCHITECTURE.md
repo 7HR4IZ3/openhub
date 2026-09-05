@@ -46,8 +46,20 @@ The first exploration slice exposes two server-owned entry points:
   normalized results.
 - `/repos/<owner>/<name>` loads public metadata, a directory tree, and a
   commit-resolved file through the server-only provider adapter.
+- `/repos/<owner>/<name>` also loads bounded repository context surfaces for
+  refs, commits, issues, pull requests, releases, contributors, and license
+  metadata; these are rendered as read-only tabs and link back to GitHub.
 - `/compose` can reload a selected public source range at its commit and render
-  it in a read-only composer preview before publication.
+  it in a read-only composer preview before publication. A source-backed post
+  is published through `posts.createSource`, a Convex action that verifies the
+  exact public commit/file/range and then calls an internal mutation.
+- `/compose` can also load a public file at two exact commits. A diff-backed
+  post is published through `posts.createDiff`, which verifies both commits,
+  the file snapshots, public visibility, attribution, and bounds before an
+  internal mutation stores the immutable comparison.
+- `/posts/<id>` reads an access-checked post, immutable source snapshot, and
+  threaded comments through Convex; `/notifications` reads recipient-scoped
+  realtime notifications.
 
 Both routes use `GITHUB_PUBLIC_TOKEN` for public browsing and filter private
 repositories at the public boundary. Authenticated private browsing must use a
@@ -60,7 +72,9 @@ Convex Auth currently establishes the OpenHub session and normalized identity; i
 The provider adapter must receive credentials only inside a server-side action or other trusted execution boundary. Public discovery may use a separately governed public-access credential when rate limits and provider terms permit it; an authenticated user’s private access must always be checked against that user’s provider authorization.
 
 `GITHUB_PUBLIC_TOKEN` is an interim operational credential for public repository
-discovery only. It must not become the private-repository credential model.
+discovery, source/diff verification, and bounded public contribution metadata.
+It must not become the private-repository credential model or proof of a user's
+provider permissions.
 
 ## 4. Provider abstraction
 
@@ -119,13 +133,22 @@ Suggested module boundaries:
 
 Public functions should be minimal. Use internal functions for helpers and scheduled jobs. Every Convex function must use object-form syntax, runtime argument and return validators, indexed reads, and explicit authorization.
 
-The first `posts` module follows this boundary: `posts.recent` reads only the
-public visibility index, while `posts.create` requires the signed-in user and
-creates a source reference and post atomically. A source-backed post stores the
-selected snapshot, provider, original owner, repository, commit, path, line
-range, and canonical URL. The current mutation accepts a provider-normalized
-source draft; before broad launch, replace that trust boundary with a
-server-side provider verification action for every new source reference.
+The first `posts` module follows this boundary: `posts.recent`, `posts.feed`,
+and `posts.byRepository` read only public visibility indexes and enrich bounded
+results with author/source context. `posts.create` handles text-only posts;
+`posts.createSource` and `posts.createDiff` verify public source material before
+internal mutations store immutable references and posts. `social`, `comments`,
+and `notifications` add access-checked interactions, threaded replies, and
+recipient-scoped updates. A source-backed post stores the selected snapshot,
+provider, original owner, repository, commit, path, line range, and canonical
+URL. A diff-backed post stores bounded base/head snapshots and exact commit
+SHAs. Private source and diff publication remain disabled until a separate
+user-scoped authorization path exists.
+
+Discovery signals are ingested only by trusted server actions. Public owner
+endorsements use the signed-in GitHub identity, a current public repository
+owner check, and a short expiry; collaborator-level endorsements remain behind
+the user-scoped credential boundary.
 
 ## 7. AI architecture
 
@@ -170,6 +193,8 @@ Repository code should not be treated as user-uploaded media. Cache only the min
 - Environment variables must be configured separately for preview and production.
 - Provider secrets, AI keys, and deployment credentials must never be committed.
 - Use Vercel observability and runtime logs after the first live deployment.
+- Use `/api/health` as a lightweight deployment smoke endpoint; it reports only
+  boolean readiness flags and never returns credentials.
 
 ## 11. Missing supporting decisions
 
