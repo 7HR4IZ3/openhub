@@ -16,7 +16,6 @@ import type {
   DiffDisplayContext,
   SourceContext,
 } from "@/lib/source-references";
-import { cn } from "@/lib/utils";
 import { useAction, useMutation } from "convex/react";
 import {
   ArrowTopRightIcon as ArrowUpRight,
@@ -243,29 +242,26 @@ function PostComposerForm({
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             <section className="min-w-0 rounded-xl border border-border bg-card p-5 dark:bg-card sm:p-7">
-              <div
-                className="flex flex-wrap gap-2"
-                role="tablist"
-                aria-label="Post type"
-              >
-                {postTypes.map((item) => (
-                  <button
-                    key={item.value}
-                    type="button"
-                    role="tab"
-                    aria-selected={postType === item.value}
-                    onClick={() => setPostType(item.value)}
-                    className={cn(
-                      "rounded-md border border-input px-3.5 py-2 text-xs font-semibold transition-colors border-border",
-                      postType === item.value
-                        ? "border-foreground bg-foreground text-background"
-                        : "text-muted-foreground hover:border-foreground/40 hover:text-foreground",
-                    )}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
+              <fieldset disabled={isPublishing}>
+                <legend className="mb-3 text-sm font-medium">Post type</legend>
+                <div className="flex flex-wrap gap-2">
+                  {postTypes.map((item) => (
+                    <label key={item.value} className="relative cursor-pointer">
+                      <input
+                        type="radio"
+                        name="post-type"
+                        value={item.value}
+                        checked={postType === item.value}
+                        onChange={() => setPostType(item.value)}
+                        className="peer sr-only"
+                      />
+                      <span className="inline-flex min-h-11 items-center rounded-md border border-input px-3.5 py-2 text-xs font-medium text-muted-foreground transition-colors peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ring peer-disabled:opacity-50">
+                        {item.label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
 
               <div className="mt-7">
                 <p className="text-sm font-semibold">{selectedType.hint}</p>
@@ -278,7 +274,7 @@ function PostComposerForm({
                   onChange={(event) => setBody(event.target.value)}
                   placeholder={placeholderFor(postType)}
                   rows={8}
-                  className="mt-4 min-h-48 w-full resize-y rounded-xl border border-border bg-transparent px-4 py-4 text-base leading-7 outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-ring"
+                  className="mt-4 min-h-48 w-full resize-y rounded-xl border border-border bg-transparent px-4 py-4 text-base leading-7 outline-none transition-colors placeholder:text-muted-foreground focus:border-ring"
                 />
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
                   <span>Markdown and code blocks are supported.</span>

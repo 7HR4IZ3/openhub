@@ -11,14 +11,14 @@ import {
 } from "@/components/posts/recent-post-feed";
 import { RecommendationsPanel } from "@/components/discovery/recommendations-panel";
 import { MagnifyingGlassIcon, CodeIcon } from "@radix-ui/react-icons";
-import { cn } from "@/lib/utils";
+import { SectionTabs } from "@/components/ui/section-tabs";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 const tabs = [
-  { label: "For you", mode: "recent" },
-  { label: "Following", mode: "following" },
-  { label: "Trending", mode: "trending" },
+  { label: "For you", value: "recent" },
+  { label: "Following", value: "following" },
+  { label: "Trending", value: "trending" },
 ] as const;
 export function HomeScreen({
   convexConfigured = false,
@@ -26,18 +26,12 @@ export function HomeScreen({
   convexConfigured?: boolean;
 }) {
   const [mode, setMode] = useState<PostFeedMode>("recent");
-  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   return (
     <CurationShell
       active="Home"
       eyebrow="home"
       title="Discover"
-      aside={
-        <>
-          {convexConfigured ? <RecommendationsPanel convexConfigured /> : null}
-          <CurationRail />
-        </>
-      }
+      aside={<CurationRail />}
     >
       <section className="page-section">
         <h2 className="editorial-title max-w-xl text-3xl sm:text-4xl">
@@ -57,71 +51,39 @@ export function HomeScreen({
           </span>
         </Link>
       </section>
-      <div
-        className="flex gap-6 border-b px-5 sm:px-8"
-        role="tablist"
-        aria-label="Home feed"
+      {convexConfigured ? (
+        <section className="border-b px-5 py-4 sm:px-8">
+          <details>
+            <summary className="cursor-pointer py-2 text-sm font-medium">
+              Recommended repositories
+            </summary>
+            <div className="pt-4">
+              <RecommendationsPanel convexConfigured />
+            </div>
+          </details>
+        </section>
+      ) : null}
+      <SectionTabs
+        label="Home feed"
+        items={tabs}
+        value={mode}
+        onChange={setMode}
       >
-        {tabs.map((tab, index) => (
-          <button
-            key={tab.mode}
-            ref={(node) => {
-              tabRefs.current[index] = node;
-            }}
-            type="button"
-            id={`feed-tab-${tab.mode}`}
-            role="tab"
-            aria-selected={mode === tab.mode}
-            aria-controls="feed-panel"
-            tabIndex={mode === tab.mode ? 0 : -1}
-            onClick={() => setMode(tab.mode)}
-            onKeyDown={(event) => {
-              const next =
-                event.key === "ArrowRight"
-                  ? (index + 1) % tabs.length
-                  : event.key === "ArrowLeft"
-                    ? (index + tabs.length - 1) % tabs.length
-                    : event.key === "Home"
-                      ? 0
-                      : event.key === "End"
-                        ? tabs.length - 1
-                        : null;
-              if (next !== null) {
-                event.preventDefault();
-                setMode(tabs[next].mode);
-                tabRefs.current[next]?.focus();
-              }
-            }}
-            className={cn(
-              "min-h-14 border-b-2 border-transparent text-sm text-muted-foreground transition-colors hover:text-foreground",
-              mode === tab.mode &&
-                "border-foreground font-semibold text-foreground",
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-      <section
-        id="feed-panel"
-        role="tabpanel"
-        aria-labelledby={`feed-tab-${mode}`}
-        tabIndex={0}
-        className="px-5 py-6 sm:px-8"
-      >
-        {convexConfigured ? (
-          <RecentPostFeed convexConfigured mode={mode} />
-        ) : (
-          <CurationEmptyState
-            icon={CodeIcon}
-            eyebrow="Public browsing is open"
-            title="Start with a repository."
-            body="The social feed is unavailable right now. You can still explore public repositories and read their source."
-            action="Explore repositories"
-            actionHref="/explore"
-          />
-        )}
-      </section>
+        <section className="px-5 py-6 sm:px-8">
+          {convexConfigured ? (
+            <RecentPostFeed convexConfigured mode={mode} />
+          ) : (
+            <CurationEmptyState
+              icon={CodeIcon}
+              eyebrow="Public browsing is open"
+              title="Start with a repository."
+              body="The social feed is unavailable right now. You can still explore public repositories and read their source."
+              action="Explore repositories"
+              actionHref="/explore"
+            />
+          )}
+        </section>
+      </SectionTabs>
     </CurationShell>
   );
 }

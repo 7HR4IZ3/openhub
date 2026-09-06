@@ -97,3 +97,7 @@ Repository saving uses the installed Radix dropdown primitive for keyboard navig
 The shared header now exposes account actions and keyboard-accessible appearance choices on mobile and desktop. Signed-out and missing-provider states remain safe; sign-out shows pending/error feedback. Removed the redundant home-level Convex provider because the root layout already supplies authentication and realtime context.
 
 Repository headers now use the same account menu, keeping theme switching and sign-out reachable while reading source. The menu also provides a mobile-accessible compose action.
+
+### Feed and composition accessibility
+
+Home now reuses the shared keyboard tab component. Recommended repositories are available through a content disclosure at every viewport, instead of disappearing with the desktop-only rail. Post type uses a labeled native radio group, matching its form semantics and supporting keyboard selection. Composer placeholders use the readable muted-text token.
