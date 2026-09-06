@@ -2,11 +2,17 @@
 
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
-import { useAction } from "convex/react";
+import { useAction, useQuery } from "convex/react";
 import { ArrowUpRight, Bot, Check, LoaderCircle, Map } from "lucide-react";
 import { useState } from "react";
 
 type AnalysisMode = "summary" | "diagram";
+type AnalysisCitation = {
+  path: string;
+  startLine: number;
+  endLine: number;
+  canonicalUrl: string;
+};
 
 export function RepositoryAnalyzer({
   owner,
@@ -22,6 +28,9 @@ export function RepositoryAnalyzer({
   convexConfigured: boolean;
 }) {
   const analyze = useAction(api.ai.analyzeRepository);
+  const [clock] = useState(() => Date.now());
+  const dayKey = new Date(clock).toISOString().slice(0, 10);
+  const usage = useQuery(api.ai.usage, convexConfigured ? { dayKey, now: clock } : "skip");
   const [mode, setMode] = useState<AnalysisMode>("summary");
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<Awaited<ReturnType<typeof analyze>> | null>(null);
@@ -48,10 +57,14 @@ export function RepositoryAnalyzer({
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#b45e3c]/10 text-[#9b4d31] dark:bg-[#e99970]/10 dark:text-[#e99970]"><Map className="h-4 w-4" /></div>
           <div>
             <h2 id="repository-analysis-heading" className="text-sm font-semibold">Read the codebase with AI</h2>
-            <p className="mt-1 max-w-xl text-xs leading-5 text-muted-foreground">OpenHub reads a small, commit-pinned set of public files and returns an explanation with file-level citations. It cannot edit or execute the repository.</p>
+            <p className="mt-1 max-w-xl text-xs leading-5 text-muted-foreground">OpenHub reads a small, commit-pinned set of public or authorized files and returns an explanation with file-level citations. It cannot edit or execute the repository.</p>
           </div>
         </div>
-        <span className="shrink-0 text-[10px] text-muted-foreground">Shared limit · 5 reads/day</span>
+        <span className="shrink-0 text-[10px] text-muted-foreground">
+          {usage
+            ? `${usage.plan === "pro" ? "Pro" : "Free"} · ${usage.dailyRequestsUsed}/${usage.dailyRequestLimit} reads today`
+            : "Free · 5 reads/day"}
+        </span>
       </div>
 
       {!convexConfigured ? <p className="mt-4 text-xs leading-5 text-muted-foreground">Connect Convex before repository analysis is available.</p> : (
@@ -64,7 +77,7 @@ export function RepositoryAnalyzer({
               <option value="summary">Orientation</option>
               <option value="diagram">Flow map</option>
             </select>
-            <Button type="button" size="sm" className="rounded-full" onClick={() => void submit()} disabled={pending}>
+            <Button type="button" size="sm" className="rounded-full" onClick={() => void submit()} disabled={pending || (usage !== null && usage !== undefined && usage.dailyRequestsUsed >= usage.dailyRequestLimit)}>
               {pending ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Bot className="h-3.5 w-3.5" />}
               {pending ? "Reading…" : "Analyze"}
             </Button>
@@ -78,7 +91,7 @@ export function RepositoryAnalyzer({
                 <span>Commit {answer.commitSha.slice(0, 7)}</span>
               </div>
               <div className="mt-4 flex flex-wrap gap-2" aria-label="Analysis citations">
-                {answer.citations.map((citation) => <a key={citation.path} href={`${citation.canonicalUrl}#L${citation.startLine}-L${citation.endLine}`} target="_blank" rel="noreferrer" className="inline-flex max-w-full items-center gap-1 rounded-md border border-black/[0.1] px-2.5 py-1.5 font-mono text-[10px] text-[#9b4d31] hover:border-[#b45e3c] hover:underline dark:border-white/[0.1] dark:text-[#e99970]"><span className="truncate">{citation.path}:L{citation.startLine}–L{citation.endLine}</span><ArrowUpRight className="h-3 w-3 shrink-0" /></a>)}
+                {answer.citations.map((citation: AnalysisCitation) => <a key={citation.path} href={`${citation.canonicalUrl}#L${citation.startLine}-L${citation.endLine}`} target="_blank" rel="noreferrer" className="inline-flex max-w-full items-center gap-1 rounded-md border border-black/[0.1] px-2.5 py-1.5 font-mono text-[10px] text-[#9b4d31] hover:border-[#b45e3c] hover:underline dark:border-white/[0.1] dark:text-[#e99970]"><span className="truncate">{citation.path}:L{citation.startLine}–L{citation.endLine}</span><ArrowUpRight className="h-3 w-3 shrink-0" /></a>)}
               </div>
               <p className="mt-4 text-[10px] leading-4 text-muted-foreground">Analysis is grounded in the selected commit. <a href={repositoryUrl} target="_blank" rel="noreferrer" className="font-semibold underline underline-offset-2">Open the original repository</a> to verify the source.</p>
             </div>

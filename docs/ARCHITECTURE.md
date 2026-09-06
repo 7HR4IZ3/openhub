@@ -8,7 +8,7 @@ GitHub, GitLab, Bitbucket, and other providers remain the source of truth for re
 - Social posts and comments
 - Follows, reactions, reposts, and bookmarks
 - Communities and lists
-- Repository references and cached metadata
+- Repository references and visibility-scoped cached metadata
 - OpenHub signals and recommendations
 - AI sessions and cited answers
 - Moderation records
@@ -98,15 +98,26 @@ Use two cache classes:
 
 ### Public cache
 
-Keyed by provider, repository, ref, path, and commit SHA. It may be reused for public users, subject to provider policies and freshness.
+Next.js provider responses and future provider-neutral cache rows may be reused
+for public users, subject to provider policies and freshness. The repository
+gateway uses commit/ref/path-shaped keys and conditional request metadata where
+the provider supports it.
 
 ### Authorized private cache
 
-Keyed by the OpenHub user and provider repository authorization. It must never be included in global search, public recommendations, public snippets, public AI context, or another user’s response.
+The Convex `repositoryCacheEntries` table keys private rows by the OpenHub user
+and provider repository authorization. It must never be included in global
+search, public recommendations, public snippets, public AI context, or another
+user's response. Private gateway calls are also bounded by a per-user provider
+request window and may serve only a short stale window after an upstream
+failure.
 
 Commit-addressed data is preferred because it gives stable citations.
 
-Use pagination, conditional provider requests, stale-while-revalidate behavior, and explicit cache expiry. Provider rate limits must be treated as a design constraint from the first milestone.
+Use pagination, conditional provider requests, stale-while-revalidate behavior,
+explicit cache expiry, and bounded payload sizes. Provider rate limits must be
+treated as a design constraint from the first milestone. Cache cleanup should be
+scheduled once the production Convex deployment is linked.
 
 ## 6. Convex modules
 
@@ -142,6 +153,11 @@ their own posts; deleted posts fail closed from every post access path. A
 source-backed post stores the selected snapshot, provider, original owner,
 repository, commit, path, line range, and canonical URL.
 
+The private repository gateway and AI repository context follow the same
+boundary: provider identity is revalidated against the encrypted user token,
+private responses are cached only in the user's scope, and AI receives only the
+authorized commit-pinned files selected by that gateway.
+
 ## 7. AI architecture
 
 Use the Convex agent component for AI threads, history, streaming, retries, and tool use. Repository explanations should use a retrieval layer that returns chunks with file path, line range, commit SHA, and provider URL.
@@ -155,7 +171,11 @@ AI tools should be read-only:
 - Compare commits
 - Read OpenHub discussion context when authorized
 
-AI must not edit or execute repository code.
+AI must not edit or execute repository code. OpenHub's free/pro entitlement
+policy is enforced in Convex before generation: free users receive a bounded
+daily request and input budget, while the subscription table is ready for a
+future billing provider. A manual subscription record is not itself a payment
+integration.
 
 ## 8. Realtime behavior
 

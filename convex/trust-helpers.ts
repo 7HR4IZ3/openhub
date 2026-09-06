@@ -9,7 +9,7 @@ export async function isPostSuppressed(
 ) {
   if (post.deletedAt !== undefined) return true;
   if (!(await canReadCommunityPost(ctx, post, viewerId))) return true;
-  if (post.moderationState !== undefined && post.authorId !== viewerId) return true;
+  if ((post.moderationState === "hidden" || post.moderationState === "removed") && post.authorId !== viewerId) return true;
   if (viewerId === null) return false;
 
   const blockedByViewer = await ctx.db.query("blocks")

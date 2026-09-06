@@ -1,6 +1,6 @@
 # OpenHub progress audit
 
-Date: 2026-09-05. Scope: conversation available in this session, local repository/history, GitHub branch and PR state, Linear issues, Vercel deployment metadata and browser access. This is not a claim to have retrieved every separate historical chat.
+Date: 2026-09-06. Scope: conversation available in this session, local repository/history, GitHub branch and PR state, Linear issues, Vercel deployment metadata and browser access. This is not a claim to have retrieved every separate historical chat.
 
 ## Overall assessment
 
@@ -12,7 +12,7 @@ Early implementation with several coherent vertical slices, not a completed plat
 | --- | --- | --- |
 | Planning | Product, architecture, security, data, UX and roadmap documents; Linear milestone/issues | Reconcile acceptance criteria with actual live flows |
 | Foundation | Next.js, TypeScript, shadcn, Convex Auth wiring, provider contracts, CI, health route | Cloud backend, OAuth and end-to-end acceptance |
-| Repository exploration | GitHub adapter, public search, file tree, read-only Monaco, refs/commits/issues/PRs/releases/license surfaces, encrypted authenticated private browsing | Live credential configuration, robust caching/rate limits, large repos, dependency/activity surfaces |
+| Repository exploration | GitHub adapter, public search, file tree, read-only Monaco, refs/commits/issues/PRs/releases/license surfaces, encrypted authenticated private browsing, user-scoped Convex cache and provider request windows | Live credential configuration, public cache cleanup, large repos, dependency/activity surfaces |
 | Source composer | Commit/line selection, server-verified public source/diff snapshots, attribution UI | Provider-equivalent verification, media and richer attachments |
 | Text/social backend | Authenticated post, reaction, bookmark, repost, comment/reply and notification handlers | Cloud deployment, integration tests, pagination, abuse controls, full UI parity |
 | Post detail | Source display and social controls exist | Full Markdown, Monaco embeds, quote UI, diffs and line discussions |
@@ -20,7 +20,7 @@ Early implementation with several coherent vertical slices, not a completed plat
 | Curation | Public/private lists, people/repository/topic/category follows, communities, membership, list target resolution | Private sharing/invitations and community post streams |
 | Feeds | Recent, following and trending post queries; evidence-backed repository recommendations | Full For You ranking, scheduled refresh, stronger diversity and negative feedback |
 | Trust | Reports, blocks, mutes, keyword filters, moderation actions/history, source verification | Automated/external moderation, appeals, deletion/export, secret/malware workflows |
-| AI/business/providers | Read-only cited source and bounded whole-repository analysis, shared quota, external task/bounty listings, aggregate maintainer analytics, public provider search adapters | Premium billing, ads, sponsorships, maintainer opt-in background scans, GitLab/Bitbucket verification |
+| AI/business/providers | Read-only cited source and bounded whole-repository analysis, public/private authorized context, free/pro entitlement boundary, external task/bounty listings, aggregate maintainer analytics, owner-managed sponsorship links, public provider search adapters | Premium billing, ads, promoted placements, maintainer opt-in background scans, GitLab/Bitbucket verification |
 
 Followers-only posts now consult the persisted person-follow graph; private posts remain author-only. Realtime refers to app updates/comments/notifications, not implemented direct messages. Task and bounty listings link to external issue/reward systems and do not constitute escrow.
 
@@ -41,6 +41,8 @@ Followers-only posts now consult the persisted person-follow graph; private post
 13. Repository analysis now samples a commit-pinned set of public files and returns bounded AI orientation/diagram answers with file citations.
 14. Maintainer endorsements now require the same-user encrypted GitHub token, immutable GitHub identity validation, and an `admin`/`maintain` permission check.
 15. User post edits and soft deletion are authorization-checked; deleted posts are suppressed from every post access path and mention rows are cleaned on edit/delete.
+16. Repository gateway responses now use user-scoped Convex caching, conditional requests, stale fallback, and bounded per-user GitHub request windows. Repository AI accepts private files only after immutable GitHub identity validation.
+17. Convex local development is scripted through the checked-in CLI binary, with a separate anonymous local backend path and explicit production-cloud configuration. The current execution environment could not finish downloading the local backend binary.
 
 Existing source rows, if any, are not automatically verified or migrated by this patch. Review/quarantine legacy snapshots before enabling a public backend. This audit did not access a deployed Convex database.
 
@@ -55,7 +57,7 @@ The user's three requested skills were read. Minimalist is the primary style. Se
 - Tests and browser verification were intentionally deferred for this implementation pass; no live Convex deployment or production OAuth flow is claimed.
 - These tests mock framework boundaries and GitHub responses; they are not deployed Convex integration tests or browser end-to-end tests.
 - Vercel deployment `dpl_7Y1fyLfz5sbw4QWtnhmBBPgdRfK2` was rechecked as READY. It predates these audit changes. Browser access to `/home` redirects to Vercel sign-in, so visual acceptance was not completed. No protection settings were changed.
-- Previous health evidence showed missing Convex and public GitHub configuration. The health route reports configuration presence, not an authenticated dependency probe. Live OAuth/backend functionality remains unverified.
+- Previous health evidence showed missing Convex and public GitHub configuration. The health route reports configuration presence, not an authenticated dependency probe. Live OAuth/backend functionality remains unverified. The local Convex CLI is present, but its backend-runtime download was blocked in this environment before `.env.local` could be generated.
 - The implementation branch is `main`; its local tip includes the current vertical slices and is ahead of the previously fetched `origin/main`. No live Convex deployment or production OAuth flow is claimed.
 - Linear status is synchronized after the implementation commit; milestone percentages remain planning indicators, not shipped-product claims.
 
@@ -74,8 +76,8 @@ The user's three requested skills were read. Minimalist is the primary style. Se
 ## Next implementation order
 
 1. Restore full validation in the authorized environment; run CI and review the audit patch before merging.
-2. Finish Convex deployment and GitHub OAuth configuration, then verify login, encrypted token storage, private browsing, profile bootstrap and text-post/comment flow end to end.
-3. Add provider-neutral verification adapters and production rate limits before widening source publication.
+2. Run `npm run dev:local` on a machine that can download the Convex local backend, or link a cloud deployment for production; then configure GitHub OAuth and verify login, encrypted token storage, private browsing, profile bootstrap and text-post/comment flow end to end.
+3. Add provider-neutral verification adapters and production cache cleanup/rate limits before widening source publication.
 4. Complete the minimalist component migration and browser acceptance on mobile/desktop in both themes.
 5. Finish premium entitlements, maintainer opt-in background scans, provider-equivalent verification, and provider expansion.
 

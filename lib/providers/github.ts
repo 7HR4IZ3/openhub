@@ -432,6 +432,8 @@ async function githubGraphQL<T>(
   query: string,
   variables: Record<string, string | number | null>,
 ) {
+  const owner = typeof variables.owner === "string" ? variables.owner.toLowerCase() : "search";
+  const name = typeof variables.name === "string" ? variables.name.toLowerCase() : "all";
   const response = await fetch(GITHUB_GRAPHQL_URL, {
     method: "POST",
     headers: {
@@ -441,10 +443,18 @@ async function githubGraphQL<T>(
       "User-Agent": "OpenHub",
     },
     body: JSON.stringify({ query, variables }),
-    cache: "no-store",
+    cache: "force-cache",
+    next: {
+      revalidate: query.includes("SearchRepositories") ? 60 : 120,
+      tags: [`github:repository:${owner}/${name}`],
+    },
   });
 
   if (!response.ok) {
+    const retryAfter = response.headers.get("retry-after");
+    if (response.status === 403 || response.status === 429) {
+      throw new Error(`GitHub rate limit reached${retryAfter ? `; retry after ${retryAfter} seconds` : ""}`);
+    }
     throw new Error(`GitHub API request failed with status ${response.status}`);
   }
 

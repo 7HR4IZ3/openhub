@@ -3,9 +3,11 @@ import { Agent } from "@convex-dev/agent";
 import { ConvexError, v } from "convex/values";
 import type { FunctionReference } from "convex/server";
 import type { Doc, Id } from "./_generated/dataModel";
-import { action, internalMutation } from "./_generated/server";
+import { action, internalMutation, internalQuery, query, type ActionCtx } from "./_generated/server";
 import { components, internal } from "./_generated/api";
 import { verifyPublicSource } from "./github-source";
+import { subscriptionPlan, subscriptionStatus } from "./billing-schema";
+import { decryptProviderToken } from "./provider-tokens";
 
 const modeValidator = v.union(v.literal("explain"), v.literal("summary"), v.literal("diagram"));
 const sourceInputValidator = v.object({
@@ -53,6 +55,15 @@ const repositoryResultValidator = v.object({
   citations: v.array(repositoryCitationValidator),
   filesIncluded: v.number(),
 });
+const usageValidator = v.object({
+  plan: v.union(v.literal("free"), v.literal("pro")),
+  dailyRequestLimit: v.number(),
+  dailyRequestsUsed: v.number(),
+  inputCharacterLimit: v.number(),
+  inputCharactersUsed: v.number(),
+  dayKey: v.string(),
+  resetAt: v.number(),
+});
 
 type AiResult = {
   threadId: string;
@@ -84,6 +95,16 @@ type QuotaRefs = {
   consumeQuota: FunctionReference<"mutation", "internal", { userId: Id<"users">; dayKey: string; inputCharacters: number }, boolean>;
 };
 const refs = internal.ai as unknown as QuotaRefs;
+type AuthRefs = {
+  providerTokenForUser: FunctionReference<"query", "internal", { userId: Id<"users"> }, { login: string; providerUserId: string; encryptedTokenRef: string } | null>;
+};
+const authRefs = internal.auth as unknown as AuthRefs;
+
+const FREE_DAILY_REQUEST_LIMIT = 5;
+const PRO_DAILY_REQUEST_LIMIT = 100;
+const FREE_INPUT_CHARACTER_LIMIT = 100_000;
+const PRO_INPUT_CHARACTER_LIMIT = 2_000_000;
+const MAX_AI_INPUT_CHARACTER_LIMIT = PRO_INPUT_CHARACTER_LIMIT;
 
 const repositoryGuide = new Agent(components.agent, {
   name: "OpenHub repository guide",
@@ -95,9 +116,15 @@ export const consumeQuota = internalMutation({
   args: { userId: v.id("users"), dayKey: v.string(), inputCharacters: v.number() },
   returns: v.boolean(),
   handler: async (ctx, args) => {
-    if (!Number.isInteger(args.inputCharacters) || args.inputCharacters < 0 || args.inputCharacters > 100_000) throw new ConvexError("AI input is too large");
+    if (!Number.isInteger(args.inputCharacters) || args.inputCharacters < 0 || args.inputCharacters > MAX_AI_INPUT_CHARACTER_LIMIT) throw new ConvexError("AI input is too large");
+    const subscription = await ctx.db
+      .query("subscriptions")
+      .withIndex("by_user_updated_at", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .first();
+    const limits = limitsForSubscription(subscription, Date.now());
     const existing = await ctx.db.query("aiUsage").withIndex("by_user_day", (q) => q.eq("userId", args.userId).eq("dayKey", args.dayKey)).unique();
-    if (existing && existing.requestCount >= 5) return false;
+    if (existing && (existing.requestCount >= limits.dailyRequestLimit || existing.inputCharacters + args.inputCharacters > limits.inputCharacterLimit)) return false;
     const now = Date.now();
     if (existing) {
       await ctx.db.patch(existing._id, { requestCount: existing.requestCount + 1, inputCharacters: existing.inputCharacters + args.inputCharacters, updatedAt: now });
@@ -105,6 +132,86 @@ export const consumeQuota = internalMutation({
       await ctx.db.insert("aiUsage", { userId: args.userId, dayKey: args.dayKey, requestCount: 1, inputCharacters: args.inputCharacters, updatedAt: now });
     }
     return true;
+  },
+});
+
+export const entitlementForUser = internalQuery({
+  args: { userId: v.id("users"), now: v.number() },
+  returns: v.object({ plan: v.union(v.literal("free"), v.literal("pro")), dailyRequestLimit: v.number(), inputCharacterLimit: v.number() }),
+  handler: async (ctx, args) => {
+    const subscription = await ctx.db
+      .query("subscriptions")
+      .withIndex("by_user_updated_at", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .first();
+    return limitsForSubscription(subscription, args.now);
+  },
+});
+
+export const usage = query({
+  args: { dayKey: v.string(), now: v.number() },
+  returns: v.union(usageValidator, v.null()),
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) return null;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(args.dayKey) || !Number.isFinite(args.now)) {
+      throw new ConvexError("AI usage window is invalid");
+    }
+    const subscription = await ctx.db
+      .query("subscriptions")
+      .withIndex("by_user_updated_at", (q) => q.eq("userId", userId))
+      .order("desc")
+      .first();
+    const limits = limitsForSubscription(subscription, args.now);
+    const existing = await ctx.db
+      .query("aiUsage")
+      .withIndex("by_user_day", (q) => q.eq("userId", userId).eq("dayKey", args.dayKey))
+      .unique();
+    return {
+      plan: limits.plan,
+      dailyRequestLimit: limits.dailyRequestLimit,
+      dailyRequestsUsed: existing?.requestCount ?? 0,
+      inputCharacterLimit: limits.inputCharacterLimit,
+      inputCharactersUsed: existing?.inputCharacters ?? 0,
+      dayKey: args.dayKey,
+      resetAt: nextUtcDay(args.dayKey),
+    };
+  },
+});
+
+export const upsertSubscription = internalMutation({
+  args: {
+    userId: v.id("users"),
+    plan: subscriptionPlan,
+    status: subscriptionStatus,
+    externalCustomerId: v.optional(v.string()),
+    externalSubscriptionId: v.optional(v.string()),
+    currentPeriodEndsAt: v.optional(v.number()),
+  },
+  returns: v.id("subscriptions"),
+  handler: async (ctx, args) => {
+    if (await ctx.db.get(args.userId) === null) throw new ConvexError("User is not available");
+    const existing = await ctx.db
+      .query("subscriptions")
+      .withIndex("by_user_updated_at", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .first();
+    const now = Date.now();
+    const value = {
+      userId: args.userId,
+      provider: "manual" as const,
+      plan: args.plan,
+      status: args.status,
+      ...(args.externalCustomerId === undefined ? {} : { externalCustomerId: args.externalCustomerId }),
+      ...(args.externalSubscriptionId === undefined ? {} : { externalSubscriptionId: args.externalSubscriptionId }),
+      ...(args.currentPeriodEndsAt === undefined ? {} : { currentPeriodEndsAt: args.currentPeriodEndsAt }),
+      updatedAt: now,
+    } as const;
+    if (existing) {
+      await ctx.db.patch(existing._id, value);
+      return existing._id;
+    }
+    return await ctx.db.insert("subscriptions", { ...value, createdAt: now });
   },
 });
 
@@ -146,7 +253,7 @@ export const analyzeRepository = action({
   handler: async (ctx, args): Promise<RepositoryAnalysisResult> => {
     const userId = await getAuthUserId(ctx);
     if (userId === null) throw new ConvexError("Sign in required for repository analysis");
-    const context = await loadRepositoryContext(args.owner, args.name, args.ref);
+    const context = await loadRepositoryContext(ctx, userId, args.owner, args.name, args.ref);
     const question = (args.question ?? "").trim().slice(0, 2_000);
     const inputCharacters = context.prompt.length + question.length;
     const dayKey = new Date().toISOString().slice(0, 10);
@@ -177,6 +284,20 @@ function buildPrompt(mode: "explain" | "summary" | "diagram", question: string, 
   return `${task}\n\nUser question: ${question || "What should I understand first?"}\n\nTrusted citation: ${source.repositoryFullName}/${source.path} at commit ${source.commitSha}, lines ${source.startLine}-${source.endLine}.\n\nSource:\n${source.sourceSnapshot}`;
 }
 
+function limitsForSubscription(subscription: Doc<"subscriptions"> | null, now: number) {
+  const premium = subscription !== null && subscription.plan === "pro" &&
+    (subscription.status === "active" || subscription.status === "canceled") &&
+    (subscription.currentPeriodEndsAt === undefined || subscription.currentPeriodEndsAt > now);
+  return premium
+    ? { plan: "pro" as const, dailyRequestLimit: PRO_DAILY_REQUEST_LIMIT, inputCharacterLimit: PRO_INPUT_CHARACTER_LIMIT }
+    : { plan: "free" as const, dailyRequestLimit: FREE_DAILY_REQUEST_LIMIT, inputCharacterLimit: FREE_INPUT_CHARACTER_LIMIT };
+}
+
+function nextUtcDay(dayKey: string) {
+  const date = new Date(`${dayKey}T00:00:00.000Z`);
+  return date.getTime() + 86_400_000;
+}
+
 type RepositoryContext = {
   owner: string;
   name: string;
@@ -190,16 +311,26 @@ type RepositoryContext = {
   }>;
 };
 
-async function loadRepositoryContext(owner: string, name: string, ref: string): Promise<RepositoryContext> {
+async function loadRepositoryContext(ctx: ActionCtx, userId: Id<"users">, owner: string, name: string, ref: string): Promise<RepositoryContext> {
   validateRepositorySegment(owner, "owner");
   validateRepositorySegment(name, "repository");
   const safeRef = validateRepositoryRef(ref);
-  const token = process.env.GITHUB_PUBLIC_TOKEN?.trim();
-  if (!token) throw new ConvexError("Public GitHub access is not configured for repository analysis");
+  const account = await ctx.runQuery(authRefs.providerTokenForUser, { userId });
+  const connectedToken = account === null ? null : await decryptProviderToken(account.encryptedTokenRef);
+  const token = connectedToken ?? process.env.GITHUB_PUBLIC_TOKEN?.trim();
+  if (!token) throw new ConvexError("GitHub access is not configured for repository analysis");
+  if (connectedToken && account) {
+    const identity = record(await githubJson(connectedToken, "/user"));
+    const identityId = typeof identity.id === "number" ? String(identity.id) : typeof identity.id === "string" ? identity.id : null;
+    const identityLogin = typeof identity.login === "string" ? identity.login : null;
+    if (identityId !== account.providerUserId || identityLogin?.toLowerCase() !== account.login.toLowerCase()) {
+      throw new ConvexError("GitHub identity validation failed");
+    }
+  }
 
   const repository = record(await githubJson(token, `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`));
-  if (repository.private === true || repository.disabled === true || repository.visibility !== "public") {
-    throw new ConvexError("Only public GitHub repositories can be analyzed");
+  if (repository.disabled === true || (repository.private === true && connectedToken === null) || (repository.private !== true && repository.visibility !== "public")) {
+    throw new ConvexError("This GitHub repository is not available for your connected account");
   }
   const commit = record(await githubJson(token, `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}/commits/${encodeURIComponent(safeRef)}`));
   const commitSha = typeof commit.sha === "string" && /^[a-f0-9]{40}$/i.test(commit.sha) ? commit.sha : null;

@@ -8,7 +8,6 @@ deployment and OAuth application are connected.
 
 - Node.js 20.9 or newer
 - npm
-- A signed-in Convex account and development deployment
 - A GitHub OAuth App owned by the OpenHub operator
 
 ## Install and run the shell
@@ -44,17 +43,29 @@ With this value configured:
 - Directory links load the corresponding tree.
 - File links open a commit-resolved, read-only Monaco view.
 
-## Link Convex
+## Run Convex locally
 
-From the repository root, run:
+OpenHub uses the checked-in Convex CLI binary and an anonymous local Convex
+backend for development. This does not create a cloud project or require a
+Convex account. The first run downloads the local backend runtime, generates
+`convex/_generated/`, and writes `.env.local`.
 
 ```bash
-npx convex dev
+npm run dev:local
 ```
 
-The CLI links or creates a development deployment and writes the generated local
-environment values. Keep `.env.local` private. Once linked, regenerate the
-checked-in Convex client types and functions with the same command.
+For separate terminals, start the backend with `npm run convex:local`, then run
+`npm run prepare:convex` if needed and start the frontend with `npm run
+dev:frontend`. `.env.local` is private and is not committed.
+
+If the local backend binary cannot be downloaded, the CLI will stop before it
+can write `CONVEX_URL`; this is an environment/network limitation, not a valid
+local deployment. Keep the code generation step on hold until the binary is
+available, or authenticate a cloud deployment for production setup.
+
+The local backend is intentionally separate from production. Vercel cannot use
+the anonymous local URL; production will need a real Convex deployment and
+`NEXT_PUBLIC_CONVEX_URL` configured in Vercel.
 
 Set the following variables on the Convex deployment, not in committed files:
 
@@ -98,7 +109,7 @@ GitHub credential; it never returns secret values.
 ## Current external setup blockers
 
 1. Authenticate a Convex account, create/link the OpenHub cloud deployment,
-   and regenerate `_generated/`.
+   and regenerate `_generated/` with `node_modules/.bin/convex deploy`.
 2. Create the GitHub OAuth App and set its credentials on Convex.
 3. Configure `OPENHUB_TOKEN_ENCRYPTION_KEY` before enabling private repository
    browsing; do not expose raw tokens or enable provider write operations.

@@ -31,6 +31,18 @@ import { type FormEvent, useState } from "react";
 import { Input } from "@/components/ui/input";
 
 type Profile = Doc<"profiles">;
+export type RepositoryCardData = {
+  _id: string;
+  ownerLogin: string;
+  name: string;
+  fullName: string;
+  description: string | null;
+  primaryLanguage: string | null;
+  stars: number;
+  forks: number;
+  licenseSpdxId: string | null;
+  topics: string[];
+};
 
 export function ProfileScreen({ convexConfigured }: { convexConfigured: boolean }) {
   if (!convexConfigured) {
@@ -181,7 +193,7 @@ function ProfileContent({ profile }: { profile: Profile }) {
             </div>
           ) : (
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {repositories.map((repository) => <RepositoryCard key={repository._id} repository={repository} />)}
+              {repositories.map((repository: RepositoryCardData) => <RepositoryCard key={repository._id} repository={repository} />)}
             </div>
           )}
         </section>
@@ -282,20 +294,7 @@ function ProfileHero({ profile, githubUrl, onEdit }: { profile: Profile; githubU
 
 export function RepositoryCard({
   repository,
-}: {
-  repository: {
-    _id: string;
-    ownerLogin: string;
-    name: string;
-    fullName: string;
-    description: string | null;
-    primaryLanguage: string | null;
-    stars: number;
-    forks: number;
-    licenseSpdxId: string | null;
-    topics: string[];
-  };
-}) {
+}: { repository: RepositoryCardData }) {
   return (
     <Link href={`/repos/${encodeURIComponent(repository.ownerLogin)}/${encodeURIComponent(repository.name)}`} className="group rounded-2xl border border-black/[0.08] p-5 transition-colors hover:border-[#b45e3c]/60 dark:border-white/[0.08] dark:hover:border-[#e99970]/60">
       <div className="flex items-start justify-between gap-3">

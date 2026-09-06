@@ -33,8 +33,19 @@ OpenHub-specific biography, interests, portfolio links, availability, featured r
 Normalized provider repository metadata: provider, provider repository ID, an
 optional private owner user ID, owner, name, URL, visibility, default branch,
 description, language, topics, license, stars, forks, open issues, and fetch
-timestamps. Repository files and trees are currently read live through provider
-adapters; no general repository snapshot/file cache table is enabled yet.
+timestamps. Repository files and trees are read through provider adapters and
+may be cached in `repositoryCacheEntries`.
+
+### `repositoryCacheEntries` and `providerRateLimits`
+
+`repositoryCacheEntries` stores bounded GitHub repository, commit, tree, and
+file responses. Public cache rows use a public scope; private rows use an
+OpenHub-user scope and carry the owning user ID. Cache keys include provider,
+repository, kind, ref, and path, with optional commit and conditional-request
+metadata. Private rows are never read by public discovery, recommendations,
+source publication, or another user's response. `providerRateLimits` keeps a
+per-scope request window so an authorized repository gateway fails closed before
+it overwhelms GitHub.
 
 ### `repositorySignals`
 
@@ -134,8 +145,8 @@ Every frequently filtered or ordered access path needs an index. Examples:
 - Comments by post and creation time
 - Follows by actor and target
 - Bookmarks by user and target
-- Repository snapshots by repository and commit
-- Files by snapshot and path
+- Repository cache entries by scope, repository, kind, ref, and path
+- Provider request windows by scope and provider
 - Notifications by recipient and read state
 - Reports by status and creation time
 

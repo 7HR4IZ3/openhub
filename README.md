@@ -45,14 +45,16 @@ Each milestone must leave the app buildable, type-safe, mobile-usable, and deplo
 
 ## Local setup
 
-Requirements: Node.js 20.9 or newer, npm, and a Convex deployment for authenticated development.
+Requirements: Node.js 20.9 or newer and npm. Use the anonymous local Convex
+backend for development, or a linked cloud deployment when validating
+production authentication.
 
 ```bash
 npm install
 npm run dev:frontend
 ```
 
-Copy `.env.example` to `.env.local`. Set `GITHUB_PUBLIC_TOKEN` to enable server-side public repository search and browsing. Set `NEXT_PUBLIC_CONVEX_URL` when a Convex deployment is available. GitHub OAuth credentials and callback setup are documented in [Setup](docs/SETUP.md) and [Architecture](docs/ARCHITECTURE.md). Run `npm run typecheck`, `npm run lint`, and `npm run build` before opening a change.
+Copy `.env.example` to `.env.local` when you need provider credentials. Run `npm run dev:local` to start the checked-in local Convex binary/backend and Next.js together. Set `GITHUB_PUBLIC_TOKEN` to enable server-side public repository search and browsing. Production uses a cloud Convex deployment and `NEXT_PUBLIC_CONVEX_URL`. GitHub OAuth credentials and callback setup are documented in [Setup](docs/SETUP.md) and [Architecture](docs/ARCHITECTURE.md). Run `npm run typecheck`, `npm run lint`, and `npm run build` before opening a change.
 
 ## Repository exploration slice
 

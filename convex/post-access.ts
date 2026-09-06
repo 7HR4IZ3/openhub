@@ -7,7 +7,7 @@ export function canViewPost(
   userId: Id<"users"> | null,
 ) {
   if (post.deletedAt !== undefined) return false;
-  if (post.moderationState !== undefined && post.authorId !== userId) return false;
+  if ((post.moderationState === "hidden" || post.moderationState === "removed") && post.authorId !== userId) return false;
   if (post.communityId !== undefined && post.authorId !== userId) return false;
   if (post.visibility === "public") return true;
 
@@ -23,7 +23,7 @@ export async function canViewPostWithContext(
   userId: Id<"users"> | null,
 ) {
   if (post.deletedAt !== undefined) return false;
-  if (post.moderationState !== undefined && post.authorId !== userId) return false;
+  if ((post.moderationState === "hidden" || post.moderationState === "removed") && post.authorId !== userId) return false;
   if (post.communityId !== undefined && !(await canReadCommunityPost(ctx, post, userId))) return false;
   if (post.visibility === "public") return true;
   if (userId === null) return false;

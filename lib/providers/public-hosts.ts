@@ -320,14 +320,18 @@ async function bitbucketJson<T>(path: string): Promise<T> { return requestJson<T
 async function codebergJson<T>(path: string): Promise<T> { return requestJson<T>(`https://codeberg.org/api/v1${path}`); }
 
 async function requestJson<T>(url: string): Promise<T> {
-  const response = await fetch(url, { headers: { Accept: "application/json", "User-Agent": "OpenHub" }, redirect: "error", signal: AbortSignal.timeout(10_000), cache: "no-store" });
-  if (!response.ok) throw new Error(`Provider request failed with status ${response.status}`);
+  const response = await fetch(url, { headers: { Accept: "application/json", "User-Agent": "OpenHub" }, redirect: "error", signal: AbortSignal.timeout(10_000), cache: "force-cache", next: { revalidate: 120 } });
+  if (!response.ok) {
+    const retryAfter = response.headers.get("retry-after");
+    if (response.status === 403 || response.status === 429) throw new Error(`Provider rate limit reached${retryAfter ? `; retry after ${retryAfter} seconds` : ""}`);
+    throw new Error(`Provider request failed with status ${response.status}`);
+  }
   const raw = await response.text(); if (raw.length > 1_000_000) throw new Error("Provider response is too large"); return JSON.parse(raw) as T;
 }
 
 async function tryRaw(url: string) {
   try {
-    const response = await fetch(url, { headers: { Accept: "text/plain, application/json", "User-Agent": "OpenHub" }, redirect: "error", signal: AbortSignal.timeout(10_000), cache: "no-store" });
+    const response = await fetch(url, { headers: { Accept: "text/plain, application/json", "User-Agent": "OpenHub" }, redirect: "error", signal: AbortSignal.timeout(10_000), cache: "force-cache", next: { revalidate: 86_400 } });
     if (!response.ok) return null;
     return { contentType: response.headers.get("content-type") ?? "", text: () => response.text() };
   } catch { return null; }
@@ -357,4 +361,3 @@ function isPullRequest(value: RepositoryPullRequest | RepositoryIssue | null): v
 function isRelease(value: RepositoryRelease | null): value is RepositoryRelease { return value !== null; }
 function isContributor(value: RepositoryContributor | null): value is RepositoryContributor { return value !== null; }
 function isRef(value: RepositoryRef | null): value is RepositoryRef { return value !== null; }
-

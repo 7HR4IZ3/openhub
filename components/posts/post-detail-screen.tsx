@@ -557,7 +557,7 @@ function SafetyControls({
   postId: Id<"posts">;
   authorId: Id<"users">;
   isAuthor: boolean;
-  moderationState?: "hidden" | "removed";
+  moderationState?: "visible" | "hidden" | "removed";
 }) {
   const createReport = useMutation(api.trust.createReport);
   const setBlock = useMutation(api.trust.setBlock);
@@ -569,6 +569,7 @@ function SafetyControls({
   const [details, setDetails] = useState("");
   const [notice, setNotice] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const isModerated = moderationState === "hidden" || moderationState === "removed";
 
   async function act(callback: () => Promise<unknown>, message: string) {
     setPending(true); setNotice(null);
@@ -580,7 +581,7 @@ function SafetyControls({
       <button type="button" className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs text-muted-foreground hover:bg-black/[0.05] hover:text-foreground dark:hover:bg-white/[0.06]" onClick={() => setOpen((value) => !value)} aria-expanded={open}><MoreHorizontal className="h-4 w-4" /><span className="sr-only">Post safety actions</span></button>
       {open ? <div className="mt-2 w-full max-w-sm rounded-2xl border border-black/[0.1] bg-[#f7f7f4] p-3 dark:border-white/[0.1] dark:bg-[#111310]">
         <div className="flex flex-wrap gap-2">
-          {!isAuthor ? <><Button type="button" variant="outline" size="sm" className="rounded-full" disabled={pending} onClick={() => void act(() => setMute({ target: { kind: "person", userId: authorId }, muted: true }), "Author muted") }><VolumeX className="h-3.5 w-3.5" />Mute</Button><Button type="button" variant="outline" size="sm" className="rounded-full" disabled={pending} onClick={() => void act(() => setBlock({ blockedUserId: authorId, blocked: true }), "Author blocked") }><Ban className="h-3.5 w-3.5" />Block</Button><Button type="button" variant="outline" size="sm" className="rounded-full" disabled={pending} onClick={() => setReporting((value) => !value)}><ShieldCheck className="h-3.5 w-3.5" />Report</Button></> : <Button type="button" variant="outline" size="sm" className="rounded-full" disabled={pending} onClick={() => void act(() => moderatePost({ postId, action: moderationState ? "restore" : "hide", reason: "Author safety control" }), moderationState ? "Post restored" : "Post hidden")}>{moderationState ? "Restore post" : "Hide post"}</Button>}
+          {!isAuthor ? <><Button type="button" variant="outline" size="sm" className="rounded-full" disabled={pending} onClick={() => void act(() => setMute({ target: { kind: "person", userId: authorId }, muted: true }), "Author muted") }><VolumeX className="h-3.5 w-3.5" />Mute</Button><Button type="button" variant="outline" size="sm" className="rounded-full" disabled={pending} onClick={() => void act(() => setBlock({ blockedUserId: authorId, blocked: true }), "Author blocked") }><Ban className="h-3.5 w-3.5" />Block</Button><Button type="button" variant="outline" size="sm" className="rounded-full" disabled={pending} onClick={() => setReporting((value) => !value)}><ShieldCheck className="h-3.5 w-3.5" />Report</Button></> : <Button type="button" variant="outline" size="sm" className="rounded-full" disabled={pending} onClick={() => void act(() => moderatePost({ postId, action: isModerated ? "restore" : "hide", reason: "Author safety control" }), isModerated ? "Post restored" : "Post hidden")}>{isModerated ? "Restore post" : "Hide post"}</Button>}
         </div>
         {reporting ? <form className="mt-3 border-t border-black/[0.08] pt-3 dark:border-white/[0.08]" onSubmit={(event) => { event.preventDefault(); void act(() => createReport({ target: { kind: "post", postId }, reason, details }), "Report submitted"); }}><label className="block text-xs font-semibold">Reason<select value={reason} onChange={(event) => setReason(event.target.value as typeof reason)} className="mt-2 h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"><option value="spam">Spam</option><option value="harassment">Harassment</option><option value="hate">Hate</option><option value="sexual">Sexual content</option><option value="malware">Malware or unsafe code</option><option value="copyright">Copyright</option><option value="privacy">Privacy</option><option value="other">Other</option></select></label><textarea value={details} onChange={(event) => setDetails(event.target.value)} maxLength={2000} rows={3} placeholder="Add context for the review (optional)" className="mt-3 w-full resize-y rounded-md border border-input bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-1 focus-visible:ring-ring" /><Button type="submit" size="sm" className="mt-3 rounded-full" disabled={pending}>{pending ? "Submitting…" : "Submit report"}</Button></form> : null}
         {notice ? <p role="status" className="mt-3 text-xs text-muted-foreground">{notice}</p> : null}

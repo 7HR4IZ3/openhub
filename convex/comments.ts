@@ -28,7 +28,7 @@ const commentValidator = v.object({
   createdAt: v.number(),
   updatedAt: v.number(),
   likeCount: v.number(),
-  moderationState: v.optional(v.union(v.literal("hidden"), v.literal("removed"))),
+  moderationState: v.optional(v.union(v.literal("visible"), v.literal("hidden"), v.literal("removed"))),
 });
 
 const commentAuthorValidator = v.object({
@@ -87,7 +87,7 @@ export const list = query({
                 .lt("createdAt", args.before as number),
             );
     const comments = await commentsQuery.order("desc").take(limit);
-    return await Promise.all(comments.filter((comment) => comment.moderationState === undefined).map((comment) => toCommentView(ctx, comment)));
+    return await Promise.all(comments.filter((comment) => !isCommentSuppressed(comment)).map((comment) => toCommentView(ctx, comment)));
   },
 });
 
@@ -104,7 +104,7 @@ export const listPage = query({
       .withIndex("by_post_status_created_at", (q) => q.eq("postId", args.postId).eq("status", "visible"))
       .order("desc")
       .paginate(boundedPagination(args.paginationOpts));
-    const visible = result.page.filter((comment) => comment.moderationState === undefined);
+    const visible = result.page.filter((comment) => !isCommentSuppressed(comment));
     return {
       page: await Promise.all(visible.map((comment) => toCommentView(ctx, comment))),
       isDone: result.isDone,
@@ -136,7 +136,8 @@ export const create = mutation({
       if (
         parent === null ||
         parent.postId !== post._id ||
-        parent.status !== "visible"
+        parent.status !== "visible" ||
+        isCommentSuppressed(parent)
       ) {
         throw new Error("Reply target is not available");
       }
@@ -184,7 +185,7 @@ export const update = mutation({
     const userId = await getAuthUserId(ctx);
     if (userId === null) throw new Error("Not signed in");
     const comment = await ctx.db.get(args.commentId);
-    if (comment === null || comment.status !== "visible" || comment.moderationState !== undefined) throw new Error("Comment is not available");
+    if (comment === null || comment.status !== "visible" || isCommentSuppressed(comment)) throw new Error("Comment is not available");
     if (comment.authorId !== userId) throw new Error("Only the author can edit this comment");
     assertCommentBody(args.body);
     await ctx.db.patch(comment._id, { body: args.body, updatedAt: Date.now() });
@@ -268,6 +269,10 @@ async function toCommentView(
             avatarUrl: profile.avatarUrl ?? null,
           },
   };
+}
+
+function isCommentSuppressed(comment: Doc<"comments">) {
+  return comment.moderationState === "hidden" || comment.moderationState === "removed";
 }
 
 function clampLimit(value: number | undefined) {

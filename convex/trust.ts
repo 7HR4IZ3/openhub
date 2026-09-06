@@ -361,7 +361,7 @@ export const moderatePost = mutation({
     if (!post || !await canModeratePost(ctx, post, userId)) throw new ConvexError("Moderation permission required");
     const reason = clean(args.reason, 500);
     if (args.action === "restore") {
-      await ctx.db.patch(post._id, { moderationState: undefined });
+      await ctx.db.patch(post._id, { moderationState: "visible" });
     } else {
       await ctx.db.patch(post._id, { moderationState: args.action === "remove" ? "removed" : "hidden" });
     }
@@ -393,7 +393,7 @@ export const moderateComment = mutation({
     }
     const reason = clean(args.reason, 500);
     if (args.action === "restore") {
-      await ctx.db.patch(comment._id, { moderationState: undefined });
+      await ctx.db.patch(comment._id, { moderationState: "visible" });
     } else {
       await ctx.db.patch(comment._id, { moderationState: args.action === "remove" ? "removed" : "hidden" });
     }

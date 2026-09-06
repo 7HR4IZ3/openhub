@@ -50,7 +50,7 @@ public metadata, directory navigation, commit-resolved Monaco viewing,
 branch/tag selection, commit history, issues, pull requests, releases,
 contributors, license context, and authenticated private file browsing. The
 remaining M1 blockers are Convex cloud deployment, live OAuth configuration,
-rate-aware caching, and dependency/activity surfaces.
+provider-neutral public caching, and dependency/activity surfaces.
 
 ### Scope
 
@@ -243,9 +243,10 @@ Users can learn from repositories with cited explanations and visual architectur
 
 The Convex Agent component and Vercel AI SDK are wired for a read-only source
 guide and bounded repository orientation. Explain, summary, and Mermaid diagram
-modes re-verify public source and return commit/file/line citations with a
-shared free quota. Premium entitlements, diff/commit summaries, and maintainer
-opt-in background analysis remain open.
+modes re-verify source and return commit/file/line citations. Repository
+analysis accepts public files or files authorized through the user's encrypted
+GitHub token. Daily free/pro entitlements are enforced in Convex; billing,
+diff/commit summaries, and maintainer opt-in background analysis remain open.
 
 ### Acceptance criteria
 
@@ -274,10 +275,11 @@ Maintainers and organizations can measure discovery and responsibly monetize att
 
 ### Progress
 
-External-link task/bounty listings and a privacy-conscious aggregate maintainer
-analytics slice are implemented. Stripe subscriptions, sponsorship links,
-ads, promoted placements, and organization-level permission verification remain
-open.
+External-link task/bounty listings, a privacy-conscious aggregate maintainer
+analytics slice, and owner-managed HTTPS sponsorship links are implemented. The
+subscription entitlement boundary is ready for billing, while Stripe
+subscriptions, ads, promoted placements, and organization-level permission
+verification remain open.
 
 ### Acceptance criteria
 
@@ -300,7 +302,7 @@ OpenHub expands beyond GitHub and becomes reliable for mobile-first browsing at 
 - Capability matrix
 - Cross-provider search
 - Full-text file and symbol index
-- Cache tuning
+- Provider-scoped cache tuning and cleanup
 - Mobile performance pass
 - Native mobile application discovery
 

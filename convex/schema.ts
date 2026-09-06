@@ -7,6 +7,9 @@ import { trustTables } from "./trust-schema";
 import { reputationTables } from "./reputation-schema";
 import { bountyTables } from "./bounty-schema";
 import { analyticsTables } from "./analytics-schema";
+import { repositoryCacheTables } from "./repository-cache-schema";
+import { billingTables } from "./billing-schema";
+import { businessTables } from "./business-schema";
 
 export default defineSchema({
   ...authTables,
@@ -16,6 +19,9 @@ export default defineSchema({
   ...reputationTables,
   ...bountyTables,
   ...analyticsTables,
+  ...repositoryCacheTables,
+  ...billingTables,
+  ...businessTables,
   aiUsage: defineTable({
     userId: v.id("users"),
     dayKey: v.string(),
@@ -142,7 +148,7 @@ export default defineSchema({
     communityId: v.optional(v.id("communities")),
     quoteOfId: v.optional(v.id("posts")),
     deletedAt: v.optional(v.number()),
-    moderationState: v.optional(v.union(v.literal("hidden"), v.literal("removed"))),
+    moderationState: v.optional(v.union(v.literal("visible"), v.literal("hidden"), v.literal("removed"))),
     visibility: v.union(
       v.literal("public"),
       v.literal("followers"),
@@ -191,7 +197,7 @@ export default defineSchema({
     parentId: v.optional(v.id("comments")),
     body: v.string(),
     status: v.union(v.literal("visible"), v.literal("deleted")),
-    moderationState: v.optional(v.union(v.literal("hidden"), v.literal("removed"))),
+    moderationState: v.optional(v.union(v.literal("visible"), v.literal("hidden"), v.literal("removed"))),
     createdAt: v.number(),
     updatedAt: v.number(),
     likeCount: v.number(),

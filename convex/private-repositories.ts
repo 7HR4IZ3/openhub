@@ -1,6 +1,8 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
-import { ConvexError, v } from "convex/values";
-import { action } from "./_generated/server";
+import { ConvexError, v, type Infer } from "convex/values";
+import type { FunctionReference } from "convex/server";
+import type { Doc, Id } from "./_generated/dataModel";
+import { action, type ActionCtx } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { decryptProviderToken } from "./provider-tokens";
 
@@ -17,10 +19,28 @@ const entryValidator = v.object({ name: v.string(), path: v.string(), kind: v.un
 const fileValidator = v.object({ path: v.string(), commitSha: v.string(), oid: v.string(), text: v.string(), byteSize: v.union(v.number(), v.null()) });
 const resultValidator = v.object({ repository: repositoryValidator, sourceRef: v.string(), treePath: v.string(), entries: v.array(entryValidator), file: v.union(fileValidator, v.null()) });
 
+type CacheRefs = {
+  get: FunctionReference<"query", "internal", {
+    scopeKey: string; provider: "github"; repositoryFullName: string;
+    kind: "repository" | "commit" | "tree" | "file"; ref: string; pathKey: string;
+  }, Doc<"repositoryCacheEntries"> | null>;
+  put: FunctionReference<"mutation", "internal", {
+    scopeKey: string; ownerUserId?: Id<"users">; provider: "github";
+    repositoryFullName: string; kind: "repository" | "commit" | "tree" | "file";
+    ref: string; pathKey: string; commitSha?: string; payload: string;
+    etag?: string; lastModified?: string; fetchedAt: number; expiresAt: number; staleUntil: number;
+  }, Id<"repositoryCacheEntries">>;
+  touch: FunctionReference<"mutation", "internal", { id: Id<"repositoryCacheEntries">; fetchedAt: number; expiresAt: number; staleUntil: number }, null>;
+  recordFailure: FunctionReference<"mutation", "internal", { id: Id<"repositoryCacheEntries">; message: string }, null>;
+  consumeProviderRequest: FunctionReference<"mutation", "internal", { scopeKey: string; provider: "github"; windowKey: string; requestLimit: number; resetAt: number }, boolean>;
+};
+const cacheRefs: CacheRefs = (internal as unknown as { repositoryCache: CacheRefs }).repositoryCache;
+type PrivateRepositoryView = Infer<typeof resultValidator>;
+
 export const getView = action({
   args: { owner: v.string(), name: v.string(), ref: v.optional(v.string()), path: v.optional(v.string()) },
   returns: resultValidator,
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<PrivateRepositoryView> => {
     const userId = await getAuthUserId(ctx);
     if (userId === null) throw new ConvexError("Sign in required");
     const account = await ctx.runQuery(internal.auth.providerTokenForUser, { userId });
@@ -29,13 +49,66 @@ export const getView = action({
     if (token === null) throw new ConvexError("Private GitHub access is not available in this deployment");
     validateSegment(args.owner, "owner");
     validateSegment(args.name, "repository");
-    const repositoryResponse = await githubJson(token, `/repos/${encodeURIComponent(args.owner)}/${encodeURIComponent(args.name)}`);
+    const scopeKey = `user:${String(userId)}:github:${account.providerUserId}`;
+    const repositoryKey = `${args.owner}/${args.name}`.toLowerCase();
+    const identityResponse = await githubJson(
+      ctx,
+      userId,
+      token,
+      scopeKey,
+      "__account__",
+      "repository",
+      "identity",
+      "",
+      "/user",
+      300_000,
+    );
+    const identity = record(identityResponse);
+    const identityId = typeof identity.id === "number" ? String(identity.id) : typeof identity.id === "string" ? identity.id : null;
+    const identityLogin = typeof identity.login === "string" ? identity.login : null;
+    if (identityId !== account.providerUserId || identityLogin?.toLowerCase() !== account.login.toLowerCase()) {
+      throw new ConvexError("GitHub identity validation failed");
+    }
+    const repositoryResponse = await githubJson(
+      ctx,
+      userId,
+      token,
+      scopeKey,
+      repositoryKey,
+      "repository",
+      "",
+      "",
+      `/repos/${encodeURIComponent(args.owner)}/${encodeURIComponent(args.name)}`,
+      120_000,
+    );
     const repository = normalizeRepository(repositoryResponse);
     const requestedRef = safeRef(args.ref) ?? repository.defaultBranch ?? "main";
-    const commitResponse = await githubJson(token, `/repos/${encodeURIComponent(args.owner)}/${encodeURIComponent(args.name)}/commits/${encodeURIComponent(requestedRef)}`);
-    const sourceRef = readString(record(commitResponse), "sha");
+    const commitResponse = await githubJson(
+      ctx,
+      userId,
+      token,
+      scopeKey,
+      repositoryKey,
+      "commit",
+      requestedRef,
+      "",
+      `/repos/${encodeURIComponent(args.owner)}/${encodeURIComponent(args.name)}/commits/${encodeURIComponent(requestedRef)}`,
+      120_000,
+    );
+    const sourceRef = readCommitSha(record(commitResponse));
     const requestedPath = args.path === undefined ? null : safePath(args.path);
-    const root = await githubJson(token, contentsUrl(args.owner, args.name, requestedPath, requestedRef));
+    const root = await githubJson(
+      ctx,
+      userId,
+      token,
+      scopeKey,
+      repositoryKey,
+      "tree",
+      sourceRef,
+      requestedPath ?? "",
+      contentsUrl(args.owner, args.name, requestedPath, sourceRef),
+      60_000,
+    );
     let entries: Array<{ name: string; path: string; kind: "file" | "directory" | "submodule"; oid: string; byteSize: number | null }> = [];
     let file: { path: string; commitSha: string; oid: string; text: string; byteSize: number | null } | null = null;
     let treePath = requestedPath ?? "";
@@ -44,12 +117,23 @@ export const getView = action({
       entries = root.slice(0, 500).map(normalizeEntry);
       const readme = requestedPath === null ? entries.find((entry) => entry.kind === "file" && /^readme(?:\.[^/]+)?$/i.test(entry.name)) : undefined;
       if (readme) {
-        file = await readFile(token, args.owner, args.name, readme.path, requestedRef, sourceRef);
+        file = await readFile(ctx, userId, token, scopeKey, repositoryKey, args.owner, args.name, readme.path, sourceRef, sourceRef);
       }
     } else {
       file = await normalizeFile(root, requestedPath ?? "", sourceRef);
       treePath = parentDirectory(file.path);
-      const parent = await githubJson(token, contentsUrl(args.owner, args.name, treePath || null, requestedRef));
+      const parent = await githubJson(
+        ctx,
+        userId,
+        token,
+        scopeKey,
+        repositoryKey,
+        "tree",
+        sourceRef,
+        treePath,
+        contentsUrl(args.owner, args.name, treePath || null, sourceRef),
+        60_000,
+      );
       if (Array.isArray(parent)) entries = parent.slice(0, 500).map(normalizeEntry);
     }
 
@@ -57,8 +141,30 @@ export const getView = action({
   },
 });
 
-async function readFile(token: string, owner: string, name: string, path: string, ref: string, commitSha: string) {
-  const value = await githubJson(token, contentsUrl(owner, name, path, ref));
+async function readFile(
+  ctx: ActionCtx,
+  userId: Id<"users">,
+  token: string,
+  scopeKey: string,
+  repositoryKey: string,
+  owner: string,
+  name: string,
+  path: string,
+  ref: string,
+  commitSha: string,
+): Promise<Infer<typeof fileValidator>> {
+  const value: unknown = await githubJson(
+    ctx,
+    userId,
+    token,
+    scopeKey,
+    repositoryKey,
+    "file",
+    ref,
+    path,
+    contentsUrl(owner, name, path, ref),
+    86_400_000,
+  );
   return normalizeFile(value, path, commitSha);
 }
 
@@ -99,12 +205,116 @@ function normalizeEntry(value: unknown) {
   return { name: readString(row, "name"), path: readString(row, "path"), kind: type as "file" | "directory" | "submodule", oid: readString(row, "sha"), byteSize: numberOrNull(row.size) };
 }
 
-async function githubJson(token: string, path: string) {
-  const response = await fetch(`https://api.github.com${path}`, { headers: { Accept: "application/vnd.github+json", Authorization: `Bearer ${token}`, "User-Agent": "OpenHub", "X-GitHub-Api-Version": "2022-11-28" }, redirect: "error", signal: AbortSignal.timeout(15_000) });
-  const raw = await response.text();
-  if (raw.length > 2_000_000) throw new ConvexError("GitHub response is too large");
-  if (!response.ok) throw new ConvexError(response.status === 404 ? "Private repository or path not found" : "GitHub private access failed");
-  try { return JSON.parse(raw) as unknown; } catch { throw new ConvexError("GitHub returned invalid data"); }
+async function githubJson(
+  ctx: ActionCtx,
+  userId: Id<"users">,
+  token: string,
+  scopeKey: string,
+  repositoryKey: string,
+  kind: "repository" | "commit" | "tree" | "file",
+  ref: string,
+  pathKey: string,
+  path: string,
+  ttlMs: number,
+): Promise<unknown> {
+  const cached: Doc<"repositoryCacheEntries"> | null = await ctx.runQuery(cacheRefs.get, {
+    scopeKey,
+    provider: "github",
+    repositoryFullName: repositoryKey,
+    kind,
+    ref,
+    pathKey,
+  });
+  const now = Date.now();
+  if (cached && cached.expiresAt > now) {
+    try {
+      return JSON.parse(cached.payload) as unknown;
+    } catch {
+      // A malformed cache row is treated as a miss and replaced below.
+    }
+  }
+
+  try {
+    const windowStart = Math.floor(now / 60_000);
+    const allowed = await ctx.runMutation(cacheRefs.consumeProviderRequest, {
+      scopeKey,
+      provider: "github",
+      windowKey: String(windowStart),
+      requestLimit: 60,
+      resetAt: (windowStart + 1) * 60_000,
+    });
+    if (!allowed) throw new ConvexError("GitHub request limit reached for this private workspace; try again shortly");
+
+    const headers: Record<string, string> = {
+      Accept: "application/vnd.github+json",
+      Authorization: `Bearer ${token}`,
+      "User-Agent": "OpenHub",
+      "X-GitHub-Api-Version": "2022-11-28",
+    };
+    if (cached?.etag) headers["If-None-Match"] = cached.etag;
+    if (cached?.lastModified) headers["If-Modified-Since"] = cached.lastModified;
+    const response = await fetch(`https://api.github.com${path}`, {
+      headers,
+      redirect: "error",
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (response.status === 304 && cached) {
+      await ctx.runMutation(cacheRefs.touch, {
+        id: cached._id,
+        fetchedAt: now,
+        expiresAt: now + ttlMs,
+        staleUntil: now + ttlMs * 4,
+      });
+      return JSON.parse(cached.payload) as unknown;
+    }
+    const raw = await response.text();
+    if (response.status === 403 || response.status === 429) {
+      const retryAfter = response.headers.get("retry-after");
+      const reset = response.headers.get("x-ratelimit-reset");
+      const retryText = retryAfter ? ` Retry after ${retryAfter} seconds.` : reset ? ` Retry after ${new Date(Number(reset) * 1_000).toISOString()}.` : "";
+      throw new ConvexError(`GitHub rate limit reached.${retryText}`);
+    }
+    if (!response.ok) throw new ConvexError(response.status === 404 ? "Private repository or path not found" : "GitHub private access failed");
+    if (raw.length > 2_000_000) throw new ConvexError("GitHub response is too large");
+    let value: unknown;
+    try { value = JSON.parse(raw) as unknown; } catch { throw new ConvexError("GitHub returned invalid data"); }
+    if (raw.length <= 900_000) {
+      const valueRecord = value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : null;
+      const commitSha = valueRecord && typeof valueRecord.sha === "string" ? valueRecord.sha : undefined;
+      await ctx.runMutation(cacheRefs.put, {
+        scopeKey,
+        ownerUserId: userId,
+        provider: "github",
+        repositoryFullName: repositoryKey,
+        kind,
+        ref,
+        pathKey,
+        ...(commitSha ? { commitSha } : {}),
+        payload: raw,
+        ...(response.headers.get("etag") ? { etag: response.headers.get("etag")! } : {}),
+        ...(response.headers.get("last-modified") ? { lastModified: response.headers.get("last-modified")! } : {}),
+        fetchedAt: now,
+        expiresAt: now + ttlMs,
+        staleUntil: now + ttlMs * 4,
+      });
+    }
+    return value;
+  } catch (error) {
+    if (cached && cached.staleUntil > now) {
+      try {
+        return JSON.parse(cached.payload) as unknown;
+      } catch {
+        // Fall through to the provider error when the stale payload is invalid.
+      }
+    }
+    if (cached) {
+      await ctx.runMutation(cacheRefs.recordFailure, {
+        id: cached._id,
+        message: error instanceof Error ? error.message : "GitHub request failed",
+      });
+    }
+    throw error;
+  }
 }
 
 function contentsUrl(owner: string, name: string, path: string | null, ref: string) {
@@ -121,6 +331,11 @@ function readString(value: Record<string, unknown>, key: string, fallback?: stri
   if (typeof result === "string" && result.length > 0) return result;
   if (fallback !== undefined) return fallback;
   throw new ConvexError(`GitHub response is missing ${key}`);
+}
+function readCommitSha(value: Record<string, unknown>) {
+  const sha = readString(value, "sha");
+  if (!/^[a-f0-9]{40}$/i.test(sha)) throw new ConvexError("GitHub returned an invalid commit");
+  return sha;
 }
 function readNumber(value: Record<string, unknown>, key: string) {
   const result = value[key];

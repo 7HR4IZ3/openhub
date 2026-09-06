@@ -5,24 +5,24 @@ import type { NormalizedRepository, RepositorySearchResult } from "./types";
 type JsonRecord = Record<string, unknown>;
 
 export async function searchGitLab(query: string): Promise<RepositorySearchResult> {
-  const response = await fetch(`https://gitlab.com/api/v4/projects?search=${encodeURIComponent(query)}&simple=true&per_page=20&order_by=last_activity_at&sort=desc`, { headers: { Accept: "application/json", "User-Agent": "OpenHub" }, signal: AbortSignal.timeout(10_000), cache: "no-store" });
-  if (!response.ok) throw new Error("GitLab search failed");
+  const response = await fetch(`https://gitlab.com/api/v4/projects?search=${encodeURIComponent(query)}&simple=true&per_page=20&order_by=last_activity_at&sort=desc`, { headers: { Accept: "application/json", "User-Agent": "OpenHub" }, signal: AbortSignal.timeout(10_000), cache: "force-cache", next: { revalidate: 120 } });
+  if (!response.ok) throw new Error(response.status === 429 ? "GitLab search rate limit reached" : "GitLab search failed");
   const data = await response.json() as unknown;
   if (!Array.isArray(data)) return { items: [], hasNextPage: false, cursor: null };
   return { items: data.filter(isRecord).map(normalizeGitLab).filter((item): item is NormalizedRepository => item !== null), hasNextPage: false, cursor: null };
 }
 
 export async function searchBitbucket(query: string): Promise<RepositorySearchResult> {
-  const response = await fetch(`https://api.bitbucket.org/2.0/repositories/?q=name~"${encodeURIComponent(query.replace(/"/g, ""))}"&pagelen=20`, { headers: { Accept: "application/json", "User-Agent": "OpenHub" }, signal: AbortSignal.timeout(10_000), cache: "no-store" });
-  if (!response.ok) throw new Error("Bitbucket search failed");
+  const response = await fetch(`https://api.bitbucket.org/2.0/repositories/?q=name~"${encodeURIComponent(query.replace(/"/g, ""))}"&pagelen=20`, { headers: { Accept: "application/json", "User-Agent": "OpenHub" }, signal: AbortSignal.timeout(10_000), cache: "force-cache", next: { revalidate: 120 } });
+  if (!response.ok) throw new Error(response.status === 429 ? "Bitbucket search rate limit reached" : "Bitbucket search failed");
   const data = await response.json() as unknown;
   const values = isRecord(data) && Array.isArray(data.values) ? data.values : [];
   return { items: values.filter(isRecord).map(normalizeBitbucket).filter((item): item is NormalizedRepository => item !== null), hasNextPage: false, cursor: null };
 }
 
 export async function searchCodeberg(query: string): Promise<RepositorySearchResult> {
-  const response = await fetch(`https://codeberg.org/api/v1/repos/search?q=${encodeURIComponent(query)}&limit=20`, { headers: { Accept: "application/json", "User-Agent": "OpenHub" }, signal: AbortSignal.timeout(10_000), cache: "no-store" });
-  if (!response.ok) throw new Error("Codeberg search failed");
+  const response = await fetch(`https://codeberg.org/api/v1/repos/search?q=${encodeURIComponent(query)}&limit=20`, { headers: { Accept: "application/json", "User-Agent": "OpenHub" }, signal: AbortSignal.timeout(10_000), cache: "force-cache", next: { revalidate: 120 } });
+  if (!response.ok) throw new Error(response.status === 429 ? "Codeberg search rate limit reached" : "Codeberg search failed");
   const data = await response.json() as unknown;
   const values = isRecord(data) && Array.isArray(data.data) ? data.data : [];
   return { items: values.filter(isRecord).map(normalizeCodeberg).filter((item): item is NormalizedRepository => item !== null), hasNextPage: false, cursor: null };

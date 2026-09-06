@@ -44,6 +44,7 @@ import {
 import { RepositoryAnalyzer } from "@/components/ai/repository-analyzer";
 import { RepositorySurfacePanel } from "@/components/repository/repository-surface-panel";
 import { RepositoryAnalyticsPanel } from "@/components/repository/repository-analytics-panel";
+import { RepositorySponsorship } from "@/components/repository/repository-sponsorship";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type {
@@ -53,16 +54,7 @@ import type {
   RepositoryTreeEntry,
 } from "@/lib/providers/types";
 
-export function RepositoryWorkspace({
-  repository,
-  convexConfigured,
-  sourceRef,
-  treePath,
-  entries,
-  file,
-  surfaces,
-  workspaceBasePath,
-}: {
+type RepositoryWorkspaceProps = {
   repository: NormalizedRepository;
   convexConfigured: boolean;
   sourceRef: string;
@@ -71,21 +63,19 @@ export function RepositoryWorkspace({
   file: RepositoryFile | null;
   surfaces: RepositorySurfaces;
   workspaceBasePath?: string;
-}) {
-  const [isTreeOpen, setIsTreeOpen] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
-  const [showExplainer, setShowExplainer] = useState(false);
-  const [selectionState, setSelectionState] = useState<{
-    fileKey: string;
-    selection: CodeSelection | null;
-  }>({ fileKey: "", selection: null });
-  const basePath = workspaceBasePath ?? `/repos/${encodeURIComponent(repository.ownerLogin)}/${encodeURIComponent(repository.name)}`;
-  const fileKey = file ? `${file.commitSha}:${file.path}` : "";
-  const selection =
-    selectionState.fileKey === fileKey ? selectionState.selection : null;
+};
+
+export function RepositoryWorkspace(props: RepositoryWorkspaceProps) {
+  if (!props.convexConfigured) {
+    return <RepositoryWorkspaceView {...props} storedRepositoryId={null} />;
+  }
+  return <ConnectedRepositoryWorkspace {...props} />;
+}
+
+function ConnectedRepositoryWorkspace({ repository, convexConfigured, ...props }: RepositoryWorkspaceProps) {
   const storedRepositoryId = useQuery(
     api.discovery.byProviderRepository,
-    convexConfigured && repository.visibility === "public"
+    repository.visibility === "public"
       ? { provider: repository.provider, providerRepositoryId: repository.providerRepositoryId }
       : "skip",
   );
@@ -97,9 +87,35 @@ export function RepositoryWorkspace({
   }, [storedRepositoryId, track]);
 
   useEffect(() => {
-    if (!storedRepositoryId || !file) return;
-    void track({ eventName: "file_view", repositoryId: storedRepositoryId, path: file.path });
-  }, [file, storedRepositoryId, track]);
+    if (!storedRepositoryId || !props.file) return;
+    void track({ eventName: "file_view", repositoryId: storedRepositoryId, path: props.file.path });
+  }, [props.file, storedRepositoryId, track]);
+
+  return <RepositoryWorkspaceView repository={repository} convexConfigured={convexConfigured} {...props} storedRepositoryId={storedRepositoryId} />;
+}
+
+function RepositoryWorkspaceView({
+  repository,
+  convexConfigured,
+  sourceRef,
+  treePath,
+  entries,
+  file,
+  surfaces,
+  workspaceBasePath,
+  storedRepositoryId,
+}: RepositoryWorkspaceProps & { storedRepositoryId: Id<"repositories"> | null | undefined }) {
+  const [isTreeOpen, setIsTreeOpen] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+  const [showExplainer, setShowExplainer] = useState(false);
+  const [selectionState, setSelectionState] = useState<{
+    fileKey: string;
+    selection: CodeSelection | null;
+  }>({ fileKey: "", selection: null });
+  const basePath = workspaceBasePath ?? `/repos/${encodeURIComponent(repository.ownerLogin)}/${encodeURIComponent(repository.name)}`;
+  const fileKey = file ? `${file.commitSha}:${file.path}` : "";
+  const selection =
+    selectionState.fileKey === fileKey ? selectionState.selection : null;
 
   const sourceUrl = file
     ? buildSourceUrl(repository, file.commitSha, file.path, selection)
@@ -277,7 +293,7 @@ export function RepositoryWorkspace({
                       {isCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                       {isCopied ? "Copied" : "Copy link"}
                     </Button>
-                    {repository.provider === "github" && repository.visibility === "public" ? <Button
+                    {convexConfigured && repository.provider === "github" && repository.visibility === "public" ? <Button
                       type="button"
                       variant="ghost"
                       size="sm"
@@ -337,7 +353,7 @@ export function RepositoryWorkspace({
                     </div>
                   ) : null}
                 </div>
-                {repository.provider === "github" && repository.visibility === "public" && showExplainer && selection ? (
+                {convexConfigured && repository.provider === "github" && repository.visibility === "public" && showExplainer && selection ? (
                   <div className="px-4 pb-4 sm:px-5">
                     <SourceExplainer
                       source={buildExplainableSource(repository, file, selection)}
@@ -384,7 +400,7 @@ export function RepositoryWorkspace({
           </section>
         </div>
 
-        {repository.provider === "github" && repository.visibility === "public" ? (
+        {convexConfigured && repository.provider === "github" && (repository.visibility === "public" || repository.visibility === "private") ? (
           <div className="mt-4">
             <RepositoryAnalyzer
               owner={repository.ownerLogin}
@@ -403,7 +419,8 @@ export function RepositoryWorkspace({
           surfaces={surfaces}
           workspaceBasePath={basePath}
         />
-        <RepositoryAnalyticsPanel repositoryId={storedRepositoryId} />
+        {convexConfigured ? <RepositorySponsorship repositoryId={storedRepositoryId} /> : null}
+        {convexConfigured ? <RepositoryAnalyticsPanel repositoryId={storedRepositoryId} /> : null}
       </div>
     </main>
   );
