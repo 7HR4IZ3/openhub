@@ -75,3 +75,7 @@ Lists and Communities now share a keyboard-operable tab component with roving fo
 ### Reader and discussion follow-up
 
 Post detail now uses the shared navigation shell, fixing the prior tablet layout that reserved an invisible right-hand column. Repository tabs support arrow, Home and End navigation and labeled panels. Monaco follows the selected light/dark theme using its native themes and keeps read-only behavior; smooth scrolling is disabled for reduced-motion consistency. Removed remaining heavy menu shadows and restored the original OpenHub mark unchanged. No backend contracts changed and no runtime validation was performed.
+
+### Consistent unavailable states
+
+Post loading, unavailable and missing states now retain application navigation and use shared skeleton/empty-state components. Placeholder routes use the same reading width and controls. Notification read mutations report failures and prevent repeated mark-all submissions. Momentary post actions no longer announce a false toggle state; true toggles retain pressed semantics.

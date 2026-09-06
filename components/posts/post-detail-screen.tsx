@@ -11,7 +11,6 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  ArrowLeftIcon as ArrowLeft,
   ArrowTopRightIcon as ArrowUpRight,
   MinusCircledIcon as Ban,
   BookmarkIcon as Bookmark,
@@ -34,6 +33,10 @@ import {
 
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
+import {
+  CurationEmptyState,
+  CurationLoading,
+} from "@/components/curation/curation-states";
 import { CurationShell } from "@/components/curation/curation-shell";
 import { PostBody } from "@/components/posts/post-body";
 import { DiffCodeViewer } from "@/components/repository/diff-code-viewer";
@@ -1341,7 +1344,7 @@ function ActionButton({
   icon: Icon,
   label,
   count,
-  active = false,
+  active,
   disabled = false,
   onClick,
 }: {
@@ -1361,7 +1364,7 @@ function ActionButton({
       onClick={onClick}
       className={cn(
         "inline-flex min-h-11 items-center gap-1.5 rounded-md px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:bg-black/[0.05] hover:text-foreground disabled:pointer-events-none disabled:opacity-50 dark:hover:bg-white/[0.06]",
-        active && "text-foreground text-foreground",
+        active && "bg-accent text-accent-foreground",
       )}
     >
       <Icon className="h-4 w-4" />
@@ -1375,68 +1378,45 @@ function ActionButton({
 
 function PostSetupState() {
   return (
-    <main className="flex min-h-[100dvh] items-center justify-center bg-background px-5 py-12 dark:bg-background">
-      <section className="w-full max-w-xl rounded-3xl border border-border bg-card p-7 dark:bg-card sm:p-10">
-        <Code2 className="h-6 w-6 text-foreground" />
-        <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-          Post detail
-        </p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.05em]">
-          The conversation layer is ready to connect.
-        </h1>
-        <p className="mt-4 text-sm leading-7 text-muted-foreground">
-          This deployment needs its Convex URL before it can load source-backed
-          posts, comments, and realtime interactions.
-        </p>
-        <div className="mt-7 flex flex-wrap gap-3">
-          <Button asChild className="rounded-md">
-            <Link href="/explore">Explore repositories</Link>
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            className="rounded-md bg-transparent"
-          >
-            <Link href="/signin">Connect GitHub</Link>
-          </Button>
-        </div>
-      </section>
-    </main>
+    <CurationShell active="Home" eyebrow="post" title="Discussion">
+      <div className="page-section">
+        <CurationEmptyState
+          icon={Code2}
+          eyebrow="Temporarily unavailable"
+          title="This conversation cannot load right now."
+          body="You can still explore public repositories while discussions are unavailable."
+          action="Explore repositories"
+          actionHref="/explore"
+        />
+      </div>
+    </CurationShell>
   );
 }
 
 function PostLoadingState() {
   return (
-    <main className="flex min-h-[100dvh] items-center justify-center bg-background px-5 dark:bg-background">
-      <div className="text-center">
-        <div className="mx-auto h-10 w-10 animate-pulse rounded-xl bg-secondary dark:bg-secondary" />
-        <p className="mt-4 text-sm text-muted-foreground">
-          Loading source-backed conversation…
-        </p>
+    <CurationShell active="Home" eyebrow="post" title="Discussion">
+      <div className="page-section">
+        <CurationLoading label="Loading conversation…" />
       </div>
-    </main>
+    </CurationShell>
   );
 }
 
 function PostNotFoundState() {
   return (
-    <main className="flex min-h-[100dvh] items-center justify-center bg-background px-5 dark:bg-background">
-      <section className="max-w-md text-center">
-        <UserRound className="mx-auto h-6 w-6 text-muted-foreground" />
-        <h1 className="mt-5 text-3xl font-semibold tracking-[-0.05em]">
-          This post is not available.
-        </h1>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          It may be private, deleted, or not connected to this OpenHub
-          deployment.
-        </p>
-        <Button asChild className="mt-6 rounded-md">
-          <Link href="/home">
-            <ArrowLeft className="h-4 w-4" /> Back to home
-          </Link>
-        </Button>
-      </section>
-    </main>
+    <CurationShell active="Home" eyebrow="post" title="Discussion">
+      <div className="page-section">
+        <CurationEmptyState
+          icon={UserRound}
+          eyebrow="Unavailable"
+          title="This post is not available."
+          body="It may be private or deleted, or you may not have access to it."
+          action="Back to home"
+          actionHref="/home"
+        />
+      </div>
+    </CurationShell>
   );
 }
 

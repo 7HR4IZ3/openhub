@@ -2,6 +2,7 @@
 
 import { useConvexAuth, useMutation, usePaginatedQuery } from "convex/react";
 import Link from "next/link";
+import { useState } from "react";
 import {
   BellIcon as Bell,
   CheckIcon as Check,
@@ -40,8 +41,31 @@ function ConnectedNotifications() {
     {},
     { initialNumItems: 30 },
   );
+  const [markingAll, setMarkingAll] = useState(false);
+  const [readError, setReadError] = useState<string | null>(null);
   const markRead = useMutation(api.notifications.markRead);
   const markAllRead = useMutation(api.notifications.markAllRead);
+  async function readAll() {
+    if (markingAll) return;
+    setMarkingAll(true);
+    setReadError(null);
+    try {
+      await markAllRead();
+    } catch {
+      setReadError("Could not mark notifications as read. Try again.");
+    } finally {
+      setMarkingAll(false);
+    }
+  }
+  async function readOne(notificationId: Id<"notifications">) {
+    try {
+      await markRead({ notificationId });
+    } catch {
+      setReadError(
+        "Could not save the read status. You can retry from this page.",
+      );
+    }
+  }
   const unreadCount = notifications.filter(
     (notification) => notification.readAt === undefined,
   ).length;
@@ -99,13 +123,19 @@ function ConnectedNotifications() {
             type="button"
             variant="ghost"
             size="sm"
-            onClick={() => void markAllRead()}
+            onClick={() => void readAll()}
+            disabled={markingAll}
           >
             <Check />
             Mark all read
           </Button>
         ) : null}
       </div>
+      {readError ? (
+        <p role="alert" className="px-5 py-3 text-sm text-destructive sm:px-8">
+          {readError}
+        </p>
+      ) : null}
       <section
         className="divide-y divide-black/[0.08] p-5 dark:divide-white/[0.08] sm:p-7"
         aria-label="Notifications"
@@ -126,7 +156,7 @@ function ConnectedNotifications() {
               notification={notification}
               onRead={() => {
                 if (notification.readAt === undefined)
-                  void markRead({ notificationId: notification._id });
+                  void readOne(notification._id);
               }}
             />
           ))
