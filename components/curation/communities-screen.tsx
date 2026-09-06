@@ -13,7 +13,7 @@ import {
   CurationRail,
   CurationShell,
 } from "@/components/curation/curation-shell";
-import { cn } from "@/lib/utils";
+import { SectionTabs } from "@/components/ui/section-tabs";
 import { useConvexAuth, useMutation, usePaginatedQuery } from "convex/react";
 import {
   ArrowTopRightIcon as ArrowUpRight,
@@ -63,53 +63,29 @@ function ConnectedCommunitiesScreen() {
       description="Find people who care about the same layer of software. Communities are for context and discussion, not group chat."
       aside={<CommunitiesRail />}
     >
-      <div className="border-b border-border px-5 pt-4 sm:px-7">
-        <div
-          className="flex gap-6 overflow-x-auto"
-          role="tablist"
-          aria-label="Community views"
-        >
-          {tabs.map((tab) => (
-            <button
-              key={tab.value}
-              type="button"
-              role="tab"
-              aria-selected={activeTab === tab.value}
-              onClick={() => setActiveTab(tab.value)}
-              className={cn(
-                "relative whitespace-nowrap pb-4 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground",
-                activeTab === tab.value && "text-foreground",
-              )}
-            >
-              {tab.label}
-              {activeTab === tab.value ? (
-                <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-accent" />
-              ) : null}
-            </button>
-          ))}
+      <SectionTabs
+        label="Community views"
+        items={tabs}
+        value={activeTab}
+        onChange={setActiveTab}
+      >
+        <div className="p-5 sm:p-7">
+          {activeTab === "discover" ? (
+            <DiscoverCommunities
+              communities={communities.results}
+              status={communities.status}
+              loadMore={communities.loadMore}
+              isAuthenticated={isAuthenticated}
+            />
+          ) : null}
+          {activeTab === "following" ? (
+            <FollowingCommunities isAuthenticated={isAuthenticated} />
+          ) : null}
+          {activeTab === "create" ? (
+            <CreateCommunity isAuthenticated={isAuthenticated} />
+          ) : null}
         </div>
-      </div>
-      <div className="p-5 sm:p-7">
-        <CurationStatus
-          tone="accent"
-          title="Keep the circle close to the source"
-          body="Communities are public or invite-only spaces for repository context. Private membership never enters discovery."
-        />
-        {activeTab === "discover" ? (
-          <DiscoverCommunities
-            communities={communities.results}
-            status={communities.status}
-            loadMore={communities.loadMore}
-            isAuthenticated={isAuthenticated}
-          />
-        ) : null}
-        {activeTab === "following" ? (
-          <FollowingCommunities isAuthenticated={isAuthenticated} />
-        ) : null}
-        {activeTab === "create" ? (
-          <CreateCommunity isAuthenticated={isAuthenticated} />
-        ) : null}
-      </div>
+      </SectionTabs>
     </CurationShell>
   );
 }
@@ -137,29 +113,6 @@ function DiscoverCommunities({
 }) {
   return (
     <div className="mt-5">
-      <div className="flex flex-col gap-4 rounded-xl bg-secondary p-6 dark:bg-secondary sm:flex-row sm:items-end sm:justify-between sm:p-7">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground">
-            Browse by layer
-          </p>
-          <h2 className="mt-3 max-w-xl text-2xl font-semibold tracking-[-0.04em]">
-            A place to ask better questions.
-          </h2>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
-            Join a focused circle when you want to follow a technical curiosity
-            beyond one repository.
-          </p>
-        </div>
-        <Button
-          asChild
-          variant="outline"
-          className="shrink-0 rounded-md bg-transparent"
-        >
-          <Link href="/explore">
-            Browse source <ArrowUpRight className="h-4 w-4" />
-          </Link>
-        </Button>
-      </div>
       {communities.length > 0 ? (
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           {communities.map((community) => (

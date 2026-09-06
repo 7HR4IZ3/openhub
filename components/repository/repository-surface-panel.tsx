@@ -120,7 +120,7 @@ export function RepositorySurfacePanel({
                 aria-controls={`repository-surface-${tab.id}`}
                 onClick={() => setActiveSurface(tab.id)}
                 className={cn(
-                  "inline-flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors",
+                  "inline-flex shrink-0 items-center gap-2 rounded-md px-3.5 py-2 text-xs font-semibold transition-colors",
                   isActive
                     ? "bg-foreground text-background"
                     : "text-muted-foreground hover:bg-black/[0.05] hover:text-foreground dark:hover:bg-white/[0.07]",
@@ -190,7 +190,7 @@ function RepositoryRefPicker({
 
   return (
     <details className="group relative shrink-0">
-      <summary className="flex cursor-pointer list-none items-center gap-2 rounded-full border border-black/[0.12] bg-transparent px-3.5 py-2 text-xs font-semibold transition-colors hover:border-ring dark:border-white/[0.12] dark:hover:border-ring">
+      <summary className="flex cursor-pointer list-none items-center gap-2 rounded-md border border-input bg-transparent px-3.5 py-2 text-xs font-semibold transition-colors hover:border-ring dark:border-white/[0.12] dark:hover:border-ring">
         <GitBranch className="h-3.5 w-3.5 text-foreground" />
         <span className="max-w-40 truncate font-mono">
           {refLabel(sourceRef)}
@@ -325,7 +325,7 @@ function OverviewSurface({
         />
       </div>
 
-      <div className="rounded-xl border border-border bg-[#f2f0e9] p-4 dark:bg-secondary">
+      <div className="rounded-xl border border-border bg-secondary p-4 dark:bg-secondary">
         <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
           Trust and context
         </p>
@@ -334,7 +334,7 @@ function OverviewSurface({
             {repository.isArchived ? (
               <Archive className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
             ) : (
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#66856c]" />
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-accent-foreground" />
             )}
             <span>
               {repository.isArchived
@@ -461,7 +461,7 @@ function IssueSurface({
             rel="noreferrer"
             className="group flex items-start gap-3 py-4 first:pt-0 last:pb-0"
           >
-            <Icon className="mt-1 h-4 w-4 shrink-0 text-[#66856c]" />
+            <Icon className="mt-1 h-4 w-4 shrink-0 text-accent-foreground" />
             <div className="min-w-0 flex-1">
               <p className="line-clamp-2 text-sm font-semibold leading-6 group-hover:text-foreground dark:group-hover:text-foreground">
                 <span className="mr-1.5 font-mono text-xs text-muted-foreground">

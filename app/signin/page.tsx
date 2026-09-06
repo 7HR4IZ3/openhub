@@ -13,22 +13,6 @@ import Link from "next/link";
 import { useState } from "react";
 
 export default function SignInPage() {
-  const { signIn } = useAuthActions();
-  const [isSigningIn, setIsSigningIn] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function handleSignIn() {
-    setIsSigningIn(true);
-    setError(null);
-    try {
-      await signIn("github", { redirectTo: "/home" });
-    } catch (signInError) {
-      console.error(signInError);
-      setError("GitHub sign-in could not be started. Try again in a moment.");
-      setIsSigningIn(false);
-    }
-  }
-
   return (
     <main className="min-h-[100dvh] bg-background">
       <div className="mx-auto grid min-h-[100dvh] w-full max-w-6xl items-center gap-12 px-5 py-10 md:grid-cols-[1fr_0.8fr] md:px-8">
@@ -72,21 +56,27 @@ export default function SignInPage() {
             </p>
           </div>
 
-          <Button
-            type="button"
-            size="lg"
-            className="h-12 w-full rounded-md"
-            onClick={handleSignIn}
-            disabled={isSigningIn}
+          {process.env.NEXT_PUBLIC_CONVEX_URL ? (
+            <GitHubSignIn />
+          ) : (
+            <div role="status" className="rounded-lg border p-5">
+              <p className="text-sm font-medium">
+                Sign-in is unavailable right now.
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                You can continue exploring public repositories.
+              </p>
+              <Button asChild className="mt-4">
+                <Link href="/explore">Browse repositories</Link>
+              </Button>
+            </div>
+          )}
+          <Link
+            href="/explore"
+            className="mt-4 inline-flex min-h-11 items-center text-sm text-muted-foreground hover:text-foreground"
           >
-            <Github className="h-5 w-5" />
-            {isSigningIn ? "Connecting to GitHub…" : "Continue with GitHub"}
-          </Button>
-          {error ? (
-            <p role="alert" className="mt-3 text-sm text-destructive">
-              {error}
-            </p>
-          ) : null}
+            Continue browsing without an account
+          </Link>
 
           <div className="mt-8 space-y-4 border-t border-border pt-6 text-sm text-muted-foreground">
             <div className="flex gap-3">
@@ -108,5 +98,43 @@ export default function SignInPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+function GitHubSignIn() {
+  const { signIn } = useAuthActions();
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSignIn() {
+    setIsSigningIn(true);
+    setError(null);
+    try {
+      await signIn("github", { redirectTo: "/home" });
+    } catch (signInError) {
+      console.error(signInError);
+      setError("GitHub sign-in could not be started. Try again in a moment.");
+      setIsSigningIn(false);
+    }
+  }
+
+  return (
+    <>
+      <Button
+        type="button"
+        size="lg"
+        className="h-12 w-full rounded-md"
+        onClick={handleSignIn}
+        disabled={isSigningIn}
+      >
+        <Github className="h-5 w-5" />
+        {isSigningIn ? "Connecting to GitHub…" : "Continue with GitHub"}
+      </Button>
+      {error ? (
+        <p role="alert" className="mt-3 text-sm text-destructive">
+          {error}
+        </p>
+      ) : null}
+    </>
   );
 }

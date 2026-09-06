@@ -8,7 +8,6 @@ import {
   HeartIcon as Heart,
   ChatBubbleIcon as MessageCircle,
   LoopIcon as Repeat2,
-  MagicWandIcon as Sparkles,
 } from "@radix-ui/react-icons";
 
 import { api } from "@/convex/_generated/api";
@@ -89,29 +88,23 @@ function ConnectedNotifications() {
       title="Useful updates"
       description="Keep the replies, mentions, and repository activity that move your understanding forward."
     >
-      <div className="border-b border-border p-5 sm:p-7">
-        <div className="flex flex-col gap-4 rounded-xl bg-secondary p-5 dark:bg-secondary sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex items-start gap-3">
-            <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-foreground" />
-            <p className="text-sm leading-6 text-muted-foreground">
-              Notifications stay focused on context: someone replied to your
-              source, added a useful reaction, or continued a project trail you
-              follow.
-            </p>
-          </div>
-          {unreadCount > 0 ? (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="shrink-0 rounded-md bg-transparent"
-              onClick={() => void markAllRead()}
-            >
-              <Check className="h-3.5 w-3.5" />
-              Mark all read
-            </Button>
-          ) : null}
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-4 sm:px-8">
+        <p className="text-sm text-muted-foreground">
+          {unreadCount
+            ? `${unreadCount} unread in this view`
+            : "You are all caught up"}
+        </p>
+        {unreadCount > 0 ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => void markAllRead()}
+          >
+            <Check />
+            Mark all read
+          </Button>
+        ) : null}
       </div>
       <section
         className="divide-y divide-black/[0.08] p-5 dark:divide-white/[0.08] sm:p-7"
@@ -201,7 +194,7 @@ function NotificationRow({
         <span className="font-semibold">{content}</span>
         {notification.readAt === undefined ? (
           <span
-            className="ml-2 inline-block h-1.5 w-1.5 rounded-full bg-accent align-middle"
+            className="ml-2 inline-block h-1.5 w-1.5 rounded-full bg-foreground align-middle"
             aria-label="Unread"
           />
         ) : null}

@@ -49,8 +49,8 @@ function ConnectedRecentPostFeed({ mode }: { mode: PostFeedMode }) {
     mode === "following" ? following : mode === "trending" ? trending : posts;
 
   if (
-    (mode === "recent" ? isLoading : activePosts === undefined) &&
-    activePosts?.length === 0
+    (mode === "recent" && isLoading && posts.length === 0) ||
+    (mode !== "recent" && activePosts === undefined)
   ) {
     return (
       <CurationLoading
@@ -106,7 +106,7 @@ function ConnectedRecentPostFeed({ mode }: { mode: PostFeedMode }) {
     return <CurationLoading label="Loading your feed…" />;
 
   return (
-    <div className="divide-y divide-black/[0.08] rounded-xl border border-border bg-card dark:divide-white/[0.08] dark:bg-card">
+    <div className="divide-y divide-border">
       <div className="flex items-end justify-between gap-4 p-5 sm:p-7">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground">

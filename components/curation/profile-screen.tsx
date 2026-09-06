@@ -880,31 +880,6 @@ function ProfileSectionsPreview() {
 function ProfileRail({ profile }: { profile: Profile }) {
   return (
     <>
-      <section className="rounded-xl border border-border p-5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-          Network state
-        </p>
-        <div className="mt-4 flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary dark:bg-secondary">
-            <Users className="h-4 w-4" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold">Follow graph is next</p>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">
-              Your profile is ready for people and trails.
-            </p>
-          </div>
-        </div>
-        <Button
-          type="button"
-          variant="outline"
-          className="mt-5 w-full rounded-md"
-          disabled
-          title="Follow actions will use the social graph once it is connected."
-        >
-          Follow state unavailable
-        </Button>
-      </section>
       <section className="rounded-xl bg-secondary p-5 dark:bg-secondary">
         <div className="flex items-center gap-2">
           <Github className="h-4 w-4" />

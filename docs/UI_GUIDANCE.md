@@ -67,3 +67,7 @@ The current request authorizes a visual overhaul while preserving routes, source
 - Compact repository headers and file trees keep the reader near the source. Composer retains source verification and all publication controls.
 
 Validation scope: user-supplied brief excludes tests, builds, typecheck, lint, development servers, browser checks, external authentication and deployment. Source review and formatting only; rendered mobile/dark/keyboard acceptance remains unverified. Do not close Linear issues or report visual acceptance without the normal gate. User subsequently authorized incremental local commits.
+
+### Interaction and curation follow-up
+
+Lists and Communities now share a keyboard-operable tab component with roving focus, stable IDs, linked panels, and high-contrast active indicators. Removed repeated promotional panels ahead of list/community results and simplified the notifications toolbar. Sign-in renders a safe unavailable state when the Convex provider is absent. Removed the stale profile rail claim that the follow graph was still planned. Existing auth, privacy and mutation contracts are preserved.

@@ -12,7 +12,7 @@ import {
   CurationRail,
   CurationShell,
 } from "@/components/curation/curation-shell";
-import { cn } from "@/lib/utils";
+import { SectionTabs } from "@/components/ui/section-tabs";
 import { useConvexAuth, useMutation, usePaginatedQuery } from "convex/react";
 import {
   ArrowTopRightIcon as ArrowUpRight,
@@ -61,51 +61,26 @@ function ConnectedListsScreen() {
       description="Collect repositories, people, posts, and source references into a list with a point of view."
       aside={<ListsRail />}
     >
-      <div className="border-b border-border px-5 pt-4 sm:px-7">
-        <div
-          className="flex gap-6 overflow-x-auto"
-          role="tablist"
-          aria-label="List views"
-        >
-          {tabs.map((tab) => (
-            <button
-              key={tab.value}
-              type="button"
-              role="tab"
-              aria-selected={activeTab === tab.value}
-              onClick={() => setActiveTab(tab.value)}
-              className={cn(
-                "relative whitespace-nowrap pb-4 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground",
-                activeTab === tab.value && "text-foreground",
-              )}
-            >
-              {tab.label}
-              {activeTab === tab.value ? (
-                <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-accent" />
-              ) : null}
-            </button>
-          ))}
+      <SectionTabs
+        label="List views"
+        items={tabs}
+        value={activeTab}
+        onChange={setActiveTab}
+      >
+        <div className="p-5 sm:p-7">
+          {activeTab === "your" ? (
+            <YourLists isAuthenticated={isAuthenticated} />
+          ) : null}
+          {activeTab === "shared" ? <SharedLists /> : null}
+          {activeTab === "discover" ? (
+            <DiscoverLists
+              lists={discovered.results}
+              status={discovered.status}
+              loadMore={discovered.loadMore}
+            />
+          ) : null}
         </div>
-      </div>
-
-      <div className="p-5 sm:p-7">
-        <CurationStatus
-          tone="accent"
-          title="Keep a trail, not a dump"
-          body="Lists preserve source attribution and stay out of the algorithm unless you make them public."
-        />
-        {activeTab === "your" ? (
-          <YourLists isAuthenticated={isAuthenticated} />
-        ) : null}
-        {activeTab === "shared" ? <SharedLists /> : null}
-        {activeTab === "discover" ? (
-          <DiscoverLists
-            lists={discovered.results}
-            status={discovered.status}
-            loadMore={discovered.loadMore}
-          />
-        ) : null}
-      </div>
+      </SectionTabs>
     </CurationShell>
   );
 }
