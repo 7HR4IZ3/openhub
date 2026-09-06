@@ -17,9 +17,6 @@ import { SectionTabs } from "@/components/ui/section-tabs";
 import { useConvexAuth, useMutation, usePaginatedQuery } from "convex/react";
 import {
   ArrowTopRightIcon as ArrowUpRight,
-  ReaderIcon as BookOpen,
-  CodeIcon as Code2,
-  GlobeIcon as Compass,
   GlobeIcon as Globe2,
   LockClosedIcon as LockKeyhole,
   PlusIcon as Plus,
@@ -112,9 +109,9 @@ function DiscoverCommunities({
   isAuthenticated: boolean;
 }) {
   return (
-    <div className="mt-5">
+    <div>
       {communities.length > 0 ? (
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           {communities.map((community) => (
             <CommunityCard
               key={community._id}
@@ -152,23 +149,6 @@ function DiscoverCommunities({
           </Button>
         </div>
       ) : null}
-      <div className="mt-6 grid gap-3 md:grid-cols-3">
-        <CommunityIdea
-          icon={Code2}
-          title="Frontend architecture"
-          body="Trace rendering, state, and interaction patterns in public code."
-        />
-        <CommunityIdea
-          icon={BookOpen}
-          title="Open source learning"
-          body="Share approachable entry points for people reading a codebase for the first time."
-        />
-        <CommunityIdea
-          icon={Compass}
-          title="Systems in the wild"
-          body="Compare the tradeoffs behind runtimes, tools, and infrastructure."
-        />
-      </div>
     </div>
   );
 }
@@ -204,7 +184,7 @@ function CommunityCard({
   }
 
   return (
-    <article className="rounded-xl border border-border p-5">
+    <article className="rounded-xl border border-border p-4">
       <div className="flex items-center justify-between gap-3">
         <Users className="h-5 w-5 text-foreground" />
         <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -213,11 +193,11 @@ function CommunityCard({
       </div>
       <Link
         href={`/communities/${community._id}`}
-        className="mt-6 block text-base font-semibold tracking-[-0.02em] hover:underline"
+        className="mt-4 block text-base font-semibold tracking-[-0.02em] hover:underline"
       >
         {community.name}
       </Link>
-      <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">
+      <p className="mt-2 line-clamp-2 text-sm leading-5 text-muted-foreground">
         {community.description ||
           "A technical circle for source-backed discussion."}
       </p>
@@ -236,13 +216,13 @@ function CommunityCard({
               ? "Saving…"
               : joined
                 ? "Joined"
-                : "Join circle"}
+                : "Join"}
         </Button>
         <Link
           href={`/communities/${community._id}`}
           className="text-xs font-semibold text-foreground hover:underline"
         >
-          Open circle
+          Open
         </Link>
       </div>
     </article>
@@ -285,15 +265,11 @@ function ConnectedFollowingCommunities() {
             <Link
               key={row._id}
               href={`/communities/${row._id}`}
-              className="rounded-xl border border-border p-5 transition-colors hover:border-ring"
+              className="rounded-xl border border-border p-4 transition-colors hover:border-ring"
             >
               <p className="text-sm font-semibold">{row.name}</p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Your membership is active. Community posts will stay
-                source-linked.
-              </p>
-              <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-foreground">
-                Open circle <ArrowUpRight className="h-3.5 w-3.5" />
+              <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-foreground">
+                Open <ArrowUpRight className="h-3.5 w-3.5" />
               </span>
             </Link>
           ))}
@@ -448,30 +424,6 @@ function CreateCommunityForm() {
         </Button>
       </div>
     </form>
-  );
-}
-
-function CommunityIdea({
-  icon: Icon,
-  title,
-  body,
-}: {
-  icon: typeof Code2;
-  title: string;
-  body: string;
-}) {
-  return (
-    <article className="rounded-xl border border-border p-5">
-      <Icon className="h-5 w-5 text-foreground" />
-      <h3 className="mt-6 text-sm font-semibold">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">{body}</p>
-      <Link
-        href="/explore"
-        className="mt-5 inline-flex items-center gap-1 text-xs font-semibold text-foreground hover:underline"
-      >
-        Find repositories <ArrowUpRight className="h-3.5 w-3.5" />
-      </Link>
-    </article>
   );
 }
 

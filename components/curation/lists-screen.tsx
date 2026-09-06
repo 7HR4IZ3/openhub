@@ -320,21 +320,9 @@ function DiscoverLists({
   loadMore: (count: number) => void;
 }) {
   return (
-    <div className="mt-5">
-      <div className="rounded-xl bg-secondary p-6 dark:bg-secondary sm:p-7">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground">
-          Public trails
-        </p>
-        <h2 className="mt-3 max-w-xl text-2xl font-semibold tracking-[-0.04em]">
-          Curate a way into the code.
-        </h2>
-        <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
-          Public lists make browsing more generous: fewer project pitches, more
-          useful paths for the next reader.
-        </p>
-      </div>
+    <div>
       {lists.length > 0 ? (
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           {lists.map((list) => (
             <ListCard key={list._id} list={list} />
           ))}
@@ -342,7 +330,7 @@ function DiscoverLists({
       ) : status === "LoadingFirstPage" ? (
         <CurationLoading label="Loading public trails…" />
       ) : (
-        <div className="mt-5 rounded-xl border border-dashed border-black/[0.14] p-5 dark:border-white/[0.14]">
+        <div className="rounded-xl border border-dashed border-black/[0.14] p-5 dark:border-white/[0.14]">
           <div className="flex items-start gap-3">
             <Compass className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
             <div>
@@ -380,7 +368,7 @@ function ListCard({
   return (
     <Link
       href={`/lists/${list._id}`}
-      className="group rounded-xl border border-border p-5 transition-colors hover:border-ring"
+      className="group rounded-xl border border-border p-4 transition-colors hover:border-ring"
     >
       <div className="flex items-center justify-between gap-3">
         <FolderHeart className="h-5 w-5 text-foreground" />
@@ -393,14 +381,14 @@ function ListCard({
           {list.visibility}
         </span>
       </div>
-      <h3 className="mt-6 text-base font-semibold tracking-[-0.02em] group-hover:underline">
+      <h3 className="mt-4 text-base font-semibold tracking-[-0.02em] group-hover:underline">
         {list.title}
       </h3>
-      <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted-foreground">
+      <p className="mt-2 line-clamp-2 text-sm leading-5 text-muted-foreground">
         {list.description || "A source trail through software."}
       </p>
       <span className="mt-5 inline-flex items-center gap-1 text-xs font-semibold text-foreground">
-        Open trail <ArrowUpRight className="h-3.5 w-3.5" />
+        Open <ArrowUpRight className="h-3.5 w-3.5" />
       </span>
     </Link>
   );

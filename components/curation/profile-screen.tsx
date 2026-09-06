@@ -432,35 +432,35 @@ function ProfileHero({
 }) {
   return (
     <section
-      className="border-b border-border p-5 sm:p-7"
+      className="border-b border-border p-4 sm:p-6"
       aria-labelledby="profile-name"
     >
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-start gap-4">
           <ProfileAvatar
             name={profile.displayName}
             avatarUrl={profile.avatarUrl}
           />
           <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-              <span className="rounded-full bg-secondary px-2.5 py-1 font-semibold dark:bg-secondary">
-                GitHub connected
-              </span>
-              {profile.githubLogin ? <span>@{profile.githubLogin}</span> : null}
-            </div>
+            {profile.githubLogin ? (
+              <p className="text-xs text-muted-foreground">
+                @{profile.githubLogin}
+              </p>
+            ) : null}
             <h2
               id="profile-name"
-              className="mt-3 text-3xl font-semibold tracking-[-0.05em] sm:text-4xl"
+              className="mt-1 text-2xl font-semibold tracking-[-0.05em] sm:text-3xl"
             >
               {profile.displayName}
             </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-xs text-muted-foreground">
               @{profile.handle}
             </p>
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground">
-              {profile.bio ??
-                "A developer making sense of software one repository at a time."}
-            </p>
+            {profile.bio ? (
+              <p className="mt-3 max-w-2xl text-sm leading-5 text-muted-foreground">
+                {profile.bio}
+              </p>
+            ) : null}
           </div>
         </div>
         <div className="flex shrink-0 flex-wrap gap-2 sm:justify-end">
@@ -480,18 +480,12 @@ function ProfileHero({
           </Button>
         </div>
       </div>
-      <div className="mt-6 flex flex-wrap gap-2 text-xs text-muted-foreground">
+      <div className="mt-4 flex flex-wrap gap-2 text-xs text-muted-foreground">
         {profile.availability ? (
           <span className="rounded-full border border-border px-3 py-1.5">
             {profile.availability}
           </span>
         ) : null}
-        <span className="rounded-full border border-border px-3 py-1.5">
-          Source attribution on
-        </span>
-        <span className="rounded-full border border-border px-3 py-1.5">
-          Read-only by design
-        </span>
       </div>
     </section>
   );
@@ -505,7 +499,7 @@ export function RepositoryCard({
   return (
     <Link
       href={`/repos/${encodeURIComponent(repository.ownerLogin)}/${encodeURIComponent(repository.name)}`}
-      className="group rounded-xl border border-border p-5 transition-colors hover:border-ring dark:hover:border-ring"
+      className="group rounded-xl border border-border p-4 transition-colors hover:border-ring dark:hover:border-ring"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -518,10 +512,12 @@ export function RepositoryCard({
         </div>
         <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
       </div>
-      <p className="mt-3 line-clamp-2 min-h-10 text-sm leading-5 text-muted-foreground">
-        {repository.description ?? "No description provided by the maintainer."}
-      </p>
-      <div className="mt-4 flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-muted-foreground">
+      {repository.description ? (
+        <p className="mt-2 line-clamp-2 text-sm leading-5 text-muted-foreground">
+          {repository.description}
+        </p>
+      ) : null}
+      <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-muted-foreground">
         {repository.primaryLanguage ? (
           <span>{repository.primaryLanguage}</span>
         ) : null}
@@ -532,7 +528,7 @@ export function RepositoryCard({
         ) : null}
       </div>
       {repository.topics.length > 0 ? (
-        <div className="mt-3 flex flex-wrap gap-1.5">
+        <div className="mt-2 flex flex-wrap gap-1.5">
           {repository.topics.slice(0, 4).map((topic) => (
             <span
               key={topic}
