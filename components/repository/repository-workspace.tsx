@@ -47,6 +47,7 @@ import { RepositorySurfacePanel } from "@/components/repository/repository-surfa
 import { RepositoryAnalyticsPanel } from "@/components/repository/repository-analytics-panel";
 import { RepositorySponsorship } from "@/components/repository/repository-sponsorship";
 import { Button } from "@/components/ui/button";
+import { AccountMenu } from "@/components/app/account-menu";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -204,9 +205,7 @@ function RepositoryWorkspaceView({
                 <CircleDot className="h-3.5 w-3.5 text-foreground" />
                 Source from {providerDisplayName(repository.provider)}
               </span>
-              <Button asChild size="sm" className="rounded-md">
-                <Link href="/signin">Sign in</Link>
-              </Button>
+              <AccountMenu />
             </div>
           </div>
 

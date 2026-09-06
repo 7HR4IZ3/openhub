@@ -76,6 +76,9 @@ function AccountMenuContent({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>Account</DropdownMenuLabel>
+          <DropdownMenuItem asChild>
+            <Link href="/compose">Write a post</Link>
+          </DropdownMenuItem>
           {loading ? (
             <DropdownMenuItem disabled>Loading account…</DropdownMenuItem>
           ) : authenticated ? (

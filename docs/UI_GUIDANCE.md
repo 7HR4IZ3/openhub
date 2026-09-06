@@ -95,3 +95,5 @@ Repository saving uses the installed Radix dropdown primitive for keyboard navig
 ### Account controls
 
 The shared header now exposes account actions and keyboard-accessible appearance choices on mobile and desktop. Signed-out and missing-provider states remain safe; sign-out shows pending/error feedback. Removed the redundant home-level Convex provider because the root layout already supplies authentication and realtime context.
+
+Repository headers now use the same account menu, keeping theme switching and sign-out reachable while reading source. The menu also provides a mobile-accessible compose action.
