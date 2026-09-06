@@ -87,3 +87,7 @@ The composer no longer nests a fixed 300px sidebar inside the application conten
 ### Safety settings follow-up
 
 Safety settings now guard the absent auth provider, preserve a loading state during account resolution, and use a single-column settings layout inside the application shell. Keyword input has a visible label. Mutations expose failure feedback and pending states; blocks, mutes and filters expose pagination controls.
+
+### Save menu follow-up
+
+Repository saving uses the installed Radix dropdown primitive for keyboard navigation, dismissal and focus restoration. Menu dimensions respect narrow viewports; pending/saved choices prevent repeat submissions and save feedback remains accessible. Save state resets when navigating to a different repository.

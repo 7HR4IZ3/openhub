@@ -47,6 +47,14 @@ import { RepositorySurfacePanel } from "@/components/repository/repository-surfa
 import { RepositoryAnalyticsPanel } from "@/components/repository/repository-analytics-panel";
 import { RepositorySponsorship } from "@/components/repository/repository-sponsorship";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import type {
   NormalizedRepository,
@@ -665,7 +673,12 @@ function RepositorySaveButton({
       </Button>
     );
   }
-  return <ConnectedRepositorySaveButton repository={repository} />;
+  return (
+    <ConnectedRepositorySaveButton
+      key={repository.provider + ":" + repository.providerRepositoryId}
+      repository={repository}
+    />
+  );
 }
 
 function ConnectedRepositorySaveButton({
@@ -690,7 +703,6 @@ function ConnectedRepositorySaveButton({
     | undefined;
   const observe = useAction(api.discovery.observePublicRepository);
   const addItem = useMutation(api.curation.addListItem);
-  const [open, setOpen] = useState(false);
   const [saved, setSaved] = useState<Set<string>>(new Set());
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -706,6 +718,7 @@ function ConnectedRepositorySaveButton({
   }
 
   async function saveToList(listId: Id<"lists">) {
+    if (pending || saved.has(listId)) return;
     setPending(true);
     setError(null);
     try {
@@ -732,60 +745,61 @@ function ConnectedRepositorySaveButton({
   }
 
   return (
-    <div className="relative">
-      <Button
-        type="button"
-        variant="outline"
-        className="rounded-md bg-transparent"
-        onClick={() => setOpen((value) => !value)}
-        aria-expanded={open}
-      >
-        <Bookmark className="h-4 w-4" /> Save
-      </Button>
-      {open ? (
-        <div className="absolute right-0 top-full z-20 mt-2 w-64 rounded-xl border border-border bg-card p-3 shadow-sm dark:bg-card">
-          <p className="px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            Save to a list
-          </p>
+    <div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button type="button" variant="outline">
+            <Bookmark />
+            Save
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          className="w-64 max-w-[calc(100vw-2rem)]"
+        >
+          <DropdownMenuLabel>Save to a list</DropdownMenuLabel>
+          <DropdownMenuSeparator />
           {lists === undefined ? (
-            <p className="px-2 py-3 text-xs text-muted-foreground">
-              Loading lists…
-            </p>
+            <DropdownMenuItem disabled>Loading lists…</DropdownMenuItem>
           ) : lists.length === 0 ? (
-            <Link
-              href="/lists"
-              className="block px-2 py-3 text-xs leading-5 text-muted-foreground hover:text-foreground"
-            >
-              Create a list first{" "}
-              <ArrowUpRight className="inline h-3.5 w-3.5" />
-            </Link>
+            <DropdownMenuItem asChild>
+              <Link href="/lists">
+                Create a list <ArrowUpRight />
+              </Link>
+            </DropdownMenuItem>
           ) : (
-            <div className="mt-1 max-h-56 overflow-y-auto">
+            <div className="max-h-64 overflow-y-auto">
               {lists.map((list) => (
-                <button
+                <DropdownMenuItem
                   key={list._id}
-                  type="button"
-                  className="flex w-full items-center justify-between gap-3 rounded-xl px-2 py-2 text-left text-sm hover:bg-black/[0.05] dark:hover:bg-white/[0.06]"
-                  onClick={() => void saveToList(list._id)}
-                  disabled={pending}
+                  className="min-h-11 justify-between gap-3"
+                  disabled={pending || saved.has(list._id)}
+                  onSelect={(event) => {
+                    event.preventDefault();
+                    void saveToList(list._id);
+                  }}
                 >
                   <span className="min-w-0 truncate">{list.title}</span>
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     {saved.has(list._id) ? "Saved" : list.visibility}
                   </span>
-                </button>
+                </DropdownMenuItem>
               ))}
             </div>
           )}
-          {error ? (
-            <p
-              role="alert"
-              className="mt-2 px-2 text-[10px] leading-4 text-destructive"
-            >
-              {error}
-            </p>
-          ) : null}
-        </div>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <span role="status" className="sr-only">
+        {pending
+          ? "Saving repository…"
+          : saved.size > 0
+            ? "Repository saved to your list"
+            : ""}
+      </span>
+      {error ? (
+        <p role="alert" className="mt-2 max-w-64 text-xs text-destructive">
+          {error}
+        </p>
       ) : null}
     </div>
   );
