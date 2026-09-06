@@ -105,3 +105,7 @@ Home now reuses the shared keyboard tab component. Recommended repositories are 
 ### Form completion
 
 List, community and contribution forms now show persistent labels for text, visibility and description fields. Source explanation controls have visible question/mode labels and touch-sized controls. The home feed subscribes to the recent-post query only when that feed is selected.
+
+### Route recovery and post limits
+
+Added consistent unexpected-error and not-found pages using a recovery component that does not depend on auth or data queries. Error recovery uses the installed Next.js version's `retry` contract. Composer now reflects the backend's 64,000-byte UTF-8 limit, announces over-limit drafts and prevents submission rather than promising unlimited text.

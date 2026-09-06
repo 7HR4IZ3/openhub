@@ -196,7 +196,11 @@ function PostComposerForm({
   const [visibility, setVisibility] = useState<PostVisibility>("public");
   const selectedType =
     postTypes.find((item) => item.value === postType) ?? postTypes[0];
-  const canPublish = body.trim().length > 0 || source !== null || diff !== null;
+  const bodyBytes = new TextEncoder().encode(body).length;
+  const bodyTooLarge = bodyBytes > 64_000;
+  const canPublish =
+    !bodyTooLarge &&
+    (body.trim().length > 0 || source !== null || diff !== null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -274,11 +278,21 @@ function PostComposerForm({
                   onChange={(event) => setBody(event.target.value)}
                   placeholder={placeholderFor(postType)}
                   rows={8}
+                  aria-invalid={bodyTooLarge}
+                  aria-describedby="post-size-status"
                   className="mt-4 min-h-48 w-full resize-y rounded-xl border border-border bg-transparent px-4 py-4 text-base leading-7 outline-none transition-colors placeholder:text-muted-foreground focus:border-ring"
                 />
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
                   <span>Markdown and code blocks are supported.</span>
-                  <span>No character limit.</span>
+                  <span
+                    id="post-size-status"
+                    role={bodyTooLarge ? "alert" : undefined}
+                    className={bodyTooLarge ? "text-destructive" : undefined}
+                  >
+                    {bodyTooLarge
+                      ? "Post exceeds the 64 KB limit."
+                      : `${new Intl.NumberFormat("en").format(bodyBytes)} / 64,000 bytes`}
+                  </span>
                 </div>
               </div>
 
