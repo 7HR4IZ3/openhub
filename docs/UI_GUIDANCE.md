@@ -119,3 +119,5 @@ The user authorized pushing and deploying the redesign. Vercel's first build ide
 Mobile navigation is icon-only with accessible labels and native title hints, leaving the bottom bar quiet and easy to scan. The shared header, page descriptions, empty states, and section spacing are more compact. Home and Explore now put the search/feed surface first and remove repeated editorial introductions and topic prompts. Compose keeps source and publishing controls visible while removing instructional panels that competed with the writing surface. The desktop rail is reduced to direct discovery links.
 
 Lists, Communities, and Profile now follow the same content-first rule: removed introductory promo cards and idea panels, shortened card actions, reduced card density, and kept profile metadata to identity and user-provided content. Empty states still explain unavailable actions and preserve recovery paths.
+
+The public entry page now uses a shorter hero and compact destination cards, while the mobile content clearance matches the icon-only navigation height instead of reserving excess empty space.

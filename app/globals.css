@@ -109,7 +109,7 @@
     padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
   }
   .app-content {
-    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
   }
   .skip-link {
     @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-3 focus:text-primary-foreground;

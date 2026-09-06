@@ -204,8 +204,7 @@ export function CurationRail() {
         </div>
       </section>
       <p className="border-t pt-5 text-xs leading-5 text-muted-foreground">
-        Source belongs to its original authors. Every shared reference keeps its
-        attribution.
+        Source attribution preserved.
       </p>
     </>
   );

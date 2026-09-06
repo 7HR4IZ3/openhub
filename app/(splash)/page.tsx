@@ -9,26 +9,22 @@ import Link from "next/link";
 
 export default function HomePage() {
   return (
-    <main className="mx-auto w-full max-w-6xl px-5 pb-20 pt-14 sm:px-8 sm:pt-20">
-      <section className="max-w-4xl pb-16 sm:pb-24">
-        <p className="mb-6 text-sm text-muted-foreground">
-          The open-source reading room
-        </p>
-        <h1 className="editorial-title max-w-4xl text-[clamp(2.75rem,6vw,5.5rem)]">
-          Find software worth understanding.
+    <main className="mx-auto w-full max-w-6xl px-5 pb-16 pt-10 sm:px-8 sm:pt-16">
+      <section className="max-w-4xl pb-12 sm:pb-16">
+        <h1 className="editorial-title max-w-4xl text-[clamp(2.75rem,6vw,4.5rem)]">
+          Code, with context.
         </h1>
-        <p className="mt-6 max-w-xl text-lg leading-8 text-muted-foreground">
-          Explore repositories, read the source, and follow the conversations
-          that make the code click.
+        <p className="mt-4 max-w-xl text-base leading-7 text-muted-foreground">
+          Explore source, ideas, and discussion in one place.
         </p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Button asChild size="lg">
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Button asChild>
             <Link href="/explore">
-              Explore repositories <ArrowTopRightIcon />
+              Explore <ArrowTopRightIcon />
             </Link>
           </Button>
-          <Button asChild size="lg" variant="outline">
-            <Link href="/signin">Continue with GitHub</Link>
+          <Button asChild variant="outline">
+            <Link href="/signin">Sign in</Link>
           </Button>
         </div>
       </section>
@@ -38,64 +34,43 @@ export default function HomePage() {
       >
         <Link
           href="/explore"
-          className="group flex flex-col justify-between rounded-xl border bg-card p-7 transition-colors hover:bg-secondary md:col-span-3 sm:p-10"
+          className="group flex flex-col justify-between rounded-xl border bg-card p-5 transition-colors hover:bg-secondary md:col-span-3 sm:p-7"
         >
           <ReaderIcon className="h-7 w-7" />
           <div className="mt-12">
-            <h2 className="text-2xl font-semibold tracking-tight">
-              Follow an idea into the source.
+            <h2 className="text-xl font-semibold tracking-tight">
+              Repositories
             </h2>
-            <p className="mt-4 max-w-lg text-sm leading-7 text-muted-foreground">
-              Read files, explore commits, and find the exact lines behind a
-              question. The repository stays the source of truth.
-            </p>
-            <span className="mt-7 inline-flex items-center gap-2 text-sm font-medium">
-              Browse repositories <ArrowTopRightIcon />
+            <span className="mt-5 inline-flex items-center gap-2 text-sm font-medium">
+              Browse <ArrowTopRightIcon />
             </span>
           </div>
         </Link>
         <div className="grid gap-4 md:col-span-2">
           <Link
             href="/communities"
-            className="rounded-xl border bg-accent/40 p-7 transition-colors hover:bg-accent"
+            className="rounded-xl border bg-accent/40 p-5 transition-colors hover:bg-accent"
           >
             <ChatBubbleIcon className="h-5 w-5" />
-            <h2 className="mt-5 text-lg font-semibold">
-              Conversations with context.
-            </h2>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Questions, reviews, and useful observations from people learning
-              in public.
-            </p>
+            <h2 className="mt-5 text-lg font-semibold">Conversations</h2>
           </Link>
           <Link
             href="/lists"
-            className="rounded-xl border bg-secondary p-7 transition-colors hover:bg-muted"
+            className="rounded-xl border bg-secondary p-5 transition-colors hover:bg-muted"
           >
             <CodeIcon className="h-5 w-5" />
-            <h2 className="mt-5 text-lg font-semibold">
-              Keep a trail worth revisiting.
-            </h2>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Collect repositories and posts. Return to the ideas you want to
-              spend more time with.
-            </p>
+            <h2 className="mt-5 text-lg font-semibold">Reading trails</h2>
           </Link>
         </div>
       </section>
-      <section className="mt-16 grid gap-8 border-t pt-8 sm:mt-24 md:grid-cols-[1fr_1.4fr] md:gap-16">
-        <h2 className="editorial-title text-3xl sm:text-4xl">
-          The code belongs to its authors.
+      <section className="mt-12 grid gap-3 border-t pt-6 sm:mt-16 md:grid-cols-[1fr_1.4fr] md:gap-16">
+        <h2 className="editorial-title text-2xl sm:text-3xl">
+          Source stays attributed.
         </h2>
-        <div className="space-y-5 text-sm leading-7 text-muted-foreground">
+        <div className="text-sm leading-6 text-muted-foreground">
           <p>
-            OpenHub is an independent reading and discussion space. It does not
-            edit or execute repository code. Shared source references preserve
-            the original repository, commit, lines, and attribution.
-          </p>
-          <p>
-            Public browsing is open. Connect GitHub when you want to build your
-            profile and take part in the conversation.
+            OpenHub reads public repositories without editing or executing them.
+            Shared references keep their original repository, commit, and lines.
           </p>
         </div>
       </section>
