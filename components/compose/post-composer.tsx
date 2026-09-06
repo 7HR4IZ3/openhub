@@ -19,9 +19,7 @@ import type {
 import { useAction, useMutation } from "convex/react";
 import {
   ArrowTopRightIcon as ArrowUpRight,
-  CheckIcon as Check,
   FileTextIcon as FileCode2,
-  GitHubLogoIcon as Github,
   LockClosedIcon as LockKeyhole,
   PaperPlaneIcon as Send,
 } from "@radix-ui/react-icons";
@@ -218,34 +216,28 @@ function PostComposerForm({
 
   return (
     <CurationShell active="Home" eyebrow="compose" title="Write a post">
-      <div className="px-5 py-6 sm:px-8 sm:py-8">
+      <div className="px-5 py-5 sm:px-8 sm:py-6">
         <div>
           {source !== null ? (
-            <p role="status" className="mb-6 rounded-md border p-4 text-sm">
-              The source will be verified against its exact public commit before
-              it is published.
+            <p
+              role="status"
+              className="mb-5 rounded-md border px-3 py-2 text-xs text-muted-foreground"
+            >
+              Source pinned to its public commit.
               <Link href="/compose" className="ml-1 underline">
-                Write a text post
+                Remove
               </Link>
             </p>
           ) : null}
-          <div className="max-w-2xl">
-            <h2 className="editorial-title text-3xl sm:text-4xl">
-              Add something worth reading.
-            </h2>
-            <p className="mt-3 text-sm leading-6 text-muted-foreground">
-              Share a question, an observation, or a few lines of source.
-            </p>
-          </div>
 
           {communityId ? (
-            <p className="mt-6 inline-flex rounded-full bg-secondary px-3 py-2 text-xs font-semibold text-foreground dark:bg-secondary">
-              Publishing inside a community
+            <p className="mb-5 inline-flex rounded-full bg-secondary px-3 py-2 text-xs font-semibold text-foreground dark:bg-secondary">
+              Community
             </p>
           ) : null}
 
-          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-            <section className="min-w-0 rounded-xl border border-border bg-card p-5 dark:bg-card sm:p-7">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <section className="min-w-0 rounded-xl border border-border bg-card p-4 dark:bg-card sm:p-6">
               <fieldset disabled={isPublishing}>
                 <legend className="mb-3 text-sm font-medium">Post type</legend>
                 <div className="flex flex-wrap gap-2">
@@ -354,41 +346,6 @@ function PostComposerForm({
                 </Button>
               </div>
             </section>
-
-            <aside className="grid gap-4 sm:grid-cols-2">
-              <section className="rounded-xl bg-secondary p-5 dark:bg-secondary">
-                <div className="flex items-center gap-2">
-                  <Github className="h-4 w-4" />
-                  <h2 className="text-sm font-semibold">
-                    A source is a promise
-                  </h2>
-                </div>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                  Attached code is read-only, pinned to a commit, attributed to
-                  its original owner, and linked back to GitHub.
-                </p>
-              </section>
-
-              <section className="rounded-xl border border-border p-5">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                  Good OpenHub posts
-                </p>
-                <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
-                  <li className="flex gap-2">
-                    <Check className="mt-1 h-4 w-4 shrink-0 text-foreground" />
-                    Name the question a reader can help answer.
-                  </li>
-                  <li className="flex gap-2">
-                    <Check className="mt-1 h-4 w-4 shrink-0 text-foreground" />
-                    Keep the relevant lines close to the claim.
-                  </li>
-                  <li className="flex gap-2">
-                    <Check className="mt-1 h-4 w-4 shrink-0 text-foreground" />
-                    Give maintainers room to respond.
-                  </li>
-                </ul>
-              </section>
-            </aside>
           </form>
         </div>
       </div>

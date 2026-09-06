@@ -33,19 +33,13 @@ export function HomeScreen({
       title="Discover"
       aside={<CurationRail />}
     >
-      <section className="page-section">
-        <h2 className="editorial-title max-w-xl text-3xl sm:text-4xl">
-          Good software rewards curiosity.
-        </h2>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Discover repositories and the conversations behind their code.
-        </p>
+      <section className="border-b px-5 py-4 sm:px-8">
         <Link
           href="/explore"
-          className="mt-5 flex min-h-12 items-center gap-3 rounded-md border border-input px-4 text-sm text-muted-foreground transition-colors hover:bg-secondary"
+          className="flex min-h-11 items-center gap-3 rounded-md border border-input px-4 text-sm text-muted-foreground transition-colors hover:bg-secondary"
         >
           <MagnifyingGlassIcon className="h-4 w-4" />
-          Search repositories, people, and posts
+          Search repositories, people, or posts
           <span className="ml-auto" aria-hidden="true">
             →
           </span>

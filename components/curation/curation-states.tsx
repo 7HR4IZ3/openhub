@@ -45,24 +45,24 @@ export function CurationEmptyState({
   return (
     <div
       className={cn(
-        "rounded-xl border border-border bg-card p-6 sm:p-8",
+        "rounded-xl border border-border bg-card p-5 sm:p-6",
         className,
       )}
     >
       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary dark:bg-secondary">
         <Icon className="h-5 w-5 text-foreground" />
       </div>
-      <p className="mt-5 text-xs font-medium text-muted-foreground">
+      <p className="mt-4 text-xs font-medium text-muted-foreground">
         {eyebrow}
       </p>
-      <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-[-0.04em]">
+      <h2 className="mt-1.5 max-w-xl text-xl font-semibold tracking-[-0.04em]">
         {title}
       </h2>
-      <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
+      <p className="mt-2 max-w-xl text-sm leading-5 text-muted-foreground">
         {body}
       </p>
       {action && actionHref ? (
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-5 flex flex-wrap gap-3">
           <Button asChild className="rounded-md">
             <Link href={actionHref}>
               {action} <ArrowUpRight className="h-4 w-4" />

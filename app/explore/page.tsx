@@ -64,18 +64,9 @@ export default function ExplorePage() {
 
   return (
     <CurationShell active="Explore" eyebrow="explore" title="Explore">
-      <section className="page-section">
-        <h2 className="editorial-title text-3xl sm:text-4xl">
-          Find your next deep dive.
-        </h2>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          Public repositories across GitHub, GitLab, Bitbucket, and Codeberg.
-        </p>
-        <form onSubmit={handleSubmit} className="mt-6" role="search">
-          <label
-            htmlFor="repository-search"
-            className="mb-2 block text-sm font-medium"
-          >
+      <section className="border-b px-5 py-4 sm:px-8">
+        <form onSubmit={handleSubmit} role="search">
+          <label htmlFor="repository-search" className="sr-only">
             Search OpenHub
           </label>
           <div className="flex gap-2">
@@ -92,34 +83,19 @@ export default function ExplorePage() {
                 className="h-12 w-full rounded-md border border-input bg-card pl-10 pr-3 text-base"
               />
             </div>
-            <Button type="submit" className="h-12 px-5" disabled={isSearching}>
-              {isSearching ? "Searching…" : "Search"}
+            <Button
+              type="submit"
+              className="h-12 px-4"
+              disabled={isSearching}
+              aria-label={isSearching ? "Searching" : "Search"}
+            >
+              <Search className="h-4 w-4 sm:hidden" aria-hidden="true" />
+              <span className="hidden sm:inline">
+                {isSearching ? "Searching…" : "Search"}
+              </span>
             </Button>
           </div>
         </form>
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="mr-1 text-xs text-muted-foreground">
-            Try a topic
-          </span>
-          {[
-            "TypeScript",
-            "developer tools",
-            "machine learning",
-            "databases",
-          ].map((topic) => (
-            <button
-              key={topic}
-              type="button"
-              className="min-h-11 rounded-md px-3 text-xs text-muted-foreground hover:bg-secondary hover:text-foreground"
-              onClick={() => {
-                setQuery(topic);
-                void search(topic);
-              }}
-            >
-              {topic}
-            </button>
-          ))}
-        </div>
       </section>
       <section
         className="px-5 py-6 sm:px-8"
@@ -197,13 +173,8 @@ export default function ExplorePage() {
           </>
         ) : (
           <div className="py-8">
-            <h2 className="text-lg font-semibold">
-              Start with what interests you.
-            </h2>
-            <p className="mt-3 max-w-lg text-sm leading-6 text-muted-foreground">
-              Look up a project you use, a language you are learning, or a
-              problem you want to understand. Open a result to read the files
-              and follow the discussion.
+            <p className="text-sm text-muted-foreground">
+              Search by project, language, or topic.
             </p>
           </div>
         )}

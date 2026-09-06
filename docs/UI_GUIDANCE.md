@@ -113,3 +113,7 @@ Added consistent unexpected-error and not-found pages using a recovery component
 ### Production deployment follow-up
 
 The user authorized pushing and deploying the redesign. Vercel's first build identified a shared icon type mismatch: Radix icons forbid children, while the generic SVG component type allowed them. The shared type now derives directly from the installed Radix icon declaration, preserving its props and forwarded ref contract. Production build verification runs through Vercel; visual acceptance remains pending.
+
+### Content-first mobile pass
+
+Mobile navigation is icon-only with accessible labels and native title hints, leaving the bottom bar quiet and easy to scan. The shared header, page descriptions, empty states, and section spacing are more compact. Home and Explore now put the search/feed surface first and remove repeated editorial introductions and topic prompts. Compose keeps source and publishing controls visible while removing instructional panels that competed with the writing surface. The desktop rail is reduced to direct discovery links.

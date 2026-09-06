@@ -99,7 +99,7 @@ export function CurationShell({
           tabIndex={-1}
           className="app-content min-w-0 bg-card outline-none lg:border-x"
         >
-          <header className="sticky top-0 z-10 flex min-h-20 items-center justify-between gap-3 border-b bg-card px-5 py-4 sm:px-8">
+          <header className="sticky top-0 z-10 flex min-h-16 items-center justify-between gap-3 border-b bg-card px-4 py-3 sm:px-8">
             <div className="flex min-w-0 items-center gap-3">
               <Link
                 href="/home"
@@ -110,7 +110,7 @@ export function CurationShell({
               </Link>
               <div className="min-w-0">
                 <span className="sr-only">OpenHub / {eyebrow}</span>
-                <h1 className="truncate text-xl font-semibold tracking-tight">
+                <h1 className="truncate text-lg font-semibold tracking-tight sm:text-xl">
                   {title}
                 </h1>
               </div>
@@ -135,7 +135,7 @@ export function CurationShell({
             </div>
           </header>
           {description ? (
-            <p className="max-w-3xl px-5 pb-2 pt-6 text-sm leading-6 text-muted-foreground sm:px-8">
+            <p className="line-clamp-1 max-w-2xl px-5 py-3 text-xs leading-5 text-muted-foreground sm:px-8">
               {description}
             </p>
           ) : null}
@@ -148,7 +148,7 @@ export function CurationShell({
         </aside>
       </div>
       <nav
-        className="mobile-navigation fixed inset-x-0 bottom-0 z-20 grid grid-cols-6 border-t bg-card px-1 pt-2 lg:hidden"
+        className="mobile-navigation fixed inset-x-0 bottom-0 z-20 grid grid-cols-6 border-t bg-card px-2 pt-1 lg:hidden"
         aria-label="Mobile navigation"
       >
         {navigation.map(({ label, href, icon: Icon }) => (
@@ -156,13 +156,14 @@ export function CurationShell({
             key={href}
             href={href}
             aria-current={label === active ? "page" : undefined}
+            title={label}
             className={cn(
-              "flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 rounded-md text-[9px] text-muted-foreground",
+              "flex min-h-12 min-w-0 items-center justify-center rounded-md text-muted-foreground transition-colors",
               label === active && "bg-secondary font-semibold text-foreground",
             )}
           >
-            <Icon className="h-[18px] w-[18px]" aria-hidden="true" />
-            <span>{label}</span>
+            <Icon className="h-5 w-5" aria-hidden="true" />
+            <span className="sr-only">{label}</span>
           </Link>
         ))}
       </nav>
@@ -174,29 +175,22 @@ export function CurationRail() {
   return (
     <>
       <section>
-        <h2 className="text-sm font-semibold">
-          A place for curious developers.
+        <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          Explore
         </h2>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          Read the code. Follow an idea. Add the context that helps someone else
-          understand it.
-        </p>
         <Link
           href="/explore"
-          className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-medium hover:underline"
+          className="mt-3 inline-flex min-h-10 items-center gap-2 text-sm font-medium hover:underline"
         >
-          Explore repositories <ArrowTopRightIcon />
+          Repositories <ArrowTopRightIcon />
         </Link>
       </section>
       <section className="border-t pt-6">
-        <h2 className="text-xs font-semibold text-muted-foreground">
-          Keep exploring
-        </h2>
-        <div className="mt-3 space-y-1">
+        <div className="space-y-1">
           {[
-            ["/lists", "Curated lists"],
-            ["/communities", "Technical communities"],
-            ["/bounties", "Contribution tasks"],
+            ["/lists", "Lists"],
+            ["/communities", "Communities"],
+            ["/bounties", "Bounties"],
           ].map(([href, label]) => (
             <Link
               key={href}
