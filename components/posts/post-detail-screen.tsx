@@ -34,6 +34,7 @@ import {
 
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
+import { CurationShell } from "@/components/curation/curation-shell";
 import { PostBody } from "@/components/posts/post-body";
 import { DiffCodeViewer } from "@/components/repository/diff-code-viewer";
 import { SourceExplainer } from "@/components/ai/source-explainer";
@@ -189,416 +190,333 @@ function ConnectedPostDetailScreen({ postId }: { postId: PostId }) {
   }
 
   return (
-    <main className="min-h-[100dvh] bg-background text-foreground dark:bg-background">
-      <div className="mx-auto grid min-h-[100dvh] w-full max-w-[1440px] lg:grid-cols-[232px_minmax(0,680px)_304px]">
-        <aside className="sticky top-0 hidden h-[100dvh] flex-col justify-between px-5 py-6 lg:flex">
-          <div>
-            <Link
-              href="/home"
-              className="text-sm font-semibold tracking-[-0.03em]"
-            >
-              OpenHub
-            </Link>
-            <nav className="mt-12 space-y-1" aria-label="Post navigation">
-              <Link
-                href="/home"
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:bg-black/[0.04] hover:text-foreground dark:hover:bg-white/[0.05]"
-              >
-                <ArrowLeft className="h-[18px] w-[18px]" />
-                Back to home
-              </Link>
-              <Link
-                href="/explore"
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-muted-foreground hover:bg-black/[0.04] hover:text-foreground dark:hover:bg-white/[0.05]"
-              >
-                <Code2 className="h-[18px] w-[18px]" />
-                Explore source
-              </Link>
-            </nav>
-          </div>
-          <p className="px-3 text-xs leading-5 text-muted-foreground">
-            Source first. Conversation second.
-          </p>
-        </aside>
-
-        <section className="min-h-[100dvh] border-x border-border bg-card">
-          <header className="sticky top-0 z-10 flex items-center gap-4 border-b border-border bg-card/90 px-5 py-4 backdrop-blur dark:bg-card/90 sm:px-7">
-            <Link
-              href="/home"
-              className="rounded-full p-1.5 text-muted-foreground hover:bg-black/[0.05] hover:text-foreground dark:hover:bg-white/[0.06]"
-              aria-label="Back to home"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                OpenHub / post
-              </p>
-              <h1 className="mt-1 text-xl font-semibold tracking-[-0.035em]">
-                Technical context
-              </h1>
+    <CurationShell active="Home" eyebrow="post" title="Discussion">
+      <div className="min-w-0">
+        <article className="border-b border-border p-5 sm:p-7">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-foreground dark:bg-white/[0.08]">
+              {initials(post.author.displayName)}
             </div>
-          </header>
-
-          <article className="border-b border-border p-5 sm:p-7">
-            <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-foreground dark:bg-white/[0.08]">
-                {initials(post.author.displayName)}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-                  <span className="font-semibold">
-                    {post.author.displayName}
-                  </span>
-                  <span className="text-muted-foreground">
-                    @{post.author.handle}
-                  </span>
-                  <span className="text-muted-foreground">·</span>
-                  <time
-                    className="text-muted-foreground"
-                    dateTime={new Date(post.createdAt).toISOString()}
-                  >
-                    {formatDate(post.createdAt)}
-                  </time>
-                </div>
-                <span className="mt-2 inline-flex rounded-full bg-secondary px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-foreground dark:bg-secondary">
-                  {post.type}
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                <span className="font-semibold">{post.author.displayName}</span>
+                <span className="text-muted-foreground">
+                  @{post.author.handle}
                 </span>
-              </div>
-            </div>
-
-            <SafetyControls
-              postId={post._id}
-              authorId={post.authorId}
-              isAuthor={currentUser?._id === post.authorId}
-              moderationState={post.moderationState}
-            />
-            <PostOwnerControls
-              postId={post._id}
-              isAuthor={currentUser?._id === post.authorId}
-              initialBody={post.body}
-            />
-
-            <div className="mt-6">
-              <PostBody
-                body={post.body}
-                lineLinkBase={post.sourceReference?.canonicalUrl}
-              />
-            </div>
-
-            {post.sourceReference ? (
-              <SourceReferenceCard
-                source={post.sourceReference}
-                targetUserId={post.authorId}
-              />
-            ) : null}
-            {post.diffReference ? (
-              <DiffReferenceCard diff={post.diffReference} />
-            ) : null}
-
-            <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-border pt-4">
-              <ActionButton
-                icon={Heart}
-                label={liked ? "Liked" : "Like"}
-                count={post.likeCount}
-                active={liked}
-                disabled={!isAuthenticated || pendingAction !== null}
-                onClick={() =>
-                  void runAction("like", () => toggleLike({ postId }))
-                }
-              />
-              <ActionButton
-                icon={MessageCircle}
-                label="Comment"
-                count={commentCount}
-                disabled={pendingAction !== null}
-                onClick={() => document.getElementById("comment-box")?.focus()}
-              />
-              <ActionButton
-                icon={Repeat2}
-                label={reposted ? "Reposted" : "Repost"}
-                count={post.repostCount}
-                active={reposted}
-                disabled={!isAuthenticated || pendingAction !== null}
-                onClick={() =>
-                  void runAction("repost", () => toggleRepost({ postId }))
-                }
-              />
-              <ActionButton
-                icon={Quote}
-                label="Quote"
-                disabled={!isAuthenticated || pendingAction !== null}
-                onClick={() => setQuoteOpen((value) => !value)}
-              />
-              <ActionButton
-                icon={Bookmark}
-                label={bookmarked ? "Saved" : "Save"}
-                active={bookmarked}
-                disabled={!isAuthenticated || pendingAction !== null}
-                onClick={() =>
-                  void runAction("bookmark", () => toggleBookmark({ postId }))
-                }
-              />
-              <ActionButton
-                icon={Share2}
-                label="Share"
-                disabled={pendingAction !== null}
-                onClick={() => void sharePost()}
-              />
-            </div>
-
-            {quoteOpen && isAuthenticated ? (
-              <form
-                onSubmit={submitQuote}
-                className="mt-4 rounded-xl border border-border bg-background p-4 dark:bg-background"
-              >
-                <label htmlFor="quote-box" className="text-xs font-semibold">
-                  Add your context
-                </label>
-                <textarea
-                  id="quote-box"
-                  value={quoteDraft}
-                  onChange={(event) => setQuoteDraft(event.target.value)}
-                  rows={3}
-                  maxLength={64_000}
-                  placeholder="Why is this worth opening?"
-                  className="mt-3 w-full resize-y bg-transparent text-sm leading-6 outline-none placeholder:text-muted-foreground"
-                />
-                <div className="mt-3 flex justify-end">
-                  <Button
-                    type="submit"
-                    size="sm"
-                    className="rounded-md"
-                    disabled={
-                      quoteDraft.trim().length === 0 || pendingAction !== null
-                    }
-                  >
-                    {pendingAction === "quote" ? "Publishing…" : "Quote post"}
-                  </Button>
-                </div>
-              </form>
-            ) : null}
-            {shareNotice ? (
-              <p role="status" className="mt-3 text-xs text-muted-foreground">
-                {shareNotice}
-              </p>
-            ) : null}
-
-            {!isAuthenticated ? (
-              <p className="mt-4 text-xs leading-5 text-muted-foreground">
-                <Link
-                  href="/signin"
-                  className="font-semibold text-foreground hover:underline"
+                <span className="text-muted-foreground">·</span>
+                <time
+                  className="text-muted-foreground"
+                  dateTime={new Date(post.createdAt).toISOString()}
                 >
-                  Sign in with GitHub
-                </Link>{" "}
-                to join the conversation.
-              </p>
-            ) : null}
-          </article>
-
-          <section className="p-5 sm:p-7" aria-labelledby="comments-heading">
-            <div className="flex items-end justify-between gap-4">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  Contextual discussion
-                </p>
-                <h2
-                  id="comments-heading"
-                  className="mt-2 text-xl font-semibold tracking-[-0.035em]"
-                >
-                  What do you notice?
-                </h2>
+                  {formatDate(post.createdAt)}
+                </time>
               </div>
-              <span className="text-xs text-muted-foreground">
-                {commentCount} {commentCount === 1 ? "reply" : "replies"}
+              <span className="mt-2 inline-flex rounded-full bg-secondary px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-foreground dark:bg-secondary">
+                {post.type}
               </span>
             </div>
+          </div>
 
+          <SafetyControls
+            postId={post._id}
+            authorId={post.authorId}
+            isAuthor={currentUser?._id === post.authorId}
+            moderationState={post.moderationState}
+          />
+          <PostOwnerControls
+            postId={post._id}
+            isAuthor={currentUser?._id === post.authorId}
+            initialBody={post.body}
+          />
+
+          <div className="mt-6">
+            <PostBody
+              body={post.body}
+              lineLinkBase={post.sourceReference?.canonicalUrl}
+            />
+          </div>
+
+          {post.sourceReference ? (
+            <SourceReferenceCard
+              source={post.sourceReference}
+              targetUserId={post.authorId}
+            />
+          ) : null}
+          {post.diffReference ? (
+            <DiffReferenceCard diff={post.diffReference} />
+          ) : null}
+
+          <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-border pt-4">
+            <ActionButton
+              icon={Heart}
+              label={liked ? "Liked" : "Like"}
+              count={post.likeCount}
+              active={liked}
+              disabled={!isAuthenticated || pendingAction !== null}
+              onClick={() =>
+                void runAction("like", () => toggleLike({ postId }))
+              }
+            />
+            <ActionButton
+              icon={MessageCircle}
+              label="Comment"
+              count={commentCount}
+              disabled={pendingAction !== null}
+              onClick={() => document.getElementById("comment-box")?.focus()}
+            />
+            <ActionButton
+              icon={Repeat2}
+              label={reposted ? "Reposted" : "Repost"}
+              count={post.repostCount}
+              active={reposted}
+              disabled={!isAuthenticated || pendingAction !== null}
+              onClick={() =>
+                void runAction("repost", () => toggleRepost({ postId }))
+              }
+            />
+            <ActionButton
+              icon={Quote}
+              label="Quote"
+              disabled={!isAuthenticated || pendingAction !== null}
+              onClick={() => setQuoteOpen((value) => !value)}
+            />
+            <ActionButton
+              icon={Bookmark}
+              label={bookmarked ? "Saved" : "Save"}
+              active={bookmarked}
+              disabled={!isAuthenticated || pendingAction !== null}
+              onClick={() =>
+                void runAction("bookmark", () => toggleBookmark({ postId }))
+              }
+            />
+            <ActionButton
+              icon={Share2}
+              label="Share"
+              disabled={pendingAction !== null}
+              onClick={() => void sharePost()}
+            />
+          </div>
+
+          {quoteOpen && isAuthenticated ? (
             <form
-              onSubmit={submitComment}
-              className="mt-5 rounded-xl border border-border bg-background p-4 dark:bg-background"
+              onSubmit={submitQuote}
+              className="mt-4 rounded-xl border border-border bg-background p-4 dark:bg-background"
             >
-              {replyTo ? (
-                <div className="mb-3 flex items-center justify-between gap-3 text-xs text-muted-foreground">
-                  <span>Replying to @{replyTo.handle}</span>
-                  <button
-                    type="button"
-                    onClick={() => setReplyTo(null)}
-                    className="font-semibold hover:text-foreground"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              ) : null}
+              <label htmlFor="quote-box" className="text-xs font-semibold">
+                Add your context
+              </label>
               <textarea
-                id="comment-box"
-                value={commentDraft}
-                onChange={(event) => setCommentDraft(event.target.value)}
-                placeholder={
-                  isAuthenticated
-                    ? "Add useful context, a question, or a counterexample…"
-                    : "Sign in to add context…"
-                }
-                disabled={!isAuthenticated || pendingAction !== null}
+                id="quote-box"
+                value={quoteDraft}
+                onChange={(event) => setQuoteDraft(event.target.value)}
                 rows={3}
-                className="w-full resize-y bg-transparent text-sm leading-6 outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
+                maxLength={64_000}
+                placeholder="Why is this worth opening?"
+                className="mt-3 w-full resize-y bg-transparent text-sm leading-6 outline-none placeholder:text-muted-foreground"
               />
-              <div className="mt-3 flex items-center justify-between gap-3">
-                <p className="text-xs text-muted-foreground">
-                  Markdown and code blocks are welcome.
-                </p>
-                {isAuthenticated ? (
-                  <Button
-                    type="submit"
-                    size="sm"
-                    className="rounded-md"
-                    disabled={
-                      commentDraft.trim().length === 0 || pendingAction !== null
-                    }
-                  >
-                    <Send className="h-3.5 w-3.5" />
-                    {pendingAction === "comment" ? "Posting…" : "Reply"}
-                  </Button>
-                ) : (
-                  <Button asChild size="sm" className="rounded-md">
-                    <Link href="/signin">Sign in</Link>
-                  </Button>
-                )}
+              <div className="mt-3 flex justify-end">
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="rounded-md"
+                  disabled={
+                    quoteDraft.trim().length === 0 || pendingAction !== null
+                  }
+                >
+                  {pendingAction === "quote" ? "Publishing…" : "Quote post"}
+                </Button>
               </div>
             </form>
+          ) : null}
+          {shareNotice ? (
+            <p role="status" className="mt-3 text-xs text-muted-foreground">
+              {shareNotice}
+            </p>
+          ) : null}
 
-            {error ? (
-              <p
-                role="alert"
-                className="mt-4 rounded-xl bg-red-500/[0.08] px-4 py-3 text-sm text-red-700 dark:text-red-300"
+          {!isAuthenticated ? (
+            <p className="mt-4 text-xs leading-5 text-muted-foreground">
+              <Link
+                href="/signin"
+                className="font-semibold text-foreground hover:underline"
               >
-                {error}
-              </p>
-            ) : null}
+                Sign in with GitHub
+              </Link>{" "}
+              to join the conversation.
+            </p>
+          ) : null}
+        </article>
 
-            <div className="mt-6 divide-y divide-black/[0.08] dark:divide-white/[0.08]">
-              {comments.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-black/[0.12] px-5 py-10 text-center dark:border-white/[0.12]">
-                  <MessageCircle className="mx-auto h-5 w-5 text-muted-foreground" />
-                  <p className="mt-3 text-sm font-semibold">No context yet</p>
-                  <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                    Be the first reader to add a useful observation.
-                  </p>
-                </div>
+        <section className="p-5 sm:p-7" aria-labelledby="comments-heading">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Contextual discussion
+              </p>
+              <h2
+                id="comments-heading"
+                className="mt-2 text-xl font-semibold tracking-[-0.035em]"
+              >
+                What do you notice?
+              </h2>
+            </div>
+            <span className="text-xs text-muted-foreground">
+              {commentCount} {commentCount === 1 ? "reply" : "replies"}
+            </span>
+          </div>
+
+          <form
+            onSubmit={submitComment}
+            className="mt-5 rounded-xl border border-border bg-background p-4 dark:bg-background"
+          >
+            {replyTo ? (
+              <div className="mb-3 flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                <span>Replying to @{replyTo.handle}</span>
+                <button
+                  type="button"
+                  onClick={() => setReplyTo(null)}
+                  className="font-semibold hover:text-foreground"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : null}
+            <textarea
+              id="comment-box"
+              value={commentDraft}
+              onChange={(event) => setCommentDraft(event.target.value)}
+              placeholder={
+                isAuthenticated
+                  ? "Add useful context, a question, or a counterexample…"
+                  : "Sign in to add context…"
+              }
+              disabled={!isAuthenticated || pendingAction !== null}
+              rows={3}
+              className="w-full resize-y bg-transparent text-sm leading-6 outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
+            />
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <p className="text-xs text-muted-foreground">
+                Markdown and code blocks are welcome.
+              </p>
+              {isAuthenticated ? (
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="rounded-md"
+                  disabled={
+                    commentDraft.trim().length === 0 || pendingAction !== null
+                  }
+                >
+                  <Send className="h-3.5 w-3.5" />
+                  {pendingAction === "comment" ? "Posting…" : "Reply"}
+                </Button>
               ) : (
-                comments.map((comment) => (
-                  <article
-                    key={comment._id}
-                    className={cn(
-                      "py-5 first:pt-0",
-                      comment.parentId &&
-                        "ml-5 border-l border-border pl-4 border-border",
-                    )}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-[10px] font-semibold text-foreground dark:bg-white/[0.08]">
-                        {initials(comment.author.displayName)}
+                <Button asChild size="sm" className="rounded-md">
+                  <Link href="/signin">Sign in</Link>
+                </Button>
+              )}
+            </div>
+          </form>
+
+          {error ? (
+            <p
+              role="alert"
+              className="mt-4 rounded-xl bg-red-500/[0.08] px-4 py-3 text-sm text-red-700 dark:text-red-300"
+            >
+              {error}
+            </p>
+          ) : null}
+
+          <div className="mt-6 divide-y divide-black/[0.08] dark:divide-white/[0.08]">
+            {comments.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-black/[0.12] px-5 py-10 text-center dark:border-white/[0.12]">
+                <MessageCircle className="mx-auto h-5 w-5 text-muted-foreground" />
+                <p className="mt-3 text-sm font-semibold">No context yet</p>
+                <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                  Be the first reader to add a useful observation.
+                </p>
+              </div>
+            ) : (
+              comments.map((comment) => (
+                <article
+                  key={comment._id}
+                  className={cn(
+                    "py-5 first:pt-0",
+                    comment.parentId &&
+                      "ml-5 border-l border-border pl-4 border-border",
+                  )}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-[10px] font-semibold text-foreground dark:bg-white/[0.08]">
+                      {initials(comment.author.displayName)}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+                        <span className="font-semibold">
+                          {comment.author.displayName}
+                        </span>
+                        <span className="text-muted-foreground">
+                          @{comment.author.handle}
+                        </span>
+                        <span className="text-muted-foreground">·</span>
+                        <time
+                          className="text-muted-foreground"
+                          dateTime={new Date(comment.createdAt).toISOString()}
+                        >
+                          {formatDate(comment.createdAt)}
+                        </time>
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
-                          <span className="font-semibold">
-                            {comment.author.displayName}
-                          </span>
-                          <span className="text-muted-foreground">
-                            @{comment.author.handle}
-                          </span>
-                          <span className="text-muted-foreground">·</span>
-                          <time
-                            className="text-muted-foreground"
-                            dateTime={new Date(comment.createdAt).toISOString()}
-                          >
-                            {formatDate(comment.createdAt)}
-                          </time>
-                        </div>
-                        <PostBody body={comment.body} />
-                        <div className="mt-3 flex items-center gap-3">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setReplyTo({
-                                id: comment._id,
-                                handle: comment.author.handle,
-                              })
-                            }
-                            className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground"
-                          >
-                            <MessageCircle className="h-3.5 w-3.5" /> Reply
-                          </button>
-                          <CommentSafetyControls
-                            commentId={comment._id}
-                            authorId={comment.authorId}
-                            isAuthenticated={isAuthenticated}
-                            isAuthor={currentUser?._id === comment.authorId}
-                          />
-                          <CommentOwnerControls
-                            commentId={comment._id}
-                            isAuthor={currentUser?._id === comment.authorId}
-                            initialBody={comment.body}
-                          />
-                        </div>
+                      <PostBody body={comment.body} />
+                      <div className="mt-3 flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setReplyTo({
+                              id: comment._id,
+                              handle: comment.author.handle,
+                            })
+                          }
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground"
+                        >
+                          <MessageCircle className="h-3.5 w-3.5" /> Reply
+                        </button>
+                        <CommentSafetyControls
+                          commentId={comment._id}
+                          authorId={comment.authorId}
+                          isAuthenticated={isAuthenticated}
+                          isAuthor={currentUser?._id === comment.authorId}
+                        />
+                        <CommentOwnerControls
+                          commentId={comment._id}
+                          isAuthor={currentUser?._id === comment.authorId}
+                          initialBody={comment.body}
+                        />
                       </div>
                     </div>
-                  </article>
-                ))
-              )}
-              {(commentsPage.status === "CanLoadMore" ||
-                commentsPage.status === "LoadingMore") &&
-              comments.length > 0 ? (
-                <div className="pt-5 text-center">
-                  <button
-                    type="button"
-                    onClick={() => commentsPage.loadMore(30)}
-                    disabled={commentsPage.status !== "CanLoadMore"}
-                    className="text-xs font-semibold text-foreground hover:underline disabled:opacity-50"
-                  >
-                    {commentsPage.status === "LoadingMore"
-                      ? "Loading…"
-                      : "Load more replies"}
-                  </button>
-                </div>
-              ) : null}
-            </div>
-          </section>
-        </section>
-
-        <aside className="hidden px-5 py-6 xl:block">
-          <div className="sticky top-6 space-y-5">
-            <section className="rounded-xl border border-border p-5">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Conversation rule
-              </p>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                Keep the source close. Good replies explain a tradeoff, ask a
-                specific question, or help the next reader.
-              </p>
-            </section>
-            <section className="rounded-xl bg-secondary p-5 dark:bg-secondary">
-              <p className="text-sm font-semibold">Read the original context</p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Every source-backed post keeps its commit, file, line range, and
-                original owner attached.
-              </p>
-              {post.sourceReference ? (
-                <a
-                  href={post.sourceReference.canonicalUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-foreground hover:underline"
+                  </div>
+                </article>
+              ))
+            )}
+            {(commentsPage.status === "CanLoadMore" ||
+              commentsPage.status === "LoadingMore") &&
+            comments.length > 0 ? (
+              <div className="pt-5 text-center">
+                <button
+                  type="button"
+                  onClick={() => commentsPage.loadMore(30)}
+                  disabled={commentsPage.status !== "CanLoadMore"}
+                  className="text-xs font-semibold text-foreground hover:underline disabled:opacity-50"
                 >
-                  Open source <ArrowUpRight className="h-3.5 w-3.5" />
-                </a>
-              ) : null}
-            </section>
+                  {commentsPage.status === "LoadingMore"
+                    ? "Loading…"
+                    : "Load more replies"}
+                </button>
+              </div>
+            ) : null}
           </div>
-        </aside>
+        </section>
       </div>
-    </main>
+    </CurationShell>
   );
 }
 
@@ -1442,7 +1360,7 @@ function ActionButton({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:bg-black/[0.05] hover:text-foreground disabled:pointer-events-none disabled:opacity-50 dark:hover:bg-white/[0.06]",
+        "inline-flex min-h-11 items-center gap-1.5 rounded-md px-3 py-2 text-xs font-semibold text-muted-foreground transition-colors hover:bg-black/[0.05] hover:text-foreground disabled:pointer-events-none disabled:opacity-50 dark:hover:bg-white/[0.06]",
         active && "text-foreground text-foreground",
       )}
     >

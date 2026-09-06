@@ -71,3 +71,7 @@ Validation scope: user-supplied brief excludes tests, builds, typecheck, lint, d
 ### Interaction and curation follow-up
 
 Lists and Communities now share a keyboard-operable tab component with roving focus, stable IDs, linked panels, and high-contrast active indicators. Removed repeated promotional panels ahead of list/community results and simplified the notifications toolbar. Sign-in renders a safe unavailable state when the Convex provider is absent. Removed the stale profile rail claim that the follow graph was still planned. Existing auth, privacy and mutation contracts are preserved.
+
+### Reader and discussion follow-up
+
+Post detail now uses the shared navigation shell, fixing the prior tablet layout that reserved an invisible right-hand column. Repository tabs support arrow, Home and End navigation and labeled panels. Monaco follows the selected light/dark theme using its native themes and keeps read-only behavior; smooth scrolling is disabled for reduced-motion consistency. Removed remaining heavy menu shadows and restored the original OpenHub mark unchanged. No backend contracts changed and no runtime validation was performed.

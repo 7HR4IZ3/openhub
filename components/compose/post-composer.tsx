@@ -320,7 +320,7 @@ function PostComposerForm({
                     onChange={(event) =>
                       setVisibility(event.target.value as PostVisibility)
                     }
-                    className="rounded-full border border-border bg-transparent px-3 py-2 text-xs font-semibold text-foreground outline-none"
+                    className="rounded-md border border-input bg-transparent px-3 py-2 text-xs font-semibold text-foreground outline-none"
                   >
                     <option value="public">Public</option>
                     <option value="followers">Followers</option>

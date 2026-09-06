@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useTheme } from "next-themes";
 import type { editor } from "monaco-editor";
 import { useEffect, useState } from "react";
 
@@ -11,7 +12,7 @@ const MonacoEditor = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-[min(68vh,720px)] items-center justify-center bg-[#1a1d1b] text-sm text-[#8e9b93]">
+      <div className="flex h-[min(68vh,720px)] items-center justify-center bg-card text-sm text-muted-foreground">
         Loading the read-only editor…
       </div>
     ),
@@ -29,6 +30,7 @@ export function SourceCodeViewer({
   lineNumberOffset?: number;
   onSelectionChange?: (selection: CodeSelection | null) => void;
 }) {
+  const { resolvedTheme } = useTheme();
   const [editorInstance, setEditorInstance] =
     useState<editor.IStandaloneCodeEditor | null>(null);
 
@@ -63,13 +65,13 @@ export function SourceCodeViewer({
   }, [editorInstance, lineNumberOffset, onSelectionChange]);
 
   return (
-    <div className="overflow-hidden bg-[#1a1d1b]">
+    <div className="overflow-hidden bg-card">
       <MonacoEditor
         height="min(68vh, 720px)"
         language={languageForPath(file.path, primaryLanguage)}
         value={file.text}
         onMount={(instance) => setEditorInstance(instance)}
-        theme="vs-dark"
+        theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
         options={{
           automaticLayout: true,
           contextmenu: true,
@@ -92,7 +94,7 @@ export function SourceCodeViewer({
           roundedSelection: false,
           scrollBeyondLastLine: false,
           selectOnLineNumbers: true,
-          smoothScrolling: true,
+          smoothScrolling: false,
           wordWrap: "on",
         }}
       />

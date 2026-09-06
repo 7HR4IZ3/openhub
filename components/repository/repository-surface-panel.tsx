@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ArchiveIcon as Archive,
   ArrowTopRightIcon as ArrowUpRight,
@@ -71,6 +71,7 @@ export function RepositorySurfacePanel({
   surfaces: RepositorySurfaces;
   workspaceBasePath?: string;
 }) {
+  const tabButtons = useRef<Array<HTMLButtonElement | null>>([]);
   const [activeSurface, setActiveSurface] = useState<SurfaceId>("overview");
 
   return (
@@ -106,7 +107,7 @@ export function RepositorySurfacePanel({
           role="tablist"
           aria-label="Repository surfaces"
         >
-          {surfaceTabs.map((tab) => {
+          {surfaceTabs.map((tab, index) => {
             const Icon = tab.icon;
             const count = surfaceCount(tab.id, surfaces);
             const isActive = activeSurface === tab.id;
@@ -114,13 +115,35 @@ export function RepositorySurfacePanel({
             return (
               <button
                 key={tab.id}
+                ref={(node) => {
+                  tabButtons.current[index] = node;
+                }}
+                id={`repository-tab-${tab.id}`}
+                tabIndex={isActive ? 0 : -1}
+                onKeyDown={(event) => {
+                  const next =
+                    event.key === "ArrowRight"
+                      ? (index + 1) % surfaceTabs.length
+                      : event.key === "ArrowLeft"
+                        ? (index + surfaceTabs.length - 1) % surfaceTabs.length
+                        : event.key === "Home"
+                          ? 0
+                          : event.key === "End"
+                            ? surfaceTabs.length - 1
+                            : null;
+                  if (next !== null) {
+                    event.preventDefault();
+                    setActiveSurface(surfaceTabs[next].id);
+                    tabButtons.current[next]?.focus();
+                  }
+                }}
                 type="button"
                 role="tab"
                 aria-selected={isActive}
                 aria-controls={`repository-surface-${tab.id}`}
                 onClick={() => setActiveSurface(tab.id)}
                 className={cn(
-                  "inline-flex shrink-0 items-center gap-2 rounded-md px-3.5 py-2 text-xs font-semibold transition-colors",
+                  "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-md px-3.5 py-2 text-xs font-semibold transition-colors",
                   isActive
                     ? "bg-foreground text-background"
                     : "text-muted-foreground hover:bg-black/[0.05] hover:text-foreground dark:hover:bg-white/[0.07]",
@@ -147,6 +170,8 @@ export function RepositorySurfacePanel({
       <div
         id={`repository-surface-${activeSurface}`}
         role="tabpanel"
+        aria-labelledby={`repository-tab-${activeSurface}`}
+        tabIndex={0}
         className="p-5 sm:p-6"
       >
         {activeSurface === "overview" ? (
@@ -197,7 +222,7 @@ function RepositoryRefPicker({
         </span>
         <ChevronDown className="h-3.5 w-3.5 text-muted-foreground transition-transform group-open:rotate-180" />
       </summary>
-      <div className="absolute right-0 z-20 mt-2 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-black/[0.12] bg-card p-2 shadow-xl dark:border-white/[0.12] dark:bg-card">
+      <div className="absolute right-0 z-20 mt-2 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-black/[0.12] bg-card p-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:border-white/[0.12] dark:bg-card">
         <div className="px-2.5 py-2">
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             Read from a ref

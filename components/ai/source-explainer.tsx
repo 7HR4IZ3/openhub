@@ -84,7 +84,7 @@ export function SourceExplainer({ source }: { source: ExplainableSource }) {
           onChange={(event) => setQuestion(event.target.value)}
           placeholder="What should I understand first?"
           maxLength={2000}
-          className="h-9 min-w-0 flex-1 rounded-md border border-black/[0.12] bg-transparent px-3 text-xs outline-none focus-visible:ring-1 focus-visible:ring-[#b45e3c] dark:border-white/[0.12]"
+          className="h-9 min-w-0 flex-1 rounded-md border border-black/[0.12] bg-transparent px-3 text-xs outline-none focus-visible:ring-1 focus-visible:ring-ring dark:border-white/[0.12]"
         />
         <select
           value={mode}

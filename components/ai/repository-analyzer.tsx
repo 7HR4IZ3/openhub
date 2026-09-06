@@ -120,7 +120,7 @@ export function RepositoryAnalyzer({
               onChange={(event) => setQuestion(event.target.value)}
               maxLength={2_000}
               placeholder="Where should I start reading?"
-              className="h-9 min-w-0 flex-1 rounded-md border border-black/[0.12] bg-transparent px-3 text-xs outline-none focus-visible:ring-1 focus-visible:ring-[#b45e3c] dark:border-white/[0.12]"
+              className="h-9 min-w-0 flex-1 rounded-md border border-black/[0.12] bg-transparent px-3 text-xs outline-none focus-visible:ring-1 focus-visible:ring-ring dark:border-white/[0.12]"
             />
             <label className="sr-only" htmlFor="repository-analysis-mode">
               Analysis mode

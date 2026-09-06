@@ -109,7 +109,7 @@ function renderInline(
           href={match[2]}
           target="_blank"
           rel="noreferrer"
-          className="font-medium text-foreground underline decoration-[#b45e3c]/40 underline-offset-2 hover:decoration-[#b45e3c]"
+          className="font-medium text-foreground underline decoration-current underline-offset-2 hover:decoration-current"
         >
           {match[1]}
         </a>,
