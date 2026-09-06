@@ -109,3 +109,7 @@ List, community and contribution forms now show persistent labels for text, visi
 ### Route recovery and post limits
 
 Added consistent unexpected-error and not-found pages using a recovery component that does not depend on auth or data queries. Error recovery uses the installed Next.js version's `retry` contract. Composer now reflects the backend's 64,000-byte UTF-8 limit, announces over-limit drafts and prevents submission rather than promising unlimited text.
+
+### Production deployment follow-up
+
+The user authorized pushing and deploying the redesign. Vercel's first build identified a shared icon type mismatch: Radix icons forbid children, while the generic SVG component type allowed them. The shared type now derives directly from the installed Radix icon declaration, preserving its props and forwarded ref contract. Production build verification runs through Vercel; visual acceptance remains pending.

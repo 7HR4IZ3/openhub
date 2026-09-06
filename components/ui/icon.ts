@@ -1,4 +1,4 @@
-import type { ComponentType, SVGProps } from "react";
+import type { AccessibilityIcon } from "@radix-ui/react-icons";
 
 /** Shared Radix icon contract for navigation and semantic status surfaces. */
-export type AppIcon = ComponentType<SVGProps<SVGSVGElement>>;
+export type AppIcon = typeof AccessibilityIcon;
