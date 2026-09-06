@@ -1,5 +1,6 @@
 import { OpenHubMark } from "@/components/openhub-mark";
 import { Button } from "@/components/ui/button";
+import { AccountMenu } from "@/components/app/account-menu";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 import {
@@ -120,7 +121,12 @@ export function CurationShell({
                   <MagnifyingGlassIcon />
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="lg:hidden">
+              <AccountMenu />
+              <Button
+                asChild
+                variant="outline"
+                className="hidden sm:inline-flex lg:hidden"
+              >
                 <Link href="/compose" aria-label="Write a post">
                   <Pencil2Icon />
                   <span className="hidden sm:inline">Write</span>
