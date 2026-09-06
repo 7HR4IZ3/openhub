@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAction, useConvexAuth, useMutation, useQuery } from "convex/react";
 import {
   ArrowLeftIcon as ArrowLeft,
@@ -130,7 +130,15 @@ function RepositoryWorkspaceView({
   storedRepositoryId: Id<"repositories"> | null | undefined;
 }) {
   const [isTreeOpen, setIsTreeOpen] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
+  const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
+  const [copyError, setCopyError] = useState(false);
+  const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (copyTimer.current !== null) clearTimeout(copyTimer.current);
+    },
+    [],
+  );
   const [showExplainer, setShowExplainer] = useState(false);
   const [selectionState, setSelectionState] = useState<{
     fileKey: string;
@@ -156,13 +164,18 @@ function RepositoryWorkspaceView({
       ? buildDiffComposeHref(repository, file, surfaces.commits[1].sha)
       : null;
 
+  const isCopied = copiedUrl === sourceUrl;
+
   async function copySourceUrl() {
+    setCopyError(false);
     try {
       await navigator.clipboard.writeText(sourceUrl);
-      setIsCopied(true);
-      window.setTimeout(() => setIsCopied(false), 1800);
+      setCopiedUrl(sourceUrl);
+      if (copyTimer.current !== null) clearTimeout(copyTimer.current);
+      copyTimer.current = setTimeout(() => setCopiedUrl(null), 1800);
     } catch {
-      setIsCopied(false);
+      setCopiedUrl(null);
+      setCopyError(true);
     }
   }
 
@@ -273,6 +286,15 @@ function RepositoryWorkspaceView({
       </header>
 
       <div className="mx-auto max-w-[1440px] px-4 py-4 sm:px-6 lg:px-8 lg:py-6">
+        {copyError ? (
+          <p role="alert" className="mb-4 text-sm text-destructive">
+            The link could not be copied. Open the source and copy its address
+            instead.
+          </p>
+        ) : null}
+        <span role="status" className="sr-only">
+          {isCopied ? "Source link copied" : ""}
+        </span>
         <div className="mb-4 flex items-center justify-between lg:hidden">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             Repository files

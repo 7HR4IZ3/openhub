@@ -79,3 +79,7 @@ Post detail now uses the shared navigation shell, fixing the prior tablet layout
 ### Consistent unavailable states
 
 Post loading, unavailable and missing states now retain application navigation and use shared skeleton/empty-state components. Placeholder routes use the same reading width and controls. Notification read mutations report failures and prevent repeated mark-all submissions. Momentary post actions no longer announce a false toggle state; true toggles retain pressed semantics.
+
+### Composer width and source feedback
+
+The composer no longer nests a fixed 300px sidebar inside the application content column; source and writing now retain the full reading width, with guidance below. Publication failures are announced and duplicate form submissions are guarded. Repository clipboard feedback is tied to the copied URL, timers are cleaned up, and clipboard failures expose a recovery path.

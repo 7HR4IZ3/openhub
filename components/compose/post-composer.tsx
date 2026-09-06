@@ -201,7 +201,7 @@ function PostComposerForm({
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!canPublish || onPublish === undefined) return;
+    if (!canPublish || onPublish === undefined || isPublishing) return;
 
     await onPublish({
       type: postType,
@@ -241,10 +241,7 @@ function PostComposerForm({
             </p>
           ) : null}
 
-          <form
-            onSubmit={handleSubmit}
-            className="mt-10 grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px]"
-          >
+          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             <section className="min-w-0 rounded-xl border border-border bg-card p-5 dark:bg-card sm:p-7">
               <div
                 className="flex flex-wrap gap-2"
@@ -309,7 +306,9 @@ function PostComposerForm({
               ) : null}
 
               {publishError ? (
-                <p className="mt-5 text-sm text-destructive">{publishError}</p>
+                <p role="alert" className="mt-5 text-sm text-destructive">
+                  {publishError}
+                </p>
               ) : null}
 
               <div className="mt-7 flex flex-col gap-4 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
@@ -335,7 +334,7 @@ function PostComposerForm({
                   className="rounded-md"
                 >
                   {onPublish === undefined
-                    ? "Connect Convex to publish"
+                    ? "Publishing unavailable"
                     : isPublishing
                       ? "Publishing…"
                       : "Publish"}
@@ -346,7 +345,7 @@ function PostComposerForm({
               </div>
             </section>
 
-            <aside className="space-y-5">
+            <aside className="grid gap-4 sm:grid-cols-2">
               <section className="rounded-xl bg-secondary p-5 dark:bg-secondary">
                 <div className="flex items-center gap-2">
                   <Github className="h-4 w-4" />
