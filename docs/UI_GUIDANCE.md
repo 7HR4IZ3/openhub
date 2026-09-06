@@ -83,3 +83,7 @@ Post loading, unavailable and missing states now retain application navigation a
 ### Composer width and source feedback
 
 The composer no longer nests a fixed 300px sidebar inside the application content column; source and writing now retain the full reading width, with guidance below. Publication failures are announced and duplicate form submissions are guarded. Repository clipboard feedback is tied to the copied URL, timers are cleaned up, and clipboard failures expose a recovery path.
+
+### Safety settings follow-up
+
+Safety settings now guard the absent auth provider, preserve a loading state during account resolution, and use a single-column settings layout inside the application shell. Keyword input has a visible label. Mutations expose failure feedback and pending states; blocks, mutes and filters expose pagination controls.

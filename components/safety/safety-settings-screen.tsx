@@ -27,8 +27,24 @@ export function SafetySettingsScreen({
 }: {
   convexConfigured: boolean;
 }) {
-  const { isAuthenticated } = useConvexAuth();
   if (!convexConfigured) return <SafetySetup />;
+  return <AuthenticatedSafetySettings />;
+}
+
+function AuthenticatedSafetySettings() {
+  const { isAuthenticated, isLoading } = useConvexAuth();
+  if (isLoading)
+    return (
+      <CurationShell
+        active="Profile"
+        eyebrow="safety"
+        title="Safety and control"
+      >
+        <div className="page-section">
+          <CurationLoading label="Loading account…" />
+        </div>
+      </CurationShell>
+    );
   if (!isAuthenticated) return <SafetySignIn />;
   return <ConnectedSafetySettings />;
 }
@@ -53,12 +69,28 @@ function ConnectedSafetySettings() {
   const setMute = useMutation(api.trust.setMute);
   const setKeywordFilter = useMutation(api.trust.setKeywordFilter);
   const removeKeywordFilter = useMutation(api.trust.removeKeywordFilter);
+  const [pending, setPending] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [phrase, setPhrase] = useState("");
   const [filterError, setFilterError] = useState<string | null>(null);
 
+  async function updateSetting(action: () => Promise<unknown>) {
+    if (pending) return;
+    setPending(true);
+    setActionError(null);
+    try {
+      await action();
+    } catch {
+      setActionError("This setting could not be saved. Please try again.");
+    } finally {
+      setPending(false);
+    }
+  }
+
   async function addFilter(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!phrase.trim()) return;
+    if (!phrase.trim() || pending) return;
+    setPending(true);
     setFilterError(null);
     try {
       await setKeywordFilter({ phrase, enabled: true });
@@ -67,6 +99,8 @@ function ConnectedSafetySettings() {
       setFilterError(
         error instanceof Error ? error.message : "Filter could not be saved",
       );
+    } finally {
+      setPending(false);
     }
   }
 
@@ -91,7 +125,12 @@ function ConnectedSafetySettings() {
           </div>
         </div>
       </section>
-      <section className="grid gap-5 p-5 sm:p-7 lg:grid-cols-2">
+      {actionError ? (
+        <p role="alert" className="px-5 py-3 text-sm text-destructive sm:px-7">
+          {actionError}
+        </p>
+      ) : null}
+      <section className="grid gap-5 p-5 sm:p-7">
         <SafetyPanel
           icon={Ban}
           title="Blocked people"
@@ -111,11 +150,14 @@ function ConnectedSafetySettings() {
                   variant="ghost"
                   size="sm"
                   className="rounded-md"
+                  disabled={pending}
                   onClick={() =>
-                    void setBlock({
-                      blockedUserId: block.blockedUserId,
-                      blocked: false,
-                    })
+                    void updateSetting(() =>
+                      setBlock({
+                        blockedUserId: block.blockedUserId,
+                        blocked: false,
+                      }),
+                    )
                   }
                 >
                   Unblock
@@ -133,6 +175,18 @@ function ConnectedSafetySettings() {
               </p>
             ) : null}
           </div>
+          {blocks.status === "CanLoadMore" ||
+          blocks.status === "LoadingMore" ? (
+            <Button
+              type="button"
+              variant="ghost"
+              className="mt-4"
+              disabled={blocks.status === "LoadingMore"}
+              onClick={() => blocks.loadMore(30)}
+            >
+              {blocks.status === "LoadingMore" ? "Loading…" : "Load more"}
+            </Button>
+          ) : null}
         </SafetyPanel>
         <SafetyPanel
           icon={VolumeX}
@@ -151,8 +205,11 @@ function ConnectedSafetySettings() {
                   variant="ghost"
                   size="sm"
                   className="rounded-md"
+                  disabled={pending}
                   onClick={() =>
-                    void setMute({ target: mute.target, muted: false })
+                    void updateSetting(() =>
+                      setMute({ target: mute.target, muted: false }),
+                    )
                   }
                 >
                   Unmute
@@ -168,14 +225,33 @@ function ConnectedSafetySettings() {
               <p className="text-sm text-muted-foreground">No muted targets.</p>
             ) : null}
           </div>
+          {mutes.status === "CanLoadMore" || mutes.status === "LoadingMore" ? (
+            <Button
+              type="button"
+              variant="ghost"
+              className="mt-4"
+              disabled={mutes.status === "LoadingMore"}
+              onClick={() => mutes.loadMore(30)}
+            >
+              {mutes.status === "LoadingMore" ? "Loading…" : "Load more"}
+            </Button>
+          ) : null}
         </SafetyPanel>
         <SafetyPanel
           icon={Filter}
           title="Keyword filters"
           description="Hide posts containing words or phrases you do not want in your reading trail."
         >
+          <label
+            htmlFor="keyword-filter"
+            className="mb-2 block text-sm font-medium"
+          >
+            Word or phrase
+          </label>
           <form onSubmit={addFilter} className="flex gap-2">
             <Input
+              id="keyword-filter"
+              disabled={pending}
               value={phrase}
               onChange={(event) => setPhrase(event.target.value)}
               placeholder="Add a phrase"
@@ -184,13 +260,15 @@ function ConnectedSafetySettings() {
             <Button
               type="submit"
               className="shrink-0 rounded-md"
-              disabled={!phrase.trim()}
+              disabled={!phrase.trim() || pending}
             >
               Add
             </Button>
           </form>
           {filterError ? (
-            <p className="mt-2 text-xs text-destructive">{filterError}</p>
+            <p role="alert" className="mt-2 text-xs text-destructive">
+              {filterError}
+            </p>
           ) : null}
           <div className="mt-3 space-y-2">
             {filters.results.map((filter) => (
@@ -204,8 +282,11 @@ function ConnectedSafetySettings() {
                   variant="ghost"
                   size="sm"
                   className="rounded-md"
+                  disabled={pending}
                   onClick={() =>
-                    void removeKeywordFilter({ filterId: filter._id })
+                    void updateSetting(() =>
+                      removeKeywordFilter({ filterId: filter._id }),
+                    )
                   }
                 >
                   Remove
@@ -219,6 +300,18 @@ function ConnectedSafetySettings() {
               </p>
             ) : null}
           </div>
+          {filters.status === "CanLoadMore" ||
+          filters.status === "LoadingMore" ? (
+            <Button
+              type="button"
+              variant="ghost"
+              className="mt-4"
+              disabled={filters.status === "LoadingMore"}
+              onClick={() => filters.loadMore(30)}
+            >
+              {filters.status === "LoadingMore" ? "Loading…" : "Load more"}
+            </Button>
+          ) : null}
         </SafetyPanel>
         <SafetyPanel
           icon={LockKeyhole}
@@ -271,8 +364,8 @@ function SafetySetup() {
     >
       <div className="p-5 sm:p-7">
         <CurationStatus
-          title="Connect Convex to manage safety settings"
-          body="Nothing is stored until the backend is connected."
+          title="Safety settings are unavailable right now"
+          body="Please return later to manage your settings. Public repository browsing is still available."
         />
       </div>
     </CurationShell>
