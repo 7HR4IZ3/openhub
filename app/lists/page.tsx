@@ -6,5 +6,9 @@ export const metadata = {
 };
 
 export default function ListsPage() {
-  return <ListsScreen convexConfigured={Boolean(process.env.NEXT_PUBLIC_CONVEX_URL)} />;
+  return (
+    <ListsScreen
+      convexConfigured={Boolean(process.env.NEXT_PUBLIC_CONVEX_URL)}
+    />
+  );
 }

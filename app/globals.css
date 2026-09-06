@@ -4,77 +4,134 @@
 
 @layer base {
   :root {
-    --background: 60 17% 97%;
-    --foreground: 150 8% 9%;
-    --card: 60 17% 97%;
-    --card-foreground: 150 8% 9%;
-    --popover: 60 17% 97%;
-    --popover-foreground: 150 8% 9%;
-    --primary: 150 8% 9%;
-    --primary-foreground: 60 17% 97%;
-    --secondary: 48 22% 91%;
-    --secondary-foreground: 150 8% 9%;
-    --muted: 48 10% 90%;
-    --muted-foreground: 150 5% 41%;
-    --accent: 30 60% 93%;
-    --accent-foreground: 16 48% 27%;
-    --destructive: 0 68% 43%;
-    --destructive-foreground: 60 17% 97%;
-    --border: 150 8% 84%;
-    --input: 150 8% 84%;
-    --ring: 16 48% 43%;
-    --chart-1: 16 48% 43%;
-    --chart-2: 150 32% 36%;
-    --chart-3: 38 62% 54%;
-    --chart-4: 268 31% 55%;
-    --chart-5: 190 42% 42%;
-    --radius: 0.7rem;
+    --background: 60 11% 98%;
+    --foreground: 40 4% 14%;
+    --card: 0 0% 100%;
+    --card-foreground: 40 4% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 40 4% 14%;
+    --primary: 0 0% 7%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 45 14% 95%;
+    --secondary-foreground: 40 4% 20%;
+    --muted: 45 14% 95%;
+    --muted-foreground: 40 3% 42%;
+    --accent: 111 23% 94%;
+    --accent-foreground: 125 31% 30%;
+    --destructive: 1 55% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 92%;
+    --input: 40 5% 65%;
+    --ring: 40 4% 30%;
+    --chart-1: 125 31% 30%;
+    --chart-2: 204 67% 37%;
+    --chart-3: 40 70% 35%;
+    --chart-4: 1 55% 40%;
+    --chart-5: 40 3% 42%;
+    --radius: 0.5rem;
   }
-
   .dark {
-    --background: 150 9% 7%;
-    --foreground: 60 17% 96%;
-    --card: 150 9% 7%;
-    --card-foreground: 60 17% 96%;
-    --popover: 150 9% 7%;
-    --popover-foreground: 60 17% 96%;
-    --primary: 60 17% 96%;
-    --primary-foreground: 150 9% 7%;
-    --secondary: 148 9% 15%;
-    --secondary-foreground: 60 17% 96%;
-    --muted: 148 9% 15%;
-    --muted-foreground: 150 6% 64%;
-    --accent: 18 24% 19%;
-    --accent-foreground: 30 85% 82%;
-    --destructive: 0 58% 49%;
-    --destructive-foreground: 60 17% 96%;
-    --border: 150 7% 22%;
-    --input: 150 7% 22%;
-    --ring: 20 70% 63%;
-    --chart-1: 20 70% 63%;
-    --chart-2: 150 36% 56%;
-    --chart-3: 38 72% 62%;
-    --chart-4: 268 42% 70%;
-    --chart-5: 190 52% 60%;
+    --background: 40 4% 8%;
+    --foreground: 45 10% 93%;
+    --card: 40 4% 10%;
+    --card-foreground: 45 10% 93%;
+    --popover: 40 4% 12%;
+    --popover-foreground: 45 10% 93%;
+    --primary: 45 10% 93%;
+    --primary-foreground: 40 4% 8%;
+    --secondary: 40 4% 16%;
+    --secondary-foreground: 45 10% 90%;
+    --muted: 40 4% 15%;
+    --muted-foreground: 45 5% 67%;
+    --accent: 125 14% 18%;
+    --accent-foreground: 125 27% 77%;
+    --destructive: 1 55% 65%;
+    --destructive-foreground: 40 4% 8%;
+    --border: 40 4% 23%;
+    --input: 40 4% 42%;
+    --ring: 45 10% 75%;
+    --chart-1: 125 27% 77%;
+    --chart-2: 204 55% 73%;
+    --chart-3: 40 55% 70%;
+    --chart-4: 1 55% 65%;
+    --chart-5: 45 5% 67%;
   }
-
   * {
     @apply border-border;
   }
-
+  html {
+    scroll-padding-top: 6rem;
+  }
   body {
-    @apply min-h-screen bg-background text-foreground;
-    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+    @apply min-h-[100dvh] bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+      "Helvetica Neue", sans-serif;
     line-height: 1.6;
   }
-
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  summary {
+    -webkit-tap-highlight-color: transparent;
+  }
+  :where(a, button, input, textarea, select, summary):focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 3px;
+  }
+  :where(input, textarea, select) {
+    accent-color: hsl(var(--primary));
+  }
   ::selection {
-    @apply bg-[#e99970]/30;
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
   }
 }
 
+@layer components {
+  .editorial-title {
+    font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua",
+      Palatino, Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+  }
+  .page-section {
+    @apply border-b px-5 py-6 sm:px-8 sm:py-8;
+  }
+  .mobile-navigation {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
+  .app-content {
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+  }
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-3 focus:text-primary-foreground;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-content {
+    padding-bottom: 2rem;
+  }
+}
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

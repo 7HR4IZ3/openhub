@@ -37,20 +37,33 @@ DESIGN_VARIANCE: 4. MOTION_INTENSITY: 2. VISUAL_DENSITY: 5 for the application. 
 
 Before this pass: Arial body stack, warm near-white surfaces, rust accents, charcoal primary buttons, Lucide icons, widespread pill CTAs and 16px cards. The app has primary navigation, public discovery, repository workspace, compose, post detail, notification and curation routes. Preserve these routes and the wordmark.
 
-| Finding | Audit disposition |
-| --- | --- |
-| Hidden right rail still occupied a column at 1024-1279px | Fixed home and curation grid breakpoints |
-| Mobile profile link omitted; fixed nav could cover content | Added all six links and bottom content clearance |
-| Home menu icon had no action | Now links to profile and has an accurate label |
-| Lists/communities implied connecting Convex would finish them | Always display implementation status |
-| Feed tabs implied ranking/following existed | Added truthful notices and restricted recent feed to its initial tab |
-| Source composer implied safe publication | Explicit preview-only state until server verification exists |
-| Ordinary primary button shadows | Removed shared variant shadows |
-| Body typography and motion fallback | Native system stack and reduced-motion override added |
-| Lucide, pill CTAs, hardcoded colors, excessive eyebrow text | Still requires comprehensive component migration |
-| Marketing copy competes with discovery content on home | Still requires content-priority redesign |
-| Full dark/mobile/keyboard/contrast checks | Not yet completed; source inspection is not visual acceptance |
+| Finding                                                       | Audit disposition                                                    |
+| ------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Hidden right rail still occupied a column at 1024-1279px      | Fixed home and curation grid breakpoints                             |
+| Mobile profile link omitted; fixed nav could cover content    | Added all six links and bottom content clearance                     |
+| Home menu icon had no action                                  | Now links to profile and has an accurate label                       |
+| Lists/communities implied connecting Convex would finish them | Always display implementation status                                 |
+| Feed tabs implied ranking/following existed                   | Added truthful notices and restricted recent feed to its initial tab |
+| Source composer implied safe publication                      | Explicit preview-only state until server verification exists         |
+| Ordinary primary button shadows                               | Removed shared variant shadows                                       |
+| Body typography and motion fallback                           | Native system stack and reduced-motion override added                |
+| Lucide, pill CTAs, hardcoded colors, excessive eyebrow text   | Still requires comprehensive component migration                     |
+| Marketing copy competes with discovery content on home        | Still requires content-priority redesign                             |
+| Full dark/mobile/keyboard/contrast checks                     | Not yet completed; source inspection is not visual acceptance        |
 
 ## Future acceptance gate
 
 Read source skills; record applicable checks and exceptions. Inspect actual rendered pages at 390, 768, 1024 and 1440px, both themes. Verify keyboard focus, zoom/reflow, labels, empty/loading/error states, long repo names and source scrolling. Check no dead controls or dishonest claims. Run regression tests, typecheck, lint, build and Lighthouse. Capture screenshots of actual UI when accessible. Do not mark the whole UI finished based on a build or a code review.
+
+## 2026-09-06 comprehensive redesign
+
+The current request authorizes a visual overhaul while preserving routes, source attribution, permissions, and the OpenHub wordmark. Application dials remain 4 / 2 / 5. The minimalist source wins over cinematic marketing instructions. Native editorial serif is now reserved for introductory headings; interface controls remain system sans and source stays monospace.
+
+- Unified Home, Explore, composer and curation navigation with a compact header, persistent desktop rail, keyboard skip link, active-page semantics, and safe-area-aware mobile navigation.
+- Moved Home feed and Explore search above promotional content. Removed repeated marketing blocks and the fabricated landing-page code preview.
+- Migrated all Lucide imports to the existing Radix icon dependency without adding packages. Updated shared button and input dimensions, focus treatment, radii and loading skeletons.
+- Replaced warm rust UI paint with semantic monochrome tokens and quiet green status surfaces; preserved editor syntax colors.
+- Added abortable search, visible search labeling, skeletons, retry states, provider-qualified result keys, and keyboard-operated feed tabs.
+- Compact repository headers and file trees keep the reader near the source. Composer retains source verification and all publication controls.
+
+Validation scope: user-supplied brief excludes tests, builds, typecheck, lint, development servers, browser checks, external authentication and deployment. Source review and formatting only; rendered mobile/dark/keyboard acceptance remains unverified. Do not close Linear issues or report visual acceptance without the normal gate. User subsequently authorized incremental local commits.

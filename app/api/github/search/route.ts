@@ -47,7 +47,9 @@ export async function GET(request: NextRequest) {
     // server credential to turn a private repository into public discovery.
     return NextResponse.json({
       ...result,
-      items: result.items.filter((repository) => repository.visibility === "public"),
+      items: result.items.filter(
+        (repository) => repository.visibility === "public",
+      ),
     });
   } catch (error) {
     console.error("GitHub repository search failed", error);

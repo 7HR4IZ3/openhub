@@ -1,6 +1,9 @@
 import { PostComposer } from "@/components/compose/post-composer";
 import { getPublicGitHubProvider } from "@/lib/providers/server";
-import type { DiffDisplayContext, SourceContext } from "@/lib/source-references";
+import type {
+  DiffDisplayContext,
+  SourceContext,
+} from "@/lib/source-references";
 
 export const dynamic = "force-dynamic";
 
@@ -15,11 +18,12 @@ export default async function ComposePage({ searchParams }: ComposePageProps) {
   const sourceRequest = readSourceRequest(query);
   const diffRequest = readDiffRequest(query);
   const communityId = readParam(query.communityId);
-  const loaded = sourceRequest !== null
-    ? await loadSource(sourceRequest)
-    : diffRequest !== null
-      ? await loadDiff(diffRequest)
-      : { source: null, diff: null, error: null };
+  const loaded =
+    sourceRequest !== null
+      ? await loadSource(sourceRequest)
+      : diffRequest !== null
+        ? await loadDiff(diffRequest)
+        : { source: null, diff: null, error: null };
 
   return (
     <PostComposer
@@ -57,7 +61,12 @@ function readSourceRequest(
   const path = safePath(readParam(query.path));
   const ref = safeRef(readParam(query.ref));
 
-  if (owner === undefined && name === undefined && path === null && ref === null) {
+  if (
+    owner === undefined &&
+    name === undefined &&
+    path === null &&
+    ref === null
+  ) {
     return null;
   }
 
@@ -92,14 +101,20 @@ async function loadSource(request: SourceRequest): Promise<{
   error: string | null;
 }> {
   if (!request.owner || !request.name || !request.path || !request.ref) {
-    return { source: null, diff: null, error: "The source link is incomplete or invalid." };
+    return {
+      source: null,
+      diff: null,
+      error: "The source link is incomplete or invalid.",
+    };
   }
 
   const provider = getPublicGitHubProvider();
   if (provider === null) {
     return {
       source: null,
-      diff: null, error: "GitHub source preview needs the server-side public provider to be configured.",
+      diff: null,
+      error:
+        "GitHub source preview needs the server-side public provider to be configured.",
     };
   }
 
@@ -111,7 +126,8 @@ async function loadSource(request: SourceRequest): Promise<{
     if (repository === null || repository.visibility !== "public") {
       return {
         source: null,
-        diff: null, error: "Only public repository source can be attached here.",
+        diff: null,
+        error: "Only public repository source can be attached here.",
       };
     }
 
@@ -124,7 +140,8 @@ async function loadSource(request: SourceRequest): Promise<{
     if (file === null) {
       return {
         source: null,
-        diff: null, error: "GitHub could not find that file at the selected commit.",
+        diff: null,
+        error: "GitHub could not find that file at the selected commit.",
       };
     }
 
@@ -134,7 +151,8 @@ async function loadSource(request: SourceRequest): Promise<{
     if (endLine < startLine) {
       return {
         source: null,
-        diff: null, error: "The selected source line range is invalid.",
+        diff: null,
+        error: "The selected source line range is invalid.",
       };
     }
 
@@ -167,8 +185,10 @@ async function loadSource(request: SourceRequest): Promise<{
   } catch (error) {
     console.error("Source attachment failed", error);
     return {
-      source: null, diff: null,
-      error: "GitHub could not load that source right now. Try opening the file again.",
+      source: null,
+      diff: null,
+      error:
+        "GitHub could not load that source right now. Try opening the file again.",
     };
   }
 }
@@ -178,19 +198,58 @@ async function loadDiff(request: DiffRequest): Promise<{
   diff: DiffDisplayContext | null;
   error: string | null;
 }> {
-  if (!request.owner || !request.name || !request.path || !request.baseCommitSha || !request.headCommitSha) {
-    return { source: null, diff: null, error: "The diff link is incomplete or invalid." };
+  if (
+    !request.owner ||
+    !request.name ||
+    !request.path ||
+    !request.baseCommitSha ||
+    !request.headCommitSha
+  ) {
+    return {
+      source: null,
+      diff: null,
+      error: "The diff link is incomplete or invalid.",
+    };
   }
   const provider = getPublicGitHubProvider();
-  if (provider === null) return { source: null, diff: null, error: "GitHub diff preview needs the server-side public provider to be configured." };
+  if (provider === null)
+    return {
+      source: null,
+      diff: null,
+      error:
+        "GitHub diff preview needs the server-side public provider to be configured.",
+    };
   try {
-    const repository = await provider.getRepository({ owner: request.owner, name: request.name });
-    if (repository === null || repository.visibility !== "public") return { source: null, diff: null, error: "Only public repository diffs can be attached here." };
+    const repository = await provider.getRepository({
+      owner: request.owner,
+      name: request.name,
+    });
+    if (repository === null || repository.visibility !== "public")
+      return {
+        source: null,
+        diff: null,
+        error: "Only public repository diffs can be attached here.",
+      };
     const [baseFile, headFile] = await Promise.all([
-      provider.getFile({ owner: request.owner, name: request.name, path: request.path, ref: request.baseCommitSha }),
-      provider.getFile({ owner: request.owner, name: request.name, path: request.path, ref: request.headCommitSha }),
+      provider.getFile({
+        owner: request.owner,
+        name: request.name,
+        path: request.path,
+        ref: request.baseCommitSha,
+      }),
+      provider.getFile({
+        owner: request.owner,
+        name: request.name,
+        path: request.path,
+        ref: request.headCommitSha,
+      }),
     ]);
-    if (baseFile === null && headFile === null) return { source: null, diff: null, error: "GitHub could not find this file at either commit." };
+    if (baseFile === null && headFile === null)
+      return {
+        source: null,
+        diff: null,
+        error: "GitHub could not find this file at either commit.",
+      };
     const baseCommitSha = baseFile?.commitSha ?? request.baseCommitSha;
     const headCommitSha = headFile?.commitSha ?? request.headCommitSha;
     return {
@@ -215,19 +274,48 @@ async function loadDiff(request: DiffRequest): Promise<{
     };
   } catch (error) {
     console.error("Diff attachment failed", error);
-    return { source: null, diff: null, error: "GitHub could not load that diff right now. Try opening the commits again." };
+    return {
+      source: null,
+      diff: null,
+      error:
+        "GitHub could not load that diff right now. Try opening the commits again.",
+    };
   }
 }
 
-function readDiffRequest(query: Record<string, string | string[] | undefined>): DiffRequest | null {
+function readDiffRequest(
+  query: Record<string, string | string[] | undefined>,
+): DiffRequest | null {
   const owner = readParam(query.diffOwner);
   const name = readParam(query.diffName);
   const path = safePath(readParam(query.diffPath));
   const baseCommitSha = safeCommit(readParam(query.baseCommitSha));
   const headCommitSha = safeCommit(readParam(query.headCommitSha));
-  if (owner === undefined && name === undefined && path === null && baseCommitSha === null && headCommitSha === null) return null;
-  if (owner === undefined || name === undefined || !isRepositorySegment(owner) || !isRepositorySegment(name) || path === null || baseCommitSha === null || headCommitSha === null || baseCommitSha === headCommitSha) {
-    return { owner: "", name: "", path: "", baseCommitSha: "", headCommitSha: "" };
+  if (
+    owner === undefined &&
+    name === undefined &&
+    path === null &&
+    baseCommitSha === null &&
+    headCommitSha === null
+  )
+    return null;
+  if (
+    owner === undefined ||
+    name === undefined ||
+    !isRepositorySegment(owner) ||
+    !isRepositorySegment(name) ||
+    path === null ||
+    baseCommitSha === null ||
+    headCommitSha === null ||
+    baseCommitSha === headCommitSha
+  ) {
+    return {
+      owner: "",
+      name: "",
+      path: "",
+      baseCommitSha: "",
+      headCommitSha: "",
+    };
   }
   return { owner, name, path, baseCommitSha, headCommitSha };
 }
@@ -268,8 +356,7 @@ function safePath(value: string | undefined) {
     normalized.length === 0 ||
     normalized.includes(String.fromCharCode(0)) ||
     segments.some(
-      (segment) =>
-        segment.length === 0 || segment === "." || segment === "..",
+      (segment) => segment.length === 0 || segment === "." || segment === "..",
     )
   ) {
     return null;

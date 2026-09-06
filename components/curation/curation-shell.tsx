@@ -1,17 +1,18 @@
 import { OpenHubMark } from "@/components/openhub-mark";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 import {
-  Bell,
-  Compass,
-  Home,
-  List,
-  PenLine,
-  Search,
-  UserRound,
-  Users,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+  BellIcon,
+  GlobeIcon,
+  HomeIcon,
+  ListBulletIcon,
+  Pencil2Icon,
+  MagnifyingGlassIcon,
+  PersonIcon,
+  ChatBubbleIcon,
+  ArrowTopRightIcon,
+} from "@radix-ui/react-icons";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -22,19 +23,14 @@ export type CurationSection =
   | "Lists"
   | "Communities"
   | "Profile";
-
-const navigation: Array<{
-  label: CurationSection;
-  href: string;
-  icon: LucideIcon;
-}> = [
-  { label: "Home", href: "/home", icon: Home },
-  { label: "Explore", href: "/explore", icon: Compass },
-  { label: "Notifications", href: "/notifications", icon: Bell },
-  { label: "Lists", href: "/lists", icon: List },
-  { label: "Communities", href: "/communities", icon: Users },
-  { label: "Profile", href: "/profile", icon: UserRound },
-];
+const navigation = [
+  { label: "Home", href: "/home", icon: HomeIcon },
+  { label: "Explore", href: "/explore", icon: GlobeIcon },
+  { label: "Notifications", href: "/notifications", icon: BellIcon },
+  { label: "Lists", href: "/lists", icon: ListBulletIcon },
+  { label: "Communities", href: "/communities", icon: ChatBubbleIcon },
+  { label: "Profile", href: "/profile", icon: PersonIcon },
+] as const;
 
 export function CurationShell({
   active,
@@ -52,96 +48,115 @@ export function CurationShell({
   aside?: ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#f7f7f4] text-foreground dark:bg-[#111310]">
-      <div className="mx-auto grid min-h-screen w-full max-w-[1440px] lg:grid-cols-[232px_minmax(0,1fr)] xl:grid-cols-[232px_minmax(0,1fr)_280px]">
-        <aside className="sticky top-0 hidden h-screen flex-col justify-between px-5 py-6 lg:flex">
-          <div>
-            <Link href="/home" className="inline-flex" aria-label="OpenHub home">
-              <OpenHubMark />
-            </Link>
-            <nav className="mt-12 space-y-1" aria-label="Primary navigation">
-              {navigation.map((item) => (
-                <CurationNavItem key={item.label} {...item} active={item.label === active} />
-              ))}
-            </nav>
-            <Button asChild className="mt-8 h-11 w-full rounded-full">
-              <Link href="/compose">
-                <PenLine className="h-4 w-4" />
-                Write a post
+    <div className="min-h-[100dvh] bg-background">
+      <a className="skip-link" href="#main-content">
+        Skip to content
+      </a>
+      <div className="mx-auto grid min-h-[100dvh] max-w-[1440px] lg:grid-cols-[216px_minmax(0,1fr)] xl:grid-cols-[216px_minmax(0,1fr)_272px]">
+        <aside className="sticky top-0 hidden h-[100dvh] flex-col overflow-y-auto px-5 py-7 lg:flex">
+          <Link href="/home" aria-label="OpenHub home">
+            <OpenHubMark />
+          </Link>
+          <nav className="mt-10 space-y-1" aria-label="Primary navigation">
+            {navigation.map(({ label, href, icon: Icon }) => (
+              <Link
+                key={href}
+                href={href}
+                aria-current={active === label ? "page" : undefined}
+                className={cn(
+                  "flex min-h-11 items-center gap-3 rounded-md px-3 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
+                  active === label &&
+                    "bg-secondary font-semibold text-foreground",
+                )}
+              >
+                <Icon className="h-[18px] w-[18px]" aria-hidden="true" />
+                {label}
               </Link>
-            </Button>
-          </div>
-
-          <div className="rounded-2xl border border-black/[0.08] p-3 dark:border-white/[0.08]">
-            <p className="text-sm font-medium">Your trail</p>
-            <p className="mt-1 text-xs leading-5 text-muted-foreground">
-              Connect GitHub to make this space yours.
-            </p>
-            <Link
-              href="/signin"
-              className="mt-3 inline-flex text-xs font-semibold text-[#9b4d31] hover:underline dark:text-[#e99970]"
-            >
-              Continue with GitHub
+            ))}
+          </nav>
+          <Button asChild className="mt-6 w-full">
+            <Link href="/compose">
+              <Pencil2Icon />
+              Write a post
             </Link>
+          </Button>
+          <div className="mt-auto space-y-4 pt-12">
+            <Link
+              href="/settings/safety"
+              className="block px-3 text-xs text-muted-foreground hover:text-foreground"
+            >
+              Safety and control
+            </Link>
+            <div className="flex items-center justify-between border-t pt-4">
+              <span className="text-xs text-muted-foreground">Appearance</span>
+              <ThemeToggle />
+            </div>
           </div>
         </aside>
-
-        <main className="min-h-screen min-w-0 border-x border-black/[0.08] bg-[#fbfbf9] pb-24 dark:border-white/[0.08] dark:bg-[#151714] lg:pb-0">
-          <header className="sticky top-0 z-10 border-b border-black/[0.08] bg-[#fbfbf9]/90 px-5 py-4 backdrop-blur dark:border-white/[0.08] dark:bg-[#151714]/90 sm:px-7">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex min-w-0 items-center gap-4">
-                <Link href="/home" className="shrink-0 lg:hidden" aria-label="OpenHub home">
-                  <OpenHubMark compact />
-                </Link>
-                <div className="min-w-0">
-                  <p className="truncate text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                    OpenHub / {eyebrow}
-                  </p>
-                  <h1 className="mt-1 truncate text-xl font-semibold tracking-[-0.035em] sm:text-2xl">
-                    {title}
-                  </h1>
-                </div>
-              </div>
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="app-content min-w-0 bg-card outline-none lg:border-x"
+        >
+          <header className="sticky top-0 z-10 flex min-h-20 items-center justify-between gap-3 border-b bg-card px-5 py-4 sm:px-8">
+            <div className="flex min-w-0 items-center gap-3">
               <Link
-                href="/explore"
-                className="inline-flex h-9 shrink-0 items-center gap-2 rounded-full border border-black/[0.1] px-3 text-xs font-semibold transition-colors hover:border-[#b45e3c] dark:border-white/[0.1]"
+                href="/home"
+                className="shrink-0 lg:hidden"
+                aria-label="OpenHub home"
               >
-                <Search className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Search</span>
+                <OpenHubMark compact />
               </Link>
+              <div className="min-w-0">
+                <span className="sr-only">OpenHub / {eyebrow}</span>
+                <h1 className="truncate text-xl font-semibold tracking-tight">
+                  {title}
+                </h1>
+              </div>
             </div>
-            {description ? (
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground sm:pl-12">
-                {description}
-              </p>
-            ) : null}
+            <div className="flex shrink-0 items-center gap-2">
+              <Button asChild variant="ghost" size="icon">
+                <Link href="/explore" aria-label="Search OpenHub">
+                  <MagnifyingGlassIcon />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="lg:hidden">
+                <Link href="/compose" aria-label="Write a post">
+                  <Pencil2Icon />
+                  <span className="hidden sm:inline">Write</span>
+                </Link>
+              </Button>
+            </div>
           </header>
-
+          {description ? (
+            <p className="max-w-3xl px-5 pb-2 pt-6 text-sm leading-6 text-muted-foreground sm:px-8">
+              {description}
+            </p>
+          ) : null}
           {children}
         </main>
-
-        <aside className="hidden px-5 py-6 xl:block">
-          <div className="sticky top-6 space-y-5">
+        <aside className="hidden px-6 py-7 xl:block">
+          <div className="sticky top-7 space-y-8">
             {aside ?? <CurationRail />}
           </div>
         </aside>
       </div>
-
       <nav
-        className="fixed inset-x-0 bottom-0 z-20 flex items-center justify-around border-t border-black/[0.1] bg-[#fbfbf9]/95 px-3 py-2 backdrop-blur dark:border-white/[0.1] dark:bg-[#151714]/95 lg:hidden"
+        className="mobile-navigation fixed inset-x-0 bottom-0 z-20 grid grid-cols-6 border-t bg-card px-1 pt-2 lg:hidden"
         aria-label="Mobile navigation"
       >
-        {navigation.map((item) => (
+        {navigation.map(({ label, href, icon: Icon }) => (
           <Link
-            key={item.label}
-            href={item.href}
+            key={href}
+            href={href}
+            aria-current={label === active ? "page" : undefined}
             className={cn(
-              "flex min-h-11 min-w-0 flex-1 flex-col items-center gap-1 rounded-md px-0.5 py-1.5 text-[9px] text-muted-foreground",
-              item.label === active && "text-foreground",
+              "flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 rounded-md text-[9px] text-muted-foreground",
+              label === active && "bg-secondary font-semibold text-foreground",
             )}
           >
-            <item.icon className="h-4 w-4" />
-            <span>{item.label}</span>
+            <Icon className="h-[18px] w-[18px]" aria-hidden="true" />
+            <span>{label}</span>
           </Link>
         ))}
       </nav>
@@ -149,62 +164,49 @@ export function CurationShell({
   );
 }
 
-function CurationNavItem({
-  label,
-  href,
-  icon: Icon,
-  active,
-}: {
-  label: CurationSection;
-  href: string;
-  icon: LucideIcon;
-  active: boolean;
-}) {
-  return (
-    <Link
-      href={href}
-      className={cn(
-        "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-black/[0.04] hover:text-foreground dark:hover:bg-white/[0.05]",
-        active && "bg-black/[0.05] text-foreground dark:bg-white/[0.07]",
-      )}
-    >
-      <Icon className="h-[18px] w-[18px]" />
-      {label}
-    </Link>
-  );
-}
-
 export function CurationRail() {
   return (
     <>
-      <section className="rounded-2xl border border-black/[0.08] p-5 dark:border-white/[0.08]">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-          Discovery principles
-        </p>
-        <ul className="mt-4 space-y-3 text-sm leading-5 text-muted-foreground">
-          <li>Start with source, not a sales pitch.</li>
-          <li>Keep the original owner and license visible.</li>
-          <li>Reward useful context over empty volume.</li>
-        </ul>
-      </section>
-      <section className="rounded-2xl bg-[#e9e6dc] p-5 dark:bg-[#20251f]">
-        <p className="text-sm font-semibold">A calmer social layer</p>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Lists and communities are trails through software, not another place to broadcast a launch.
+      <section>
+        <h2 className="text-sm font-semibold">
+          A place for curious developers.
+        </h2>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">
+          Read the code. Follow an idea. Add the context that helps someone else
+          understand it.
         </p>
         <Link
           href="/explore"
-          className="mt-4 inline-flex items-center text-sm font-semibold text-[#9b4d31] hover:underline dark:text-[#e99970]"
+          className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-medium hover:underline"
         >
-          Browse a repository <span className="ml-1">↗</span>
-        </Link>
-        <Link href="/bounties" className="mt-3 inline-flex items-center text-xs font-semibold text-[#9b4d31] hover:underline dark:text-[#e99970]">
-          Find contribution tasks <span className="ml-1">↗</span>
-        </Link>
-        <Link href="/settings/safety" className="mt-3 inline-flex text-xs font-semibold text-[#9b4d31] hover:underline dark:text-[#e99970]">
-          Safety and control
+          Explore repositories <ArrowTopRightIcon />
         </Link>
       </section>
+      <section className="border-t pt-6">
+        <h2 className="text-xs font-semibold text-muted-foreground">
+          Keep exploring
+        </h2>
+        <div className="mt-3 space-y-1">
+          {[
+            ["/lists", "Curated lists"],
+            ["/communities", "Technical communities"],
+            ["/bounties", "Contribution tasks"],
+          ].map(([href, label]) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex min-h-11 items-center justify-between gap-3 text-sm hover:underline"
+            >
+              {label}
+              <ArrowTopRightIcon className="text-muted-foreground" />
+            </Link>
+          ))}
+        </div>
+      </section>
+      <p className="border-t pt-5 text-xs leading-5 text-muted-foreground">
+        Source belongs to its original authors. Every shared reference keeps its
+        attribution.
+      </p>
     </>
   );
 }

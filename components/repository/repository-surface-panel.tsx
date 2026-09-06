@@ -3,26 +3,27 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
-  Archive,
-  ArrowUpRight,
-  BookOpen,
-  CheckCircle2,
-  ChevronDown,
-  CircleDot,
-  Clock3,
-  ExternalLink,
-  GitBranch,
-  GitCommit,
-  GitFork,
-  GitPullRequest,
-  Globe2,
-  History,
-  Info,
-  PackageOpen,
-  Tag,
-  Users,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+  ArchiveIcon as Archive,
+  ArrowTopRightIcon as ArrowUpRight,
+  ReaderIcon as BookOpen,
+  CheckCircledIcon as CheckCircle2,
+  ChevronDownIcon as ChevronDown,
+  DotFilledIcon as CircleDot,
+  ClockIcon as Clock3,
+  ExternalLinkIcon as ExternalLink,
+  Share2Icon as GitBranch,
+  CommitIcon as GitCommit,
+  Share2Icon as GitFork,
+  Share2Icon as GitPullRequest,
+  GlobeIcon as Globe2,
+  CounterClockwiseClockIcon as History,
+  InfoCircledIcon as Info,
+  CubeIcon as PackageOpen,
+  BookmarkIcon as Tag,
+  PersonIcon as Users,
+} from "@radix-ui/react-icons";
+
+import type { AppIcon } from "@/components/ui/icon";
 
 import { cn } from "@/lib/utils";
 import type {
@@ -47,7 +48,7 @@ type SurfaceId =
 const surfaceTabs: Array<{
   id: SurfaceId;
   label: string;
-  icon: LucideIcon;
+  icon: AppIcon;
 }> = [
   { id: "overview", label: "Overview", icon: Info },
   { id: "commits", label: "Commits", icon: GitCommit },
@@ -75,12 +76,12 @@ export function RepositorySurfacePanel({
   return (
     <section
       id="repository-surfaces"
-      className="mt-4 overflow-hidden rounded-2xl border border-black/[0.1] bg-[#fbfbf9] dark:border-white/[0.1] dark:bg-[#151714]"
+      className="mt-4 overflow-hidden rounded-xl border border-border bg-card"
     >
-      <div className="border-b border-black/[0.08] px-5 py-5 dark:border-white/[0.08] sm:px-6">
+      <div className="border-b border-border px-5 py-5 sm:px-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8b513d] dark:text-[#e6a07c]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground">
               Repository surfaces
             </p>
             <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em]">
@@ -189,12 +190,14 @@ function RepositoryRefPicker({
 
   return (
     <details className="group relative shrink-0">
-      <summary className="flex cursor-pointer list-none items-center gap-2 rounded-full border border-black/[0.12] bg-transparent px-3.5 py-2 text-xs font-semibold transition-colors hover:border-[#b45e3c]/60 dark:border-white/[0.12] dark:hover:border-[#e99970]/60">
-        <GitBranch className="h-3.5 w-3.5 text-[#b45e3c] dark:text-[#e99970]" />
-        <span className="max-w-40 truncate font-mono">{refLabel(sourceRef)}</span>
+      <summary className="flex cursor-pointer list-none items-center gap-2 rounded-full border border-black/[0.12] bg-transparent px-3.5 py-2 text-xs font-semibold transition-colors hover:border-ring dark:border-white/[0.12] dark:hover:border-ring">
+        <GitBranch className="h-3.5 w-3.5 text-foreground" />
+        <span className="max-w-40 truncate font-mono">
+          {refLabel(sourceRef)}
+        </span>
         <ChevronDown className="h-3.5 w-3.5 text-muted-foreground transition-transform group-open:rotate-180" />
       </summary>
-      <div className="absolute right-0 z-20 mt-2 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-black/[0.12] bg-[#fbfbf9] p-2 shadow-xl dark:border-white/[0.12] dark:bg-[#151714]">
+      <div className="absolute right-0 z-20 mt-2 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-black/[0.12] bg-card p-2 shadow-xl dark:border-white/[0.12] dark:bg-card">
         <div className="px-2.5 py-2">
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             Read from a ref
@@ -241,7 +244,7 @@ function RefGroup({
   workspaceBasePath,
 }: {
   label: string;
-  icon: LucideIcon;
+  icon: AppIcon;
   refs: RepositoryRef[];
   repository: NormalizedRepository;
   sourceRef: string;
@@ -251,7 +254,7 @@ function RefGroup({
   if (refs.length === 0) return null;
 
   return (
-    <div className="mt-2 border-t border-black/[0.08] pt-2 dark:border-white/[0.08]">
+    <div className="mt-2 border-t border-border pt-2">
       <p className="flex items-center gap-2 px-2.5 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
         <Icon className="h-3 w-3" />
         {label}
@@ -262,13 +265,21 @@ function RefGroup({
           return (
             <Link
               key={ref.ref}
-              href={workspaceHref(repository, ref.ref, currentPath, workspaceBasePath)}
+              href={workspaceHref(
+                repository,
+                ref.ref,
+                currentPath,
+                workspaceBasePath,
+              )}
               className={cn(
                 "flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs transition-colors hover:bg-black/[0.05] dark:hover:bg-white/[0.06]",
-                isActive && "bg-[#b45e3c]/[0.1] text-[#8f432b] dark:bg-[#e99970]/[0.12] dark:text-[#f0b38d]",
+                isActive &&
+                  "bg-accent text-foreground dark:bg-accent text-foreground",
               )}
             >
-              <span className="min-w-0 flex-1 truncate font-mono">{ref.name}</span>
+              <span className="min-w-0 flex-1 truncate font-mono">
+                {ref.name}
+              </span>
               {ref.targetSha ? (
                 <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
                   {ref.targetSha.slice(0, 7)}
@@ -292,9 +303,21 @@ function OverviewSurface({
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)]">
       <div className="grid gap-3 sm:grid-cols-2">
-        <SurfaceFact icon={History} label="Latest push" value={formatDate(repository.pushedAt)} />
-        <SurfaceFact icon={Clock3} label="Last updated" value={formatDate(repository.updatedAt)} />
-        <SurfaceFact icon={PackageOpen} label="Created" value={formatDate(repository.createdAt)} />
+        <SurfaceFact
+          icon={History}
+          label="Latest push"
+          value={formatDate(repository.pushedAt)}
+        />
+        <SurfaceFact
+          icon={Clock3}
+          label="Last updated"
+          value={formatDate(repository.updatedAt)}
+        />
+        <SurfaceFact
+          icon={PackageOpen}
+          label="Created"
+          value={formatDate(repository.createdAt)}
+        />
         <SurfaceFact
           icon={GitFork}
           label="Repository shape"
@@ -302,7 +325,7 @@ function OverviewSurface({
         />
       </div>
 
-      <div className="rounded-2xl border border-black/[0.08] bg-[#f2f0e9] p-4 dark:border-white/[0.08] dark:bg-[#20251f]">
+      <div className="rounded-xl border border-border bg-[#f2f0e9] p-4 dark:bg-secondary">
         <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
           Trust and context
         </p>
@@ -313,12 +336,18 @@ function OverviewSurface({
             ) : (
               <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#66856c]" />
             )}
-            <span>{repository.isArchived ? "Archived by the maintainer" : "Active repository"}</span>
+            <span>
+              {repository.isArchived
+                ? "Archived by the maintainer"
+                : "Active repository"}
+            </span>
           </div>
           <div className="flex items-start gap-2">
-            <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-[#b45e3c] dark:text-[#e99970]" />
+            <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-foreground" />
             <span>
-              {surfaces.license?.name ?? repository.licenseSpdxId ?? "License not detected"}
+              {surfaces.license?.name ??
+                repository.licenseSpdxId ??
+                "License not detected"}
             </span>
           </div>
           {repository.homepageUrl ? (
@@ -359,7 +388,13 @@ function OverviewSurface({
 
 function CommitSurface({ commits }: { commits: RepositoryCommit[] }) {
   if (commits.length === 0) {
-    return <SurfaceEmpty icon={GitCommit} title="No commit history returned" body="Try another ref or open the repository on GitHub." />;
+    return (
+      <SurfaceEmpty
+        icon={GitCommit}
+        title="No commit history returned"
+        body="Try another ref or open the repository on GitHub."
+      />
+    );
   }
 
   return (
@@ -373,11 +408,13 @@ function CommitSurface({ commits }: { commits: RepositoryCommit[] }) {
           className="group flex flex-col gap-2 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-start sm:justify-between sm:gap-5"
         >
           <div className="min-w-0">
-            <p className="line-clamp-2 text-sm font-semibold leading-6 group-hover:text-[#9b4d31] dark:group-hover:text-[#e99970]">
+            <p className="line-clamp-2 text-sm font-semibold leading-6 group-hover:text-foreground dark:group-hover:text-foreground">
               {commit.message}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              {commit.authorLogin ? `@${commit.authorLogin}` : commit.authorName ?? "Anonymous contributor"}
+              {commit.authorLogin
+                ? `@${commit.authorLogin}`
+                : (commit.authorName ?? "Anonymous contributor")}
               <span className="px-1.5">·</span>
               {formatDate(commit.committedAt)}
             </p>
@@ -403,7 +440,13 @@ function IssueSurface({
   const label = kind === "issue" ? "open issues" : "open pull requests";
 
   if (issues.length === 0) {
-    return <SurfaceEmpty icon={Icon} title={`No ${label} returned`} body="This surface is quiet right now." />;
+    return (
+      <SurfaceEmpty
+        icon={Icon}
+        title={`No ${label} returned`}
+        body="This surface is quiet right now."
+      />
+    );
   }
 
   return (
@@ -420,15 +463,19 @@ function IssueSurface({
           >
             <Icon className="mt-1 h-4 w-4 shrink-0 text-[#66856c]" />
             <div className="min-w-0 flex-1">
-              <p className="line-clamp-2 text-sm font-semibold leading-6 group-hover:text-[#9b4d31] dark:group-hover:text-[#e99970]">
-                <span className="mr-1.5 font-mono text-xs text-muted-foreground">#{issue.number}</span>
+              <p className="line-clamp-2 text-sm font-semibold leading-6 group-hover:text-foreground dark:group-hover:text-foreground">
+                <span className="mr-1.5 font-mono text-xs text-muted-foreground">
+                  #{issue.number}
+                </span>
                 {issue.title}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
                 {issue.authorLogin ? `@${issue.authorLogin}` : "Unknown author"}
                 <span className="px-1.5">·</span>
                 Updated {formatDate(issue.updatedAt)}
-                {pullRequest?.isDraft ? <span className="px-1.5">· Draft</span> : null}
+                {pullRequest?.isDraft ? (
+                  <span className="px-1.5">· Draft</span>
+                ) : null}
               </p>
             </div>
             <ArrowUpRight className="mt-1 h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -441,7 +488,13 @@ function IssueSurface({
 
 function ReleaseSurface({ releases }: { releases: RepositoryRelease[] }) {
   if (releases.length === 0) {
-    return <SurfaceEmpty icon={Tag} title="No releases returned" body="Published releases will appear here when the project has them." />;
+    return (
+      <SurfaceEmpty
+        icon={Tag}
+        title="No releases returned"
+        body="Published releases will appear here when the project has them."
+      />
+    );
   }
 
   return (
@@ -454,16 +507,20 @@ function ReleaseSurface({ releases }: { releases: RepositoryRelease[] }) {
           rel="noreferrer"
           className="group flex items-start gap-3 py-4 first:pt-0 last:pb-0"
         >
-          <Tag className="mt-1 h-4 w-4 shrink-0 text-[#b45e3c] dark:text-[#e99970]" />
+          <Tag className="mt-1 h-4 w-4 shrink-0 text-foreground" />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold group-hover:text-[#9b4d31] dark:group-hover:text-[#e99970]">
+            <p className="truncate text-sm font-semibold group-hover:text-foreground dark:group-hover:text-foreground">
               {release.name ?? release.tagName}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
               <span className="font-mono">{release.tagName}</span>
               <span className="px-1.5">·</span>
-              {release.publishedAt ? formatDate(release.publishedAt) : "Unpublished"}
-              {release.isPrerelease ? <span className="px-1.5">· Pre-release</span> : null}
+              {release.publishedAt
+                ? formatDate(release.publishedAt)
+                : "Unpublished"}
+              {release.isPrerelease ? (
+                <span className="px-1.5">· Pre-release</span>
+              ) : null}
             </p>
             {release.description ? (
               <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">
@@ -478,9 +535,19 @@ function ReleaseSurface({ releases }: { releases: RepositoryRelease[] }) {
   );
 }
 
-function ContributorSurface({ contributors }: { contributors: RepositoryContributor[] }) {
+function ContributorSurface({
+  contributors,
+}: {
+  contributors: RepositoryContributor[];
+}) {
   if (contributors.length === 0) {
-    return <SurfaceEmpty icon={Users} title="No recent contributors returned" body="Open a ref with commit history to see the people behind it." />;
+    return (
+      <SurfaceEmpty
+        icon={Users}
+        title="No recent contributors returned"
+        body="Open a ref with commit history to see the people behind it."
+      />
+    );
   }
 
   return (
@@ -488,17 +555,20 @@ function ContributorSurface({ contributors }: { contributors: RepositoryContribu
       {contributors.map((contributor) => (
         <div
           key={contributor.login ?? contributor.name ?? "anonymous"}
-          className="flex items-center gap-3 rounded-2xl border border-black/[0.08] p-3 dark:border-white/[0.08]"
+          className="flex items-center gap-3 rounded-xl border border-border p-3"
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#e9e6dc] text-xs font-semibold text-[#8f432b] dark:bg-white/[0.08] dark:text-[#f0b38d]">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-foreground dark:bg-white/[0.08]">
             {initials(contributor.login ?? contributor.name ?? "?")}
           </div>
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold">
-              {contributor.login ? `@${contributor.login}` : contributor.name ?? "Anonymous contributor"}
+              {contributor.login
+                ? `@${contributor.login}`
+                : (contributor.name ?? "Anonymous contributor")}
             </p>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              {contributor.commitCount} {contributor.commitCount === 1 ? "commit" : "commits"} in this ref
+              {contributor.commitCount}{" "}
+              {contributor.commitCount === 1 ? "commit" : "commits"} in this ref
             </p>
           </div>
         </div>
@@ -512,12 +582,12 @@ function SurfaceFact({
   label,
   value,
 }: {
-  icon: LucideIcon;
+  icon: AppIcon;
   label: string;
   value: string;
 }) {
   return (
-    <div className="rounded-2xl border border-black/[0.08] p-4 dark:border-white/[0.08]">
+    <div className="rounded-xl border border-border p-4">
       <Icon className="h-4 w-4 text-muted-foreground" />
       <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
         {label}
@@ -532,15 +602,17 @@ function SurfaceEmpty({
   title,
   body,
 }: {
-  icon: LucideIcon;
+  icon: AppIcon;
   title: string;
   body: string;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-black/[0.12] px-6 py-12 text-center dark:border-white/[0.12]">
+    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-black/[0.12] px-6 py-12 text-center dark:border-white/[0.12]">
       <Icon className="h-5 w-5 text-muted-foreground" />
       <p className="mt-4 text-sm font-semibold">{title}</p>
-      <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">{body}</p>
+      <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
+        {body}
+      </p>
     </div>
   );
 }
@@ -564,7 +636,9 @@ function workspaceHref(
 ) {
   const params = new URLSearchParams({ ref: sourceRef });
   if (currentPath) params.set("path", currentPath);
-  const basePath = workspaceBasePath ?? `/repos/${encodeURIComponent(repository.ownerLogin)}/${encodeURIComponent(repository.name)}`;
+  const basePath =
+    workspaceBasePath ??
+    `/repos/${encodeURIComponent(repository.ownerLogin)}/${encodeURIComponent(repository.name)}`;
   return `${basePath}?${params.toString()}`;
 }
 
@@ -584,7 +658,9 @@ function refLabel(value: string) {
 function formatDate(value: string | null) {
   if (value === null) return "Not available";
   const parsed = new Date(value);
-  return Number.isNaN(parsed.valueOf()) ? "Not available" : parsed.toISOString().slice(0, 10);
+  return Number.isNaN(parsed.valueOf())
+    ? "Not available"
+    : parsed.toISOString().slice(0, 10);
 }
 
 function initials(value: string) {

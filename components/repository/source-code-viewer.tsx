@@ -76,7 +76,8 @@ export function SourceCodeViewer({
           copyWithSyntaxHighlighting: true,
           domReadOnly: true,
           folding: true,
-          fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+          fontFamily:
+            "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
           fontSize: 13,
           glyphMargin: false,
           lineDecorationsWidth: 12,
