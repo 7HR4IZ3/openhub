@@ -30,10 +30,11 @@
   document.querySelectorAll("[data-demo-toggle]").forEach(function (button) {
     button.addEventListener("click", function () {
       var target = document.querySelector(button.dataset.demoToggle);
-      if (!target) return;
-      var active = target.dataset.active === "true";
-      target.dataset.active = String(!active);
-      button.setAttribute("aria-pressed", String(!active));
+      var active = target ? target.dataset.active === "true" : button.getAttribute("aria-pressed") === "true";
+      active = !active;
+      if (target) target.dataset.active = String(active);
+      button.dataset.active = String(active);
+      button.setAttribute("aria-pressed", String(active));
     });
   });
 })();

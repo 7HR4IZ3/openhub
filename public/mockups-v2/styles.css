@@ -558,11 +558,13 @@ h3 {
 }
 
 .repo-name {
+  display: block;
   margin-bottom: 3px;
   font: 13px var(--mono);
 }
 
 .repo-description {
+  display: block;
   overflow: hidden;
   margin: 0;
   color: var(--muted);
@@ -906,6 +908,10 @@ h3 {
   transition: transform 180ms ease, background 180ms ease;
 }
 
+.desktop-only {
+  display: inline;
+}
+
 .primary:hover {
   background: #e2f7aa;
   transform: translateY(-1px);
@@ -1219,6 +1225,10 @@ h3 {
   .composer textarea {
     min-height: 250px;
     font-size: 17px;
+  }
+
+  .desktop-only {
+    display: none;
   }
 
   .mobile-nav {
