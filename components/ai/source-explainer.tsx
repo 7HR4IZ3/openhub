@@ -78,23 +78,29 @@ export function SourceExplainer({ source }: { source: ExplainableSource }) {
           5 free explanations per day
         </span>
       </div>
-      <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-        <input
-          value={question}
-          onChange={(event) => setQuestion(event.target.value)}
-          placeholder="What should I understand first?"
-          maxLength={2000}
-          className="h-9 min-w-0 flex-1 rounded-md border border-black/[0.12] bg-transparent px-3 text-xs outline-none focus-visible:ring-1 focus-visible:ring-ring dark:border-white/[0.12]"
-        />
-        <select
-          value={mode}
-          onChange={(event) => setMode(event.target.value as typeof mode)}
-          className="h-9 rounded-md border border-black/[0.12] bg-transparent px-3 text-xs dark:border-white/[0.12]"
-        >
-          <option value="explain">Explain</option>
-          <option value="summary">Summarize</option>
-          <option value="diagram">Map flow</option>
-        </select>
+      <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">
+        <label className="min-w-0 flex-1 text-xs font-medium">
+          Question
+          <input
+            value={question}
+            onChange={(event) => setQuestion(event.target.value)}
+            placeholder="What should I understand first?"
+            maxLength={2000}
+            className="mt-2 h-11 w-full min-w-0 rounded-md border border-black/[0.12] bg-transparent px-3 text-xs outline-none focus-visible:ring-1 focus-visible:ring-ring dark:border-white/[0.12]"
+          />
+        </label>
+        <label className="text-xs font-medium">
+          Response type
+          <select
+            value={mode}
+            onChange={(event) => setMode(event.target.value as typeof mode)}
+            className="mt-2 block h-11 w-full rounded-md border border-black/[0.12] bg-transparent px-3 text-xs dark:border-white/[0.12]"
+          >
+            <option value="explain">Explain</option>
+            <option value="summary">Summarize</option>
+            <option value="diagram">Map flow</option>
+          </select>
+        </label>
         <Button
           type="button"
           size="sm"

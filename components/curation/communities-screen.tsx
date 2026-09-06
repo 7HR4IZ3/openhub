@@ -397,33 +397,42 @@ function CreateCommunityForm() {
       className="mt-5 rounded-xl border border-border bg-background p-4 dark:bg-background sm:p-5"
     >
       <div className="grid gap-3 sm:grid-cols-[1fr_170px]">
-        <Input
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="Community name"
-          maxLength={120}
-          required
-          autoFocus
-        />
-        <select
-          value={visibility}
-          onChange={(event) =>
-            setVisibility(event.target.value as "public" | "private")
-          }
-          className="h-9 rounded-md border border-input bg-transparent px-3 text-sm"
-        >
-          <option value="public">Public circle</option>
-          <option value="private">Private circle</option>
-        </select>
+        <label className="block min-w-0 space-y-2 text-sm font-medium">
+          <span>Community name</span>
+          <Input
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="Community name"
+            maxLength={120}
+            required
+            autoFocus
+          />
+        </label>
+        <label className="block space-y-2 text-sm font-medium">
+          <span>Visibility</span>
+          <select
+            value={visibility}
+            onChange={(event) =>
+              setVisibility(event.target.value as "public" | "private")
+            }
+            className="h-11 rounded-md border border-input bg-transparent px-3 text-sm"
+          >
+            <option value="public">Public circle</option>
+            <option value="private">Private circle</option>
+          </select>
+        </label>
       </div>
-      <textarea
-        value={description}
-        onChange={(event) => setDescription(event.target.value)}
-        placeholder="What technical curiosity belongs here?"
-        maxLength={2000}
-        rows={4}
-        className="mt-3 w-full resize-y rounded-md border border-input bg-transparent px-3 py-2 text-sm leading-6 outline-none focus-visible:ring-1 focus-visible:ring-ring"
-      />
+      <label className="mt-4 block text-sm font-medium">
+        <span>Description</span>
+        <textarea
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          placeholder="What technical curiosity belongs here?"
+          maxLength={2000}
+          rows={4}
+          className="mt-3 w-full resize-y rounded-md border border-input bg-transparent px-3 py-2 text-sm leading-6 outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        />
+      </label>
       {error ? (
         <p role="alert" className="mt-3 text-xs text-destructive">
           {error}

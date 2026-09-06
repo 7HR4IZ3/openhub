@@ -101,3 +101,7 @@ Repository headers now use the same account menu, keeping theme switching and si
 ### Feed and composition accessibility
 
 Home now reuses the shared keyboard tab component. Recommended repositories are available through a content disclosure at every viewport, instead of disappearing with the desktop-only rail. Post type uses a labeled native radio group, matching its form semantics and supporting keyboard selection. Composer placeholders use the readable muted-text token.
+
+### Form completion
+
+List, community and contribution forms now show persistent labels for text, visibility and description fields. Source explanation controls have visible question/mode labels and touch-sized controls. The home feed subscribes to the recent-post query only when that feed is selected.

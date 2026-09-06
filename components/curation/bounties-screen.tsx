@@ -231,59 +231,80 @@ function CreateBountyForm({ onCreated }: { onCreated: () => void }) {
       className="mt-6 rounded-xl border border-border bg-background p-4 dark:bg-background sm:p-5"
     >
       <div className="grid gap-3 sm:grid-cols-2">
-        <Input
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-          placeholder="Task title"
-          maxLength={160}
-          required
-        />
-        <Input
-          value={repositoryLabel}
-          onChange={(event) => setRepositoryLabel(event.target.value)}
-          placeholder="Repository or project (optional)"
-          maxLength={160}
-        />
+        <label className="block min-w-0 space-y-2 text-sm font-medium">
+          <span>Task title</span>
+          <Input
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            placeholder="Task title"
+            maxLength={160}
+            required
+          />
+        </label>
+        <label className="block min-w-0 space-y-2 text-sm font-medium">
+          <span>Repository or project (optional)</span>
+          <Input
+            value={repositoryLabel}
+            onChange={(event) => setRepositoryLabel(event.target.value)}
+            placeholder="Repository or project (optional)"
+            maxLength={160}
+          />
+        </label>
       </div>
-      <textarea
-        value={description}
-        onChange={(event) => setDescription(event.target.value)}
-        placeholder="What needs to be done?"
-        maxLength={8000}
-        rows={5}
-        required
-        className="mt-3 w-full resize-y rounded-md border border-input bg-transparent px-3 py-2 text-sm leading-6 outline-none focus-visible:ring-1 focus-visible:ring-ring"
-      />
-      <div className="mt-3 grid gap-3 sm:grid-cols-2">
-        <Input
-          value={issueUrl}
-          onChange={(event) => setIssueUrl(event.target.value)}
-          type="url"
-          placeholder="Canonical issue URL (https://…)"
+      <label className="mt-4 block text-sm font-medium">
+        <span>Description</span>
+        <textarea
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          placeholder="What needs to be done?"
+          maxLength={8000}
+          rows={5}
           required
+          className="mt-3 w-full resize-y rounded-md border border-input bg-transparent px-3 py-2 text-sm leading-6 outline-none focus-visible:ring-1 focus-visible:ring-ring"
         />
-        <Input
-          value={paymentUrl}
-          onChange={(event) => setPaymentUrl(event.target.value)}
-          type="url"
-          placeholder="External reward URL (optional)"
-        />
+      </label>
+      <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <label className="block min-w-0 space-y-2 text-sm font-medium">
+          <span>Issue link</span>
+          <Input
+            value={issueUrl}
+            onChange={(event) => setIssueUrl(event.target.value)}
+            type="url"
+            placeholder="Canonical issue URL (https://…)"
+            required
+          />
+        </label>
+        <label className="block min-w-0 space-y-2 text-sm font-medium">
+          <span>Reward link (optional)</span>
+          <Input
+            value={paymentUrl}
+            onChange={(event) => setPaymentUrl(event.target.value)}
+            type="url"
+            placeholder="External reward URL (optional)"
+          />
+        </label>
       </div>
       <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_120px]">
-        <Input
-          value={amount}
-          onChange={(event) => setAmount(event.target.value)}
-          type="number"
-          min="0"
-          step="0.01"
-          placeholder="Reward amount (optional)"
-        />
-        <Input
-          value={currency}
-          onChange={(event) => setCurrency(event.target.value.toUpperCase())}
-          maxLength={3}
-          placeholder="USD"
-        />
+        <label className="block min-w-0 space-y-2 text-sm font-medium">
+          <span>Reward amount (optional)</span>
+          <Input
+            value={amount}
+            onChange={(event) => setAmount(event.target.value)}
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Reward amount (optional)"
+          />
+        </label>
+        <label className="block min-w-0 space-y-2 text-sm font-medium">
+          <span>USD</span>
+          <Input
+            value={currency}
+            onChange={(event) => setCurrency(event.target.value.toUpperCase())}
+            maxLength={3}
+            placeholder="USD"
+          />
+        </label>
       </div>
       {error ? (
         <p role="alert" className="mt-3 text-xs text-destructive">

@@ -36,7 +36,9 @@ function ConnectedRecentPostFeed({ mode }: { mode: PostFeedMode }) {
     status,
     isLoading,
     loadMore,
-  } = usePaginatedQuery(api.posts.recentPage, {}, { initialNumItems: 12 });
+  } = usePaginatedQuery(api.posts.recentPage, mode === "recent" ? {} : "skip", {
+    initialNumItems: 12,
+  });
   const following = useQuery(
     api.posts.following,
     mode === "following" ? { limit: 12 } : "skip",
