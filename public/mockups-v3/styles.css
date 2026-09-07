@@ -1195,6 +1195,11 @@ svg {
   .preview-frame iframe { width: 100vw; border-radius: 0; box-shadow: none; }
 }
 
+@media (max-width: 374px) {
+  .article-topbar .topbar-right .icon-button { display: none; }
+  .article-topbar .topbar-right .button.blue { padding-right: 10px; padding-left: 10px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
