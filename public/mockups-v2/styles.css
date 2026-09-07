@@ -1755,7 +1755,13 @@ svg {
   }
 
   .repo-controls-right .search-box {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
+    width: auto;
+  }
+
+  .repo-controls-right > .button {
+    flex-shrink: 0;
   }
 
   .code-layout {
