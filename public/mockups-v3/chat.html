@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="/mockups-v3/">
+    <title>Chat · OpenHub v3</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-screen">
+      <div class="screen-scroll">
+        <div class="statusbar">
+          <span>9:41</span>
+          <span class="system-icons" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 18h2M8 15h2M12 12h2M16 9h2"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M3.5 9.5a12 12 0 0 1 17 0M6.5 13a8 8 0 0 1 11 0M10 16.5a3 3 0 0 1 4 0"/></svg>
+            <svg class="battery" viewBox="0 0 28 16"><rect x="1" y="2" width="23" height="12" rx="3"/><path d="M26 6v4"/><path d="M4 5h14v6H4z" fill="currentColor" stroke="none"/></svg>
+          </span>
+        </div>
+        <header class="topbar centered">
+          <div class="topbar-left"><a class="icon-button" href="home.html" aria-label="Back to home" title="Back"><svg viewBox="0 0 24 24"><path d="m14 5-7 7 7 7M8 12h10"/></svg></a></div>
+          <span class="topbar-title">Chat</span>
+          <div class="topbar-right"><a class="avatar small orange" href="profile.html" aria-label="Open your profile">TR</a></div>
+        </header>
+        <main class="chat-main">
+          <div class="filter-row" role="tablist" aria-label="Chat filters">
+            <button class="filter-chip selected" type="button" role="tab" aria-selected="true">All</button>
+            <button class="filter-chip" type="button" role="tab" aria-selected="false">Direct</button>
+            <button class="filter-chip" type="button" role="tab" aria-selected="false">Communities</button>
+          </div>
+          <aside class="notice-banner">
+            <svg viewBox="0 0 24 24"><path d="M12 4 21 20H3zM12 9v5M12 17h.01"/></svg>
+            <span><strong>Keep your inbox focused</strong><p>New chats from people you follow show up here.</p></span>
+            <span class="notice-actions"><button class="button text" type="button">Later</button><button class="button orange" type="button">Turn on</button></span>
+          </aside>
+          <div class="chat-list">
+            <a class="chat-row" href="article.html">
+              <span class="chat-avatar">LC</span>
+              <span class="chat-copy"><strong>Lena · The Long Read</strong><p>That line about smaller pages stayed with me.</p></span>
+              <span class="chat-time">9:32<span class="chat-unread"></span></span>
+            </a>
+            <a class="chat-row" href="article.html">
+              <span class="chat-avatar" style="background:#e4f0ff;color:#4267c9">OS</span>
+              <span class="chat-copy"><strong>Open Source Weekly</strong><p>New issue is out — would love your take.</p></span>
+              <span class="chat-time">Yesterday</span>
+            </a>
+            <a class="chat-row" href="profile.html">
+              <span class="chat-avatar" style="background:#e9f4e9;color:#4f9b57">AP</span>
+              <span class="chat-copy"><strong>Amir Patel</strong><p>Thanks for sharing the field notes.</p></span>
+              <span class="chat-time">Sun</span>
+            </a>
+            <a class="chat-row" href="profile.html">
+              <span class="chat-avatar" style="background:#f0e8fb;color:#9863d7">CF</span>
+              <span class="chat-copy"><strong>Common Field circle</strong><p>Jules posted a new note.</p></span>
+              <span class="chat-time">Sat</span>
+            </a>
+          </div>
+        </main>
+      </div>
+      <a class="compose-fab" href="compose.html" aria-label="Start a new chat" title="New chat"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></a>
+      <nav class="dock" aria-label="Primary navigation">
+        <a class="dock-item" href="home.html" aria-label="Home" title="Home"><svg viewBox="0 0 24 24"><path d="m4 11 8-7 8 7v8a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1z"/></svg><span class="sr-only">Home</span></a>
+        <a class="dock-item" href="profile.html" aria-label="Subscriptions" title="Subscriptions"><svg viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h9"/></svg><span class="sr-only">Subscriptions</span></a>
+        <a class="dock-item selected" href="chat.html" aria-label="Chat" title="Chat"><svg viewBox="0 0 24 24"><path d="M5 6h14v9H9l-4 3z"/></svg><span class="dock-dot" aria-hidden="true"></span><span class="sr-only">Chat</span></a>
+        <a class="dock-item" href="profile.html" aria-label="Activity" title="Activity"><svg viewBox="0 0 24 24"><path d="M4 12h4l2-6 4 12 2-6h4"/></svg><span class="sr-only">Activity</span></a>
+        <a class="dock-item" href="home.html" aria-label="Search" title="Search"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 5 5"/></svg><span class="sr-only">Search</span></a>
+      </nav>
+    </div>
+  </body>
+</html>

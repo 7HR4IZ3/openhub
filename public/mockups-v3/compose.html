@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="/mockups-v3/">
+    <title>Compose · OpenHub v3</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-screen compose-screen">
+      <div class="statusbar">
+        <span>9:41</span>
+        <span class="system-icons" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 18h2M8 15h2M12 12h2M16 9h2"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M3.5 9.5a12 12 0 0 1 17 0M6.5 13a8 8 0 0 1 11 0M10 16.5a3 3 0 0 1 4 0"/></svg>
+          <svg class="battery" viewBox="0 0 28 16"><rect x="1" y="2" width="23" height="12" rx="3"/><path d="M26 6v4"/><path d="M4 5h14v6H4z" fill="currentColor" stroke="none"/></svg>
+        </span>
+      </div>
+      <header class="topbar centered">
+        <div class="topbar-left"><a class="button text" href="home.html">Cancel</a></div>
+        <span class="topbar-title small">New note</span>
+        <div class="topbar-right"><a class="button text" href="profile.html">Drafts</a></div>
+      </header>
+      <main class="screen-content">
+        <div class="compose-author"><span class="avatar orange">TR</span><span class="compose-author-copy"><strong>Thraize Rowan</strong><br>Everyone can reply</span></div>
+        <label class="sr-only" for="note-body">Note text</label>
+        <textarea id="note-body" class="compose-input" placeholder="What’s on your mind?"></textarea>
+        <div class="compose-tools" aria-label="Compose tools">
+          <button class="icon-button" type="button" aria-label="Add media" title="Add media" data-sheet-open aria-expanded="false"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+          <button class="icon-button" type="button" aria-label="Add image" title="Add image"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m5 17 4-4 3 3 2-2 5 4"/></svg></button>
+          <button class="icon-button" type="button" aria-label="Add link" title="Add link"><svg viewBox="0 0 24 24"><path d="M9.5 14.5 14.5 9.5M8 17H6a4 4 0 0 1 0-8h3M16 7h2a4 4 0 0 1 0 8h-3"/></svg></button>
+          <button class="icon-button" type="button" aria-label="Add poll" title="Add poll"><svg viewBox="0 0 24 24"><path d="M6 18V9M12 18V5M18 18v-6"/></svg></button>
+          <span style="flex:1"></span>
+          <button class="button orange" type="button">Post</button>
+        </div>
+        <div class="launch-tiles" aria-label="Long-form options">
+          <a class="launch-tile" href="article.html"><span>Write an article</span><svg viewBox="0 0 24 24"><path d="M5 4.5h14v15H5zM8 8h8M8 12h8M8 16h5"/></svg></a>
+          <a class="launch-tile" href="chat.html"><span>Go live</span><small>LIVE</small></a>
+        </div>
+        <div class="keyboard" aria-hidden="true">
+          <div class="keyboard-row"><span class="key">Q</span><span class="key">W</span><span class="key">E</span><span class="key">R</span><span class="key">T</span><span class="key">Y</span><span class="key">U</span><span class="key">I</span><span class="key">O</span><span class="key">P</span></div>
+          <div class="keyboard-row"><span class="key">A</span><span class="key">S</span><span class="key">D</span><span class="key">F</span><span class="key">G</span><span class="key">H</span><span class="key">J</span><span class="key">K</span><span class="key">L</span><span class="key">⌫</span></div>
+          <div class="keyboard-row"><span class="key dark wide">↑</span><span class="key">Z</span><span class="key">X</span><span class="key">C</span><span class="key">V</span><span class="key">B</span><span class="key">N</span><span class="key">M</span><span class="key dark wide">↵</span></div>
+          <div class="keyboard-row"><span class="key dark wide">123</span><span class="key space">space</span><span class="key dark wide">return</span></div>
+        </div>
+      </main>
+      <div class="sheet-backdrop" data-sheet-backdrop></div>
+      <section class="action-sheet" data-sheet aria-label="Insert into note">
+        <div class="sheet-grabber"></div>
+        <h2 class="sheet-title">Add to note</h2>
+        <button class="sheet-row" type="button" data-sheet-close><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m5 17 4-4 3 3 2-2 5 4"/></svg><span>Image or video</span></button>
+        <button class="sheet-row" type="button" data-sheet-close><svg viewBox="0 0 24 24"><path d="M5 6h14v12H5zM8 9h8M8 12h5"/></svg><span>Button</span></button>
+        <button class="sheet-row" type="button" data-sheet-close><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg><span>Divider</span></button>
+        <button class="sheet-row" type="button" data-sheet-close><svg viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M8 8V6h8v2M9 12h6M9 15h4"/></svg><span>Subscriber-only block</span></button>
+      </section>
+    </div>
+    <script src="mockups.js"></script>
+  </body>
+</html>

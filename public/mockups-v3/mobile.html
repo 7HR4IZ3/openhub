@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="/mockups-v3/">
+    <title>Phone preview · OpenHub v3</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body class="preview-page">
+    <div class="preview-toolbar">
+      <a href="index.html">← V3 gallery</a>
+      <label for="screen-select">Screen</label>
+      <select id="screen-select">
+        <option value="home">Home</option>
+        <option value="article">Article</option>
+        <option value="compose">Compose</option>
+        <option value="publish">Publish</option>
+        <option value="chat">Chat</option>
+        <option value="profile">Profile</option>
+        <option value="settings">Settings</option>
+      </select>
+      <span id="preview-screen-name" class="sr-only">Home</span>
+    </div>
+    <main class="preview-grid">
+      <section class="preview-frame"><h2>393 px</h2><iframe data-screen-frame title="393 pixel phone preview" src="home.html"></iframe></section>
+      <section class="preview-frame narrow"><h2>360 px</h2><iframe data-screen-frame title="360 pixel phone preview" src="home.html"></iframe></section>
+    </main>
+    <script src="mockups.js"></script>
+  </body>
+</html>

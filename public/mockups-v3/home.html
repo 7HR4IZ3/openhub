@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base href="/mockups-v3/">
+    <title>Home · OpenHub v3</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-screen">
+      <div class="screen-scroll">
+        <div class="statusbar">
+          <span>9:41</span>
+          <span class="system-icons" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M4 18h2M8 15h2M12 12h2M16 9h2"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M3.5 9.5a12 12 0 0 1 17 0M6.5 13a8 8 0 0 1 11 0M10 16.5a3 3 0 0 1 4 0"/></svg>
+            <svg class="battery" viewBox="0 0 28 16"><rect x="1" y="2" width="23" height="12" rx="3"/><path d="M26 6v4"/><path d="M4 5h14v6H4z" fill="currentColor" stroke="none"/></svg>
+          </span>
+        </div>
+        <header class="home-brandbar">
+          <a class="brand-mark" href="home.html" aria-label="OpenHub home"><span></span></a>
+          <a class="avatar small orange" href="profile.html" aria-label="Open your profile">TR</a>
+        </header>
+        <main class="home-main">
+          <nav class="publication-rail" aria-label="Your publications">
+            <a class="publication" href="article.html">
+              <span class="publication-thumb circle orange">NB<span class="unread"></span></span>
+              <span class="publication-name">New Builders</span>
+            </a>
+            <a class="publication" href="article.html">
+              <span class="publication-thumb blue">OS</span>
+              <span class="publication-name">Open Source</span>
+            </a>
+            <a class="publication" href="article.html">
+              <span class="publication-thumb green">CF</span>
+              <span class="publication-name">Common Field</span>
+            </a>
+            <a class="publication" href="article.html">
+              <span class="publication-thumb purple">AN</span>
+              <span class="publication-name">A New Nature</span>
+            </a>
+            <a class="publication add" href="profile.html" aria-label="Find publications">
+              <span class="publication-thumb">+</span>
+              <span class="publication-name">Find</span>
+            </a>
+          </nav>
+
+          <article class="feed-post">
+            <p class="feed-context">New Builders · 12 min</p>
+            <div class="author-row">
+              <span class="avatar orange">NB</span>
+              <div class="author-copy"><span class="author-name">Maya Chen</span><span class="author-meta">@mayac · New Builders</span></div>
+              <button class="icon-button muted" type="button" aria-label="More options" title="More options"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1" fill="currentColor" stroke="none"/></svg></button>
+            </div>
+            <p class="post-copy">A good tool gets out of the way. The best one leaves you with a little more attention than you started with.</p>
+            <a class="media-art" href="article.html" aria-label="Read The quiet advantage">
+              <svg viewBox="0 0 600 320" role="img" aria-label="Orange and blue editorial illustration">
+                <rect width="600" height="320" fill="#f8d9c4" stroke="none"/>
+                <circle cx="478" cy="92" r="98" fill="#4267c9" stroke="none"/>
+                <path d="M0 252c101-38 151-18 224 4s143 33 224-16 110-65 152-52v132H0Z" fill="#ff6719" stroke="none"/>
+                <path d="M74 70h198v22H74zM74 112h142v16H74zM74 145h180v16H74z" fill="#1d1d1f" stroke="none"/>
+                <path d="M330 174h178v16H330zM330 205h122v16H330z" fill="#fff" stroke="none"/>
+              </svg>
+              <span class="media-caption">The quiet advantage · a field note</span>
+            </a>
+            <div class="engagement" aria-label="Post actions">
+              <button class="engagement-item" type="button" aria-label="Like"><svg viewBox="0 0 24 24"><path d="M20 8.5c0 5-8 10-8 10s-8-5-8-10A4.5 4.5 0 0 1 12 6a4.5 4.5 0 0 1 8 2.5Z"/></svg><span>128</span></button>
+              <button class="engagement-item" type="button" aria-label="Reply"><svg viewBox="0 0 24 24"><path d="M5 6h14v9H9l-4 3z"/></svg><span>18</span></button>
+              <button class="engagement-item" type="button" aria-label="Share"><svg viewBox="0 0 24 24"><path d="m12 4 6 6M12 4v12M18 10l-6-6M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg></button>
+              <button class="engagement-item" type="button" aria-label="Save"><svg viewBox="0 0 24 24"><path d="M6 4h12v16l-6-3-6 3z"/></svg></button>
+            </div>
+          </article>
+
+          <article class="feed-post">
+            <p class="feed-context">Open Source Weekly · 1 hr</p>
+            <div class="author-row">
+              <span class="avatar blue">OS</span>
+              <div class="author-copy"><span class="author-name">Open Source Weekly</span><span class="author-meta">@osweekly</span></div>
+              <button class="icon-button muted" type="button" aria-label="More options" title="More options"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1" fill="currentColor" stroke="none"/></svg></button>
+            </div>
+            <p class="post-copy">The maintainers’ guide to making a small project last: clear boundaries, boring defaults, and a README someone can actually finish.</p>
+            <a class="link-tile" href="article.html">
+              <span class="link-tile-thumb">README<br>FIRST</span>
+              <span class="link-tile-copy"><strong>Make the small thing durable</strong><span>open-source-weekly.example · 8 min read</span></span>
+            </a>
+            <div class="engagement" aria-label="Post actions">
+              <button class="engagement-item" type="button" aria-label="Like"><svg viewBox="0 0 24 24"><path d="M20 8.5c0 5-8 10-8 10s-8-5-8-10A4.5 4.5 0 0 1 12 6a4.5 4.5 0 0 1 8 2.5Z"/></svg><span>64</span></button>
+              <button class="engagement-item" type="button" aria-label="Reply"><svg viewBox="0 0 24 24"><path d="M5 6h14v9H9l-4 3z"/></svg><span>7</span></button>
+              <button class="engagement-item" type="button" aria-label="Share"><svg viewBox="0 0 24 24"><path d="m12 4 6 6M12 4v12M18 10l-6-6M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg></button>
+              <button class="engagement-item" type="button" aria-label="Save"><svg viewBox="0 0 24 24"><path d="M6 4h12v16l-6-3-6 3z"/></svg></button>
+            </div>
+          </article>
+
+          <article class="feed-post">
+            <p class="feed-context">Common Field · Yesterday</p>
+            <div class="author-row">
+              <span class="avatar green">CF</span>
+              <div class="author-copy"><span class="author-name">Jules Park</span><span class="author-meta">@julespark · Common Field</span></div>
+              <button class="icon-button muted" type="button" aria-label="More options" title="More options"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1" fill="currentColor" stroke="none"/></svg></button>
+            </div>
+            <p class="post-copy">Notes from a week of making less, and noticing more.</p>
+            <div class="engagement" aria-label="Post actions">
+              <button class="engagement-item" type="button" aria-label="Like"><svg viewBox="0 0 24 24"><path d="M20 8.5c0 5-8 10-8 10s-8-5-8-10A4.5 4.5 0 0 1 12 6a4.5 4.5 0 0 1 8 2.5Z"/></svg><span>32</span></button>
+              <button class="engagement-item" type="button" aria-label="Reply"><svg viewBox="0 0 24 24"><path d="M5 6h14v9H9l-4 3z"/></svg><span>4</span></button>
+              <button class="engagement-item" type="button" aria-label="Share"><svg viewBox="0 0 24 24"><path d="m12 4 6 6M12 4v12M18 10l-6-6M5 13v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></svg></button>
+              <button class="engagement-item" type="button" aria-label="Save"><svg viewBox="0 0 24 24"><path d="M6 4h12v16l-6-3-6 3z"/></svg></button>
+            </div>
+          </article>
+        </main>
+      </div>
+      <a class="compose-fab" href="compose.html" aria-label="Compose a note" title="Compose"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></a>
+      <nav class="dock" aria-label="Primary navigation">
+        <a class="dock-item selected" href="home.html" aria-label="Home" title="Home"><svg viewBox="0 0 24 24"><path d="m4 11 8-7 8 7v8a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1z"/></svg><span class="sr-only">Home</span></a>
+        <a class="dock-item" href="profile.html" aria-label="Subscriptions" title="Subscriptions"><svg viewBox="0 0 24 24"><path d="M5 6h14M5 12h14M5 18h9"/></svg><span class="sr-only">Subscriptions</span></a>
+        <a class="dock-item" href="chat.html" aria-label="Chat" title="Chat"><svg viewBox="0 0 24 24"><path d="M5 6h14v9H9l-4 3z"/></svg><span class="dock-dot" aria-hidden="true"></span><span class="sr-only">Chat</span></a>
+        <a class="dock-item" href="profile.html" aria-label="Activity" title="Activity"><svg viewBox="0 0 24 24"><path d="M4 12h4l2-6 4 12 2-6h4"/></svg><span class="sr-only">Activity</span></a>
+        <a class="dock-item" href="home.html" aria-label="Search" title="Search"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 5 5"/></svg><span class="sr-only">Search</span></a>
+      </nav>
+    </div>
+  </body>
+</html>
