@@ -64,7 +64,7 @@ export default function ExplorePage() {
 
   return (
     <CurationShell active="Explore" eyebrow="explore" title="Explore">
-      <section className="border-b px-5 py-4 sm:px-8">
+      <section className="v2-explore-search border-b px-5 py-4 sm:px-8">
         <form onSubmit={handleSubmit} role="search">
           <label htmlFor="repository-search" className="sr-only">
             Search OpenHub
@@ -80,7 +80,7 @@ export default function ExplorePage() {
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Repository, topic, or language"
-                className="h-12 w-full rounded-md border border-input bg-card pl-10 pr-3 text-base"
+                className="h-12 w-full rounded-full border border-input bg-secondary pl-10 pr-3 text-base"
               />
             </div>
             <Button

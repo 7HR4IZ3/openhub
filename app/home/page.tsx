@@ -1,7 +1,7 @@
 import { HomeScreen } from "@/components/home/home-screen";
 
 export const metadata = {
-  title: "Discover",
+  title: "Home",
   description:
     "Find repositories, source-backed posts, and technical conversations worth following.",
 };

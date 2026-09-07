@@ -10,7 +10,7 @@ export function CurationLoading({
   label?: string;
 }) {
   return (
-    <div role="status" className="rounded-lg border p-6">
+    <div role="status" className="v2-loading rounded-lg border p-6">
       <span className="sr-only">{label}</span>
       <div aria-hidden="true" className="space-y-4 motion-safe:animate-pulse">
         <div className="h-4 w-1/3 rounded bg-muted" />
@@ -45,7 +45,7 @@ export function CurationEmptyState({
   return (
     <div
       className={cn(
-        "rounded-xl border border-border bg-card p-5 sm:p-6",
+        "v2-empty-state rounded-xl border border-border bg-card p-5 sm:p-6",
         className,
       )}
     >
@@ -63,13 +63,13 @@ export function CurationEmptyState({
       </p>
       {action && actionHref ? (
         <div className="mt-5 flex flex-wrap gap-3">
-          <Button asChild className="rounded-md">
+          <Button asChild>
             <Link href={actionHref}>
               {action} <ArrowUpRight className="h-4 w-4" />
             </Link>
           </Button>
           {secondaryAction && secondaryHref ? (
-            <Button asChild variant="outline" className="rounded-md">
+            <Button asChild variant="outline">
               <Link href={secondaryHref}>{secondaryAction}</Link>
             </Button>
           ) : null}
@@ -91,7 +91,7 @@ export function CurationStatus({
   return (
     <div
       className={cn(
-        "rounded-xl border p-4",
+        "v2-status rounded-xl border p-4",
         tone === "accent"
           ? "border-ring bg-accent"
           : "border-border border-border",

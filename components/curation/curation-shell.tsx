@@ -55,8 +55,8 @@ export function CurationShell({
       </a>
       <div className="v2-shell-grid mx-auto grid min-h-[100dvh] max-w-[1440px] lg:grid-cols-[216px_minmax(0,1fr)] xl:grid-cols-[216px_minmax(0,1fr)_272px]">
         <aside className="v2-rail sticky top-0 hidden h-[100dvh] flex-col overflow-y-auto px-5 py-7 lg:flex">
-          <Link href="/home" aria-label="OpenHub home">
-            <OpenHubMark />
+          <Link href="/home" aria-label="OpenHub home" className="v2-brand-link">
+            <OpenHubMark className="v2-brand" />
           </Link>
           <nav className="mt-10 space-y-1" aria-label="Primary navigation">
             {navigation.map(({ label, href, icon: Icon }) => (

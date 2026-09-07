@@ -194,6 +194,27 @@
     color: hsl(var(--muted-foreground));
   }
 
+  .v2-compose-page > div {
+    width: min(100%, 44rem);
+    margin-inline: auto;
+  }
+
+  .v2-compose-card {
+    box-shadow: 0 1px 2px hsl(var(--foreground) / 0.04);
+  }
+
+  .v2-type-selector {
+    scrollbar-width: none;
+  }
+
+  .v2-type-selector::-webkit-scrollbar {
+    display: none;
+  }
+
+  .v2-empty-state {
+    box-shadow: 0 1px 2px hsl(var(--foreground) / 0.03);
+  }
+
   .v2-feed {
     background: hsl(var(--card));
   }
@@ -380,6 +401,10 @@
   .v2-rail .v2-nav-label,
   .v2-rail .v2-rail-footer,
   .v2-rail .v2-write-label {
+    display: none;
+  }
+
+  .v2-brand > span:last-child {
     display: none;
   }
 

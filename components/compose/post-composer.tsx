@@ -215,8 +215,8 @@ function PostComposerForm({
   }
 
   return (
-    <CurationShell active="Home" eyebrow="compose" title="Write a post">
-      <div className="px-5 py-5 sm:px-8 sm:py-6">
+    <CurationShell active="Home" eyebrow="compose" title="Write">
+      <div className="v2-compose-page px-5 py-5 sm:px-8 sm:py-6">
         <div>
           {source !== null ? (
             <p
@@ -237,10 +237,10 @@ function PostComposerForm({
           ) : null}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            <section className="min-w-0 rounded-xl border border-border bg-card p-4 dark:bg-card sm:p-6">
+            <section className="v2-compose-card min-w-0 rounded-xl border border-border bg-card p-4 dark:bg-card sm:p-6">
               <fieldset disabled={isPublishing}>
                 <legend className="mb-3 text-sm font-medium">Post type</legend>
-                <div className="flex flex-wrap gap-2">
+                <div className="v2-type-selector flex flex-wrap gap-2 overflow-x-auto">
                   {postTypes.map((item) => (
                     <label key={item.value} className="relative cursor-pointer">
                       <input
@@ -251,7 +251,7 @@ function PostComposerForm({
                         onChange={() => setPostType(item.value)}
                         className="peer sr-only"
                       />
-                      <span className="inline-flex min-h-11 items-center rounded-md border border-input px-3.5 py-2 text-xs font-medium text-muted-foreground transition-colors peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ring peer-disabled:opacity-50">
+                      <span className="v2-type-chip inline-flex min-h-11 shrink-0 items-center rounded-full border border-input px-3.5 py-2 text-xs font-medium text-muted-foreground transition-colors peer-checked:border-primary peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ring peer-disabled:opacity-50">
                         {item.label}
                       </span>
                     </label>
@@ -321,7 +321,7 @@ function PostComposerForm({
                     onChange={(event) =>
                       setVisibility(event.target.value as PostVisibility)
                     }
-                    className="rounded-md border border-input bg-transparent px-3 py-2 text-xs font-semibold text-foreground outline-none"
+                    className="rounded-full border border-input bg-transparent px-3 py-2 text-xs font-semibold text-foreground outline-none"
                   >
                     <option value="public">Public</option>
                     <option value="followers">Followers</option>
@@ -333,7 +333,6 @@ function PostComposerForm({
                   disabled={
                     !canPublish || onPublish === undefined || isPublishing
                   }
-                  className="rounded-md"
                 >
                   {onPublish === undefined
                     ? "Publishing unavailable"

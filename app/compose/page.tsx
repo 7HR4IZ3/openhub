@@ -11,7 +11,7 @@ type ComposePageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export const metadata = { title: "Write a post" };
+export const metadata = { title: "Write" };
 
 export default async function ComposePage({ searchParams }: ComposePageProps) {
   const query = await searchParams;

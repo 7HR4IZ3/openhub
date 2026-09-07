@@ -218,13 +218,13 @@ function RepositoryWorkspaceView({
                     ? "Public repository"
                     : "Private repository"}
                 </span>
-                <span className="v2-repo-name">
+                <h1 className="v2-repo-name">
                   <Github className="h-4 w-4 shrink-0 text-muted-foreground" />
                   <span>{repository.ownerLogin}</span>
                   <span className="text-muted-foreground">/</span>
                   <span>{repository.name}</span>
                   <span className="v2-repo-visibility">read only</span>
-                </span>
+                </h1>
               </span>
               <ChevronDown className="v2-repo-chevron h-5 w-5" aria-hidden="true" />
             </summary>
