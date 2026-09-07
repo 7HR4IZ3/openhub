@@ -108,8 +108,8 @@ function ConnectedRecentPostFeed({ mode }: { mode: PostFeedMode }) {
     return <CurationLoading label="Loading your feed…" />;
 
   return (
-    <div className="divide-y divide-border">
-      <div className="flex items-end justify-between gap-4 p-5 sm:p-7">
+    <div className="v2-feed divide-y divide-border">
+      <div className="v2-feed-heading flex items-end justify-between gap-4 p-5 sm:p-7">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground">
             {mode === "following"
@@ -134,7 +134,7 @@ function ConnectedRecentPostFeed({ mode }: { mode: PostFeedMode }) {
         </Link>
       </div>
       {activePosts.map((post) => (
-        <article key={post._id} className="p-5 sm:p-7">
+        <article key={post._id} className="v2-post p-5 sm:p-7">
           <div className="flex items-start gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-[10px] font-semibold text-foreground dark:bg-white/[0.08]">
               {initials(post.author.displayName)}
@@ -167,7 +167,7 @@ function ConnectedRecentPostFeed({ mode }: { mode: PostFeedMode }) {
           {post.sourceReference ? (
             <Link
               href={`/posts/${post._id}`}
-              className="mt-4 flex items-start gap-3 rounded-xl border border-border bg-muted p-4 transition-colors hover:border-ring dark:bg-muted"
+              className="v2-source-card mt-4 flex items-start gap-3 rounded-xl border border-border bg-muted p-4 transition-colors hover:border-ring dark:bg-muted"
             >
               <Code2 className="mt-0.5 h-4 w-4 shrink-0 text-foreground" />
               <div className="min-w-0">
@@ -187,7 +187,7 @@ function ConnectedRecentPostFeed({ mode }: { mode: PostFeedMode }) {
           {post.diffReference ? (
             <Link
               href={`/posts/${post._id}`}
-              className="mt-4 flex items-start gap-3 rounded-xl border border-border bg-muted p-4 transition-colors hover:border-ring dark:bg-muted"
+              className="v2-source-card mt-4 flex items-start gap-3 rounded-xl border border-border bg-muted p-4 transition-colors hover:border-ring dark:bg-muted"
             >
               <GitCompareArrows className="mt-0.5 h-4 w-4 shrink-0 text-foreground" />
               <div className="min-w-0">
@@ -204,7 +204,7 @@ function ConnectedRecentPostFeed({ mode }: { mode: PostFeedMode }) {
               <ArrowUpRight className="ml-auto mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
             </Link>
           ) : null}
-          <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
+          <div className="v2-post-actions mt-4 flex items-center gap-4 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1.5">
               <MessageCircle className="h-3.5 w-3.5" /> {post.commentCount}
             </span>

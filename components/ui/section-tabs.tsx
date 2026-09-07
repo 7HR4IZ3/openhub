@@ -23,7 +23,7 @@ export function SectionTabs<T extends string>({
       <div
         role="tablist"
         aria-label={label}
-        className="flex gap-6 overflow-x-auto border-b px-5 sm:px-8"
+        className="v2-tabs flex gap-6 overflow-x-auto border-b px-5 sm:px-8"
       >
         {items.map((item, index) => (
           <button

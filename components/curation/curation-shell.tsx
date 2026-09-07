@@ -49,12 +49,12 @@ export function CurationShell({
   aside?: ReactNode;
 }) {
   return (
-    <div className="min-h-[100dvh] bg-background">
+    <div className="v2-shell min-h-[100dvh] bg-background">
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
-      <div className="mx-auto grid min-h-[100dvh] max-w-[1440px] lg:grid-cols-[216px_minmax(0,1fr)] xl:grid-cols-[216px_minmax(0,1fr)_272px]">
-        <aside className="sticky top-0 hidden h-[100dvh] flex-col overflow-y-auto px-5 py-7 lg:flex">
+      <div className="v2-shell-grid mx-auto grid min-h-[100dvh] max-w-[1440px] lg:grid-cols-[216px_minmax(0,1fr)] xl:grid-cols-[216px_minmax(0,1fr)_272px]">
+        <aside className="v2-rail sticky top-0 hidden h-[100dvh] flex-col overflow-y-auto px-5 py-7 lg:flex">
           <Link href="/home" aria-label="OpenHub home">
             <OpenHubMark />
           </Link>
@@ -64,24 +64,24 @@ export function CurationShell({
                 key={href}
                 href={href}
                 aria-current={active === label ? "page" : undefined}
+                data-active={active === label ? "true" : "false"}
                 className={cn(
-                  "flex min-h-11 items-center gap-3 rounded-md px-3 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
-                  active === label &&
-                    "bg-secondary font-semibold text-foreground",
+                  "v2-rail-link flex min-h-11 items-center gap-3 rounded-full px-3 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
+                  active === label && "font-semibold text-foreground",
                 )}
               >
                 <Icon className="h-[18px] w-[18px]" aria-hidden="true" />
-                {label}
+                <span className="v2-nav-label">{label}</span>
               </Link>
             ))}
           </nav>
-          <Button asChild className="mt-6 w-full">
+          <Button asChild className="v2-write-button mt-6 w-full">
             <Link href="/compose">
               <Pencil2Icon />
-              Write a post
+              <span className="v2-write-label">Write a post</span>
             </Link>
           </Button>
-          <div className="mt-auto space-y-4 pt-12">
+          <div className="v2-rail-footer mt-auto space-y-4 pt-12">
             <Link
               href="/settings/safety"
               className="block px-3 text-xs text-muted-foreground hover:text-foreground"
@@ -97,9 +97,9 @@ export function CurationShell({
         <main
           id="main-content"
           tabIndex={-1}
-          className="app-content min-w-0 bg-card outline-none lg:border-x"
+          className="v2-main app-content min-w-0 bg-card outline-none lg:border-x"
         >
-          <header className="sticky top-0 z-10 flex min-h-16 items-center justify-between gap-3 border-b bg-card px-4 py-3 sm:px-8">
+          <header className="v2-topbar sticky top-0 z-10 flex min-h-16 items-center justify-between gap-3 border-b bg-card px-4 py-3 sm:px-8">
             <div className="flex min-w-0 items-center gap-3">
               <Link
                 href="/home"
@@ -141,14 +141,14 @@ export function CurationShell({
           ) : null}
           {children}
         </main>
-        <aside className="hidden px-6 py-7 xl:block">
+        <aside className="v2-side-column hidden px-6 py-7 xl:block">
           <div className="sticky top-7 space-y-8">
             {aside ?? <CurationRail />}
           </div>
         </aside>
       </div>
       <nav
-        className="mobile-navigation fixed inset-x-0 bottom-0 z-20 grid grid-cols-6 border-t bg-card px-2 pt-1 lg:hidden"
+        className="v2-mobile-nav mobile-navigation fixed inset-x-0 bottom-0 z-20 grid grid-cols-6 border-t bg-card px-2 pt-1 lg:hidden"
         aria-label="Mobile navigation"
       >
         {navigation.map(({ label, href, icon: Icon }) => (
@@ -157,9 +157,10 @@ export function CurationShell({
             href={href}
             aria-current={label === active ? "page" : undefined}
             title={label}
+            data-active={label === active ? "true" : "false"}
             className={cn(
-              "flex min-h-12 min-w-0 items-center justify-center rounded-md text-muted-foreground transition-colors",
-              label === active && "bg-secondary font-semibold text-foreground",
+              "v2-mobile-link flex min-h-12 min-w-0 items-center justify-center rounded-full text-muted-foreground transition-colors",
+              label === active && "font-semibold text-foreground",
             )}
           >
             <Icon className="h-5 w-5" aria-hidden="true" />

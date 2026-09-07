@@ -10,8 +10,14 @@ import {
   type PostFeedMode,
 } from "@/components/posts/recent-post-feed";
 import { RecommendationsPanel } from "@/components/discovery/recommendations-panel";
-import { MagnifyingGlassIcon, CodeIcon } from "@radix-ui/react-icons";
+import {
+  CodeIcon,
+  ImageIcon,
+  MagnifyingGlassIcon,
+  Pencil2Icon,
+} from "@radix-ui/react-icons";
 import { SectionTabs } from "@/components/ui/section-tabs";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -30,13 +36,13 @@ export function HomeScreen({
     <CurationShell
       active="Home"
       eyebrow="home"
-      title="Discover"
+      title="Home"
       aside={<CurationRail />}
     >
-      <section className="border-b px-5 py-4 sm:px-8">
+      <section className="v2-home-search border-b px-5 py-4 sm:px-8">
         <Link
           href="/explore"
-          className="flex min-h-11 items-center gap-3 rounded-md border border-input px-4 text-sm text-muted-foreground transition-colors hover:bg-secondary"
+          className="flex min-h-11 items-center gap-3 rounded-full border border-input bg-secondary px-4 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
         >
           <MagnifyingGlassIcon className="h-4 w-4" />
           Search repositories, people, or posts
@@ -44,6 +50,39 @@ export function HomeScreen({
             →
           </span>
         </Link>
+      </section>
+      <section className="v2-composer-inline px-5 py-4 sm:px-8">
+        <div className="flex items-center gap-3">
+          <span
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground"
+            aria-hidden="true"
+          >
+            OH
+          </span>
+          <Link href="/compose" className="v2-composer-prompt flex flex-1 items-center px-4 text-sm">
+            Share an update with the community
+          </Link>
+        </div>
+        <div className="mt-3 flex items-center justify-between pl-12">
+          <div className="flex items-center gap-1">
+            <Button asChild variant="ghost" size="icon" aria-label="Attach an image">
+              <Link href="/compose">
+                <ImageIcon />
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" size="icon" aria-label="Write code">
+              <Link href="/compose">
+                <CodeIcon />
+              </Link>
+            </Button>
+          </div>
+          <Button asChild size="sm">
+            <Link href="/compose">
+              <Pencil2Icon />
+              Post
+            </Link>
+          </Button>
+        </div>
       </section>
       {convexConfigured ? (
         <section className="border-b px-5 py-4 sm:px-8">
