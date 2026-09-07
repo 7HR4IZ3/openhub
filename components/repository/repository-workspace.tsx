@@ -210,6 +210,9 @@ function RepositoryWorkspaceView({
             </div>
           </div>
 
+          <h1 className="sr-only">
+            {repository.ownerLogin}/{repository.name}
+          </h1>
           <details className="v2-repo-header mt-5" open>
             <summary className="v2-repo-summary">
               <span className="min-w-0">
@@ -218,13 +221,13 @@ function RepositoryWorkspaceView({
                     ? "Public repository"
                     : "Private repository"}
                 </span>
-                <h1 className="v2-repo-name">
+                <span className="v2-repo-name">
                   <Github className="h-4 w-4 shrink-0 text-muted-foreground" />
                   <span>{repository.ownerLogin}</span>
                   <span className="text-muted-foreground">/</span>
                   <span>{repository.name}</span>
                   <span className="v2-repo-visibility">read only</span>
-                </h1>
+                </span>
               </span>
               <ChevronDown className="v2-repo-chevron h-5 w-5" aria-hidden="true" />
             </summary>
