@@ -1,5 +1,5 @@
-# OpenHub mockups — direction 02
+# OpenHub mockups — direction 03
 
-Open `index.html` to review the static prototype. Each linked screen is a separate HTML page and uses the same responsive shell.
+Open `index.html` to review the static prototype. This direction uses an X-like timeline for source notes and a GitHub-like repository reader with an expandable repository header, file manager, and code editor.
 
-The direction is intentionally different from the current product: dark workbench surfaces, a narrow icon rail, a compact inspector column, source-first layouts, icon-first actions, keyboard command palette, and small reveal/hover transitions.
+The pages are intentionally static. They are a visual proposal for the product shell and do not change product data.

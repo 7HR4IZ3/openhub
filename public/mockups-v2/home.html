@@ -4,125 +4,95 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <base href="/mockups-v2/" />
-    <title>OpenHub — Home mockup</title>
+    <title>OpenHub — Home</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <p class="mockup-note">OpenHub / 01 home / signal feed</p>
+    <p class="mockup-note">OpenHub / home / timeline</p>
     <div class="app">
       <aside class="rail">
-        <a class="brand" href="index.html" aria-label="OpenHub mockups">oh<span>·</span></a>
+        <a class="brand" href="index.html" aria-label="OpenHub mockups">openhub<span>·</span></a>
         <nav class="rail-nav" aria-label="Primary navigation">
-          <a class="rail-link" href="home.html" aria-current="page" title="Home"><svg aria-hidden="true"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M9 20v-6h6v6"/></svg></a>
-          <a class="rail-link" href="explore.html" title="Explore"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg></a>
-          <a class="rail-link" href="notifications.html" title="Notifications"><svg aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 22h4"/></svg></a>
-          <a class="rail-link" href="collections.html" title="Collections"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></a>
-          <a class="rail-link" href="discussion.html" title="Communities"><svg aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 1 1 20 11Z"/></svg></a>
-          <a class="rail-link" href="profile.html" title="Profile"><svg aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg></a>
+          <a class="rail-link" href="home.html" aria-current="page" title="Home"><svg aria-hidden="true"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M9 20v-6h6v6"/></svg><span>Home</span></a>
+          <a class="rail-link" href="explore.html" title="Explore"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><span>Explore</span></a>
+          <a class="rail-link" href="notifications.html" title="Notifications"><svg aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 22h4"/></svg><span>Notifications</span></a>
+          <a class="rail-link" href="collections.html" title="Collections"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>Collections</span></a>
+          <a class="rail-link" href="discussion.html" title="Discussions"><svg aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 1 1 20 11Z"/></svg><span>Discussions</span></a>
+          <a class="rail-link" href="profile.html" title="Profile"><svg aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg><span>Profile</span></a>
         </nav>
         <div class="rail-spacer"></div>
-        <button class="rail-link" data-command title="Command palette" aria-label="Open command palette"><svg aria-hidden="true"><path d="M5 8h14M5 12h14M5 16h9"/><path d="m17 15 3 3-3 3"/></svg></button>
-        <a class="rail-link" href="compose.html" title="Compose"><svg aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10Z"/><path d="m13.5 7.5 3 3"/></svg></a>
+        <button class="rail-link rail-utility" data-command title="Search OpenHub" aria-label="Search OpenHub"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><span>Search</span></button>
+        <a class="rail-link rail-cta" href="compose.html" title="Write a post"><svg aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10Z"/><path d="m13.5 7.5 3 3"/></svg><span>Post</span></a>
+        <a class="rail-profile" href="profile.html"><span class="avatar">TR</span><span><b>Thraize</b><br />@thraize</span></a>
       </aside>
 
       <main class="main">
         <header class="topbar">
-          <div class="crumbs"><span>openhub</span><span>/</span><strong>home</strong></div>
-          <div class="top-actions">
-            <span class="status"><i></i> synced</span>
-            <button class="icon-button" data-command title="Search or jump" aria-label="Search or jump"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg></button>
-            <a class="avatar" href="profile.html" aria-label="Open profile">TR</a>
-          </div>
+          <span class="topbar-title">Home</span>
+          <div class="top-actions"><button class="icon-button" data-command title="Search" aria-label="Search"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg></button><a class="avatar" href="profile.html" aria-label="Open profile">TR</a></div>
         </header>
 
-        <div class="page">
-          <section class="content stagger">
-            <p class="kicker">/ home · 09:42</p>
-            <h1>Recent signals.</h1>
-            <div class="command" role="search">
-              <svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>
-              <input aria-label="Search OpenHub" placeholder="Search the work" />
-              <span class="key">⌘ K</span>
+        <div class="home-grid">
+          <section class="timeline" aria-label="Home timeline">
+            <div class="timeline-tabs" role="tablist" aria-label="Timeline">
+              <button class="timeline-tab" data-tab-group="timeline" aria-selected="true" role="tab">For you</button>
+              <button class="timeline-tab" data-tab-group="timeline" aria-selected="false" role="tab">Following</button>
+              <button class="timeline-tab" data-tab-group="timeline" aria-selected="false" role="tab">Saved</button>
             </div>
 
-            <div class="section-bar"><h2>Reading queue</h2><a class="text-action" href="explore.html">Browse <span>↗</span></a></div>
-            <div class="feed">
-              <article class="feed-item">
-                <span class="mini-avatar">AM</span>
-                <div>
-                  <p class="feed-meta"><b>alexm</b> added context to <b>vercel/next.js</b></p>
-                  <h3 class="feed-title">Why does this cache boundary live here?</h3>
-                  <p class="feed-copy">A small note on the request lifecycle and the tradeoff behind this split.</p>
-                  <div class="feed-actions">
-                    <button class="icon-button" title="Open discussion" aria-label="Open discussion"><svg aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 1 1 20 11Z"/></svg></button>
-                    <button class="icon-button" title="Save" aria-label="Save"><svg aria-hidden="true"><path d="M6 4h12v17l-6-3-6 3Z"/></svg></button>
-                    <button class="icon-button" title="Share" aria-label="Share"><svg aria-hidden="true"><circle cx="18" cy="5" r="2"/><circle cx="6" cy="12" r="2"/><circle cx="18" cy="19" r="2"/><path d="m8 11 8-5M8 13l8 5"/></svg></button>
-                  </div>
+            <div class="composer-inline">
+              <span class="avatar blue">TR</span>
+              <div>
+                <a class="composer-prompt" href="compose.html">What’s happening in your code?</a>
+                <div class="composer-tools"><div class="tool-row"><button class="icon-button" title="Attach source" aria-label="Attach source"><svg aria-hidden="true"><path d="m21 11-8.5 8.5a6 6 0 0 1-8.5-8.5L12.5 2.5a4 4 0 0 1 5.7 5.7L9.7 16.7a2 2 0 1 1-2.8-2.8l8.5-8.5"/></svg></button><button class="icon-button" title="Add image" aria-label="Add image"><svg aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m5 17 4-4 3 3 2-2 5 4"/></svg></button></div><a class="button primary" href="compose.html">Post</a></div>
+              </div>
+            </div>
+
+            <div class="posts">
+              <article class="post">
+                <span class="avatar green">AM</span>
+                <div class="post-body">
+                  <div class="post-head"><strong>alexm</strong><span>@alexm ·</span><time datetime="PT12M">12m</time></div>
+                  <p class="post-text">Why does this cache boundary live here?</p>
+                  <a class="source-card" href="reader.html"><span class="source-card-top"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h5"/></svg>vercel/next.js · response.ts:38</span><strong class="source-card-title">A small note on the request lifecycle.</strong><span class="source-card-meta">Read the exact lines →</span></a>
+                  <div class="post-actions"><button class="post-action" title="Reply" aria-label="Reply"><svg aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 1 1 20 11Z"/></svg><span>8</span></button><button class="post-action" title="Repost" aria-label="Repost"><svg aria-hidden="true"><path d="M7 7h11l-2-2"/><path d="M18 7v5"/><path d="M17 17H6l2 2"/><path d="M6 17v-5"/></svg><span>12</span></button><button class="post-action like" title="Like" aria-label="Like"><svg aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6a4.8 4.8 0 0 1 8.8 2.8Z"/></svg><span>42</span></button><button class="post-action" title="Save" aria-label="Save"><svg aria-hidden="true"><path d="M6 4h12v17l-6-3-6 3Z"/></svg></button><button class="post-action" title="Share" aria-label="Share"><svg aria-hidden="true"><circle cx="18" cy="5" r="2"/><circle cx="6" cy="12" r="2"/><circle cx="18" cy="19" r="2"/><path d="m8 11 8-5M8 13l8 5"/></svg></button></div>
                 </div>
-                <time class="stamp">12m</time>
               </article>
-              <article class="feed-item">
-                <span class="mini-avatar">JS</span>
-                <div>
-                  <p class="feed-meta"><b>jules</b> reviewed <b>honojs/hono</b></p>
-                  <h3 class="feed-title">The adapter is doing more than the name suggests.</h3>
-                  <p class="feed-copy">Read the edge path beside the node path before changing either one.</p>
-                  <div class="feed-actions">
-                    <button class="icon-button" title="Open discussion" aria-label="Open discussion"><svg aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 1 1 20 11Z"/></svg></button>
-                    <button class="icon-button" title="Save" aria-label="Save"><svg aria-hidden="true"><path d="M6 4h12v17l-6-3-6 3Z"/></svg></button>
-                  </div>
+
+              <article class="post">
+                <span class="avatar purple">JS</span>
+                <div class="post-body">
+                  <div class="post-head"><strong>jules</strong><span>@jules ·</span><time datetime="PT38M">38m</time></div>
+                  <p class="post-text">The adapter is doing more than the name suggests. Read the edge path beside the node path before changing either one.</p>
+                  <a class="source-card" href="reader.html"><span class="source-card-top"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h5"/></svg>honojs/hono · adapters.ts:61</span><strong class="source-card-title">One interface, two runtime paths.</strong><span class="source-card-meta">Open source context →</span></a>
+                  <div class="post-actions"><button class="post-action" title="Reply" aria-label="Reply"><svg aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 1 1 20 11Z"/></svg><span>3</span></button><button class="post-action" title="Repost" aria-label="Repost"><svg aria-hidden="true"><path d="M7 7h11l-2-2"/><path d="M18 7v5"/><path d="M17 17H6l2 2"/><path d="M6 17v-5"/></svg><span>7</span></button><button class="post-action like" title="Like" aria-label="Like"><svg aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6a4.8 4.8 0 0 1 8.8 2.8Z"/></svg><span>18</span></button><button class="post-action" title="Save" aria-label="Save"><svg aria-hidden="true"><path d="M6 4h12v17l-6-3-6 3Z"/></svg></button><button class="post-action" title="Share" aria-label="Share"><svg aria-hidden="true"><circle cx="18" cy="5" r="2"/><circle cx="6" cy="12" r="2"/><circle cx="18" cy="19" r="2"/><path d="m8 11 8-5M8 13l8 5"/></svg></button></div>
                 </div>
-                <time class="stamp">38m</time>
               </article>
-              <article class="feed-item">
-                <span class="mini-avatar">NK</span>
-                <div>
-                  <p class="feed-meta"><b>nora</b> opened a trail in <b>rust-lang/rust</b></p>
-                  <h3 class="feed-title">Borrow checking, explained from the error outward.</h3>
-                  <p class="feed-copy">Four files, one thread, and the exact compiler message that started it.</p>
-                  <div class="feed-actions">
-                    <button class="icon-button" title="Open trail" aria-label="Open trail"><svg aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg></button>
-                    <button class="icon-button" title="Save" aria-label="Save"><svg aria-hidden="true"><path d="M6 4h12v17l-6-3-6 3Z"/></svg></button>
-                  </div>
+
+              <article class="post">
+                <span class="avatar">NK</span>
+                <div class="post-body">
+                  <div class="post-head"><strong>nora</strong><span>@nora ·</span><time datetime="PT1H">1h</time></div>
+                  <p class="post-text">Borrow checking, explained from the error outward.</p>
+                  <a class="source-card" href="reader.html"><span class="source-card-top"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h5"/></svg>rust-lang/rust · borrowck.rs:118</span><strong class="source-card-title">Start with the compiler message.</strong><span class="source-card-meta">12 people saved this trail →</span></a>
+                  <div class="post-actions"><button class="post-action" title="Reply" aria-label="Reply"><svg aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 1 1 20 11Z"/></svg><span>5</span></button><button class="post-action" title="Repost" aria-label="Repost"><svg aria-hidden="true"><path d="M7 7h11l-2-2"/><path d="M18 7v5"/><path d="M17 17H6l2 2"/><path d="M6 17v-5"/></svg><span>9</span></button><button class="post-action like" title="Like" aria-label="Like"><svg aria-hidden="true"><path d="M20.8 8.8c0 5.3-8.8 10.2-8.8 10.2S3.2 14.1 3.2 8.8A4.8 4.8 0 0 1 12 6a4.8 4.8 0 0 1 8.8 2.8Z"/></svg><span>31</span></button><button class="post-action" title="Save" aria-label="Save"><svg aria-hidden="true"><path d="M6 4h12v17l-6-3-6 3Z"/></svg></button><button class="post-action" title="Share" aria-label="Share"><svg aria-hidden="true"><circle cx="18" cy="5" r="2"/><circle cx="6" cy="12" r="2"/><circle cx="18" cy="19" r="2"/><path d="m8 11 8-5M8 13l8 5"/></svg></button></div>
                 </div>
-                <time class="stamp">1h</time>
               </article>
             </div>
           </section>
 
-          <aside class="aside">
-            <div class="panel">
-              <div class="panel-title"><span>At a glance</span><svg aria-hidden="true"><path d="M4 19V5M4 19h16"/><path d="m7 15 3-4 3 2 5-7"/></svg></div>
-              <div class="signal"><svg aria-hidden="true"><path d="M4 12h16M12 4v16"/></svg><span><b>3</b> new threads</span></div>
-              <div class="signal"><svg aria-hidden="true"><path d="M4 12h16"/><path d="m13 5 7 7-7 7"/></svg><span><b>8</b> repositories saved</span></div>
-              <div class="signal"><svg aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg><span>last sync <b>2m</b> ago</span></div>
-            </div>
-            <div class="panel">
-              <div class="panel-title"><span>Keep nearby</span><svg aria-hidden="true"><path d="M6 4h12v17l-6-3-6 3Z"/></svg></div>
-              <ul class="tiny-list">
-                <li><a href="reader.html"><span>next.js / cache</span><svg aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
-                <li><a href="reader.html"><span>hono / adapters</span><svg aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
-                <li><a href="reader.html"><span>rust / ownership</span><svg aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
-              </ul>
-            </div>
+          <aside class="side-column">
+            <div class="side-panel"><div class="side-panel-title"><span>Search</span><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg></div><label class="search-box"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><input aria-label="Search OpenHub" placeholder="Search OpenHub" /></label></div>
+            <div class="side-panel"><h2>Trending in source</h2><a class="trend" href="explore.html"><span class="trend-label">1 · Runtime</span><strong class="trend-name">cache boundaries</strong><span class="trend-meta">184 source notes</span></a><a class="trend" href="explore.html"><span class="trend-label">2 · TypeScript</span><strong class="trend-name">request context</strong><span class="trend-meta">96 source notes</span></a><a class="trend" href="explore.html"><span class="trend-label">3 · Rust</span><strong class="trend-name">borrow checking</strong><span class="trend-meta">72 source notes</span></a></div>
+            <div class="side-panel"><h2>Who to follow</h2><div class="follow-row"><span class="avatar green">AM</span><span><strong class="follow-name">alexm</strong><span class="follow-handle">@alexm</span></span><button class="button follow-button">Follow</button></div><div class="follow-row"><span class="avatar purple">JS</span><span><strong class="follow-name">jules</strong><span class="follow-handle">@jules</span></span><button class="button follow-button">Follow</button></div><a class="text-link" href="explore.html">Show more →</a></div>
           </aside>
         </div>
 
-        <nav class="mobile-nav" aria-label="Mobile navigation">
-          <a class="mobile-link" href="home.html" aria-current="page" title="Home"><svg aria-hidden="true"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M9 20v-6h6v6"/></svg><span class="sr-only">Home</span></a>
-          <a class="mobile-link" href="explore.html" title="Explore"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><span class="sr-only">Explore</span></a>
-          <a class="mobile-link" href="notifications.html" title="Notifications"><svg aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 22h4"/></svg><span class="sr-only">Notifications</span></a>
-          <a class="mobile-link" href="collections.html" title="Collections"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span class="sr-only">Collections</span></a>
-          <a class="mobile-link" href="discussion.html" title="Communities"><svg aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 1 1 20 11Z"/></svg><span class="sr-only">Communities</span></a>
-          <a class="mobile-link" href="profile.html" title="Profile"><svg aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg><span class="sr-only">Profile</span></a>
-        </nav>
+        <nav class="mobile-nav" aria-label="Mobile navigation"><a class="mobile-link" href="home.html" aria-current="page" title="Home"><svg aria-hidden="true"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M9 20v-6h6v6"/></svg><span class="sr-only">Home</span></a><a class="mobile-link" href="explore.html" title="Explore"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><span class="sr-only">Explore</span></a><a class="mobile-link" href="compose.html" title="Post"><svg aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10Z"/><path d="m13.5 7.5 3 3"/></svg><span class="sr-only">Post</span></a><a class="mobile-link" href="notifications.html" title="Notifications"><svg aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 22h4"/></svg><span class="sr-only">Notifications</span></a><a class="mobile-link" href="collections.html" title="Collections"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span class="sr-only">Collections</span></a><a class="mobile-link" href="profile.html" title="Profile"><svg aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg><span class="sr-only">Profile</span></a></nav>
       </main>
     </div>
     <div class="backdrop" data-open="false"></div>
-    <div class="palette" data-open="false" role="dialog" aria-label="Command palette">
-      <div class="palette-input"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><input placeholder="Jump to a place or action…" aria-label="Command" /></div>
-      <nav class="palette-list"><a href="explore.html"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>Explore repositories</a><a href="compose.html"><svg aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10Z"/><path d="m13.5 7.5 3 3"/></svg>Write a post</a><a href="collections.html"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Open collections</a></nav>
-    </div>
+    <div class="palette" data-open="false" role="dialog" aria-label="Command palette"><div class="palette-input"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><input placeholder="Search or jump to…" aria-label="Command" /></div><nav class="palette-list"><a href="home.html"><svg aria-hidden="true"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/></svg>Home</a><a href="explore.html"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>Explore source</a><a href="compose.html"><svg aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10Z"/></svg>Write a post</a><a href="reader.html"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h5"/></svg>Open repository</a></nav></div>
     <script src="mockups.js"></script>
   </body>
 </html>

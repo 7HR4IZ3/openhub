@@ -4,99 +4,41 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <base href="/mockups-v2/" />
-    <title>OpenHub — Explore mockup</title>
+    <title>OpenHub — Explore source</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <p class="mockup-note">OpenHub / 02 explore / search surface</p>
+    <p class="mockup-note">OpenHub / explore / source search</p>
     <div class="app">
       <aside class="rail">
-        <a class="brand" href="index.html" aria-label="OpenHub mockups">oh<span>·</span></a>
+        <a class="brand" href="index.html" aria-label="OpenHub mockups">openhub<span>·</span></a>
         <nav class="rail-nav" aria-label="Primary navigation">
-          <a class="rail-link" href="home.html" title="Home"><svg aria-hidden="true"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M9 20v-6h6v6"/></svg></a>
-          <a class="rail-link" href="explore.html" aria-current="page" title="Explore"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg></a>
-          <a class="rail-link" href="notifications.html" title="Notifications"><svg aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 22h4"/></svg></a>
-          <a class="rail-link" href="collections.html" title="Collections"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></a>
-          <a class="rail-link" href="discussion.html" title="Communities"><svg aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 1 1 20 11Z"/></svg></a>
-          <a class="rail-link" href="profile.html" title="Profile"><svg aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg></a>
+          <a class="rail-link" href="home.html" title="Home"><svg aria-hidden="true"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M9 20v-6h6v6"/></svg><span>Home</span></a>
+          <a class="rail-link" href="explore.html" aria-current="page" title="Explore"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><span>Explore</span></a>
+          <a class="rail-link" href="notifications.html" title="Notifications"><svg aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 22h4"/></svg><span>Notifications</span></a>
+          <a class="rail-link" href="collections.html" title="Collections"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>Collections</span></a>
+          <a class="rail-link" href="discussion.html" title="Discussions"><svg aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 1 1 20 11Z"/></svg><span>Discussions</span></a>
+          <a class="rail-link" href="profile.html" title="Profile"><svg aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg><span>Profile</span></a>
         </nav>
-        <div class="rail-spacer"></div>
-        <button class="rail-link" data-command title="Command palette" aria-label="Open command palette"><svg aria-hidden="true"><path d="M5 8h14M5 12h14M5 16h9"/><path d="m17 15 3 3-3 3"/></svg></button>
-        <a class="rail-link" href="compose.html" title="Compose"><svg aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10Z"/><path d="m13.5 7.5 3 3"/></svg></a>
+        <div class="rail-spacer"></div><button class="rail-link rail-utility" data-command title="Search OpenHub" aria-label="Search OpenHub"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><span>Search</span></button><a class="rail-link rail-cta" href="compose.html" title="Write a post"><svg aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 1-3-3l-10 10Z"/><path d="m13.5 7.5 3 3"/></svg><span>Post</span></a><a class="rail-profile" href="profile.html"><span class="avatar">TR</span><span><b>Thraize</b><br />@thraize</span></a>
       </aside>
-
       <main class="main">
-        <header class="topbar">
-          <div class="crumbs"><span>openhub</span><span>/</span><strong>explore</strong></div>
-          <div class="top-actions"><span class="status"><i></i> provider online</span><a class="avatar" href="profile.html" aria-label="Open profile">TR</a></div>
-        </header>
-        <div class="page">
-          <section class="content stagger">
-            <p class="kicker">/ explore · public source</p>
-            <h1>Find the file.</h1>
-            <div class="command" role="search">
-              <svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>
-              <input autofocus aria-label="Search repositories" value="edge runtime" />
-              <button class="icon-button" title="Run search" aria-label="Run search"><svg aria-hidden="true"><path d="m5 12 14 0M13 6l6 6-6 6"/></svg></button>
-            </div>
-            <div class="section-bar"><h2>Filters</h2><span class="micro">12 results</span></div>
-            <div class="chip-row">
-              <button class="select-chip" data-active="true" data-demo-toggle="#provider-filter" aria-pressed="true"><svg aria-hidden="true"><path d="M4 12h16M12 4v16"/></svg><span>All sources</span></button>
-              <button class="select-chip" data-demo-toggle="#language-filter" aria-pressed="false"><svg aria-hidden="true"><path d="M6 4h12v16H6z"/><path d="m9 9 3-2 3 2-3 2Z"/></svg><span>Language</span></button>
-              <button class="select-chip" data-demo-toggle="#signal-filter" aria-pressed="false"><svg aria-hidden="true"><path d="m4 17 5-5 3 3 8-9"/></svg><span>Active lately</span></button>
-            </div>
-            <div class="rule"></div>
-            <div class="repo-list" id="provider-filter">
-              <a class="repo-card" href="reader.html">
-                <span class="repo-mark">N</span>
-                <span><span class="repo-name">vercel/next.js</span><span class="repo-description">The React framework for the web</span></span>
-                <span class="metric"><b>132k</b> ★</span>
-              </a>
-              <a class="repo-card" href="reader.html">
-                <span class="repo-mark">H</span>
-                <span><span class="repo-name">honojs/hono</span><span class="repo-description">Ultrafast web framework for the edge</span></span>
-                <span class="metric"><b>24k</b> ★</span>
-              </a>
-              <a class="repo-card" href="reader.html">
-                <span class="repo-mark">R</span>
-                <span><span class="repo-name">rust-lang/rust</span><span class="repo-description">Empowering everyone to build reliable software</span></span>
-                <span class="metric"><b>102k</b> ★</span>
-              </a>
-              <a class="repo-card" href="reader.html">
-                <span class="repo-mark">D</span>
-                <span><span class="repo-name">denoland/deno</span><span class="repo-description">A secure runtime for JavaScript and TypeScript</span></span>
-                <span class="metric"><b>96k</b> ★</span>
-              </a>
-            </div>
+        <header class="topbar"><span class="topbar-title">Explore</span><div class="top-actions"><button class="icon-button" data-command title="Search" aria-label="Search"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg></button><a class="avatar" href="profile.html" aria-label="Open profile">TR</a></div></header>
+        <div class="page-shell">
+          <section class="surface-column">
+            <div class="page-heading"><h1>Find source.</h1><p>Search repositories, files, and source notes.</p></div>
+            <label class="search-box"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><input autofocus value="edge runtime" aria-label="Search source" /></label>
+            <div class="filter-row" style="margin-top:15px"><button class="filter-chip" data-demo-toggle="#results" aria-pressed="true" data-active="true">All</button><button class="filter-chip" data-demo-toggle="#language-filter" aria-pressed="false">Language</button><button class="filter-chip" data-demo-toggle="#activity-filter" aria-pressed="false">Active lately</button></div>
+            <div class="list-card" id="results"><span class="avatar green">N</span><div><h2>vercel/next.js</h2><p>React framework for the web · <b>response.ts</b></p></div><span class="list-meta">132k ★</span></div>
+            <div class="list-card"><span class="avatar blue">H</span><div><h2>honojs/hono</h2><p>Web framework for the edge · <b>adapters.ts</b></p></div><span class="list-meta">24k ★</span></div>
+            <div class="list-card"><span class="avatar purple">R</span><div><h2>rust-lang/rust</h2><p>Reliable software · <b>borrowck.rs</b></p></div><span class="list-meta">102k ★</span></div>
+            <div class="list-card"><span class="avatar">D</span><div><h2>denoland/deno</h2><p>JavaScript runtime · <b>permissions.ts</b></p></div><span class="list-meta">96k ★</span></div>
           </section>
-          <aside class="aside">
-            <div class="panel">
-              <div class="panel-title"><span>Search scope</span><svg aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4a12 12 0 0 1 0 16M12 4a12 12 0 0 0 0 16"/></svg></div>
-              <div class="signal"><svg aria-hidden="true"><path d="M5 5h14v14H5z"/><path d="M8 9h8M8 13h5"/></svg><span>Public repositories</span></div>
-              <div class="signal"><svg aria-hidden="true"><path d="M4 12h16"/><path d="m13 5 7 7-7 7"/></svg><span>Source-backed posts</span></div>
-            </div>
-            <div class="panel">
-              <div class="panel-title"><span>Recent paths</span><svg aria-hidden="true"><path d="M4 5h16M4 12h16M4 19h16"/></svg></div>
-              <ul class="tiny-list">
-                <li><a href="reader.html"><span>runtime / edge</span><svg aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
-                <li><a href="reader.html"><span>cache / invalidation</span><svg aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
-                <li><a href="reader.html"><span>types / boundaries</span><svg aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></a></li>
-              </ul>
-            </div>
-          </aside>
+          <aside class="side-column"><div class="side-panel"><h2>Search scope</h2><a class="trend" href="#results"><span class="trend-label">Repositories</span><strong class="trend-name">Public source</strong><span class="trend-meta">Indexed from GitHub</span></a><a class="trend" href="#results"><span class="trend-label">Notes</span><strong class="trend-name">Source-backed posts</strong><span class="trend-meta">Exact file references</span></a></div><div class="side-panel"><h2>Recent paths</h2><a class="trend" href="reader.html"><span class="trend-label">next.js</span><strong class="trend-name">runtime / edge</strong></a><a class="trend" href="reader.html"><span class="trend-label">hono</span><strong class="trend-name">cache / invalidation</strong></a><a class="trend" href="reader.html"><span class="trend-label">rust</span><strong class="trend-name">types / boundaries</strong></a></div></aside>
         </div>
-        <nav class="mobile-nav" aria-label="Mobile navigation">
-          <a class="mobile-link" href="home.html" title="Home"><svg aria-hidden="true"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M9 20v-6h6v6"/></svg><span class="sr-only">Home</span></a>
-          <a class="mobile-link" href="explore.html" aria-current="page" title="Explore"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><span class="sr-only">Explore</span></a>
-          <a class="mobile-link" href="notifications.html" title="Notifications"><svg aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 22h4"/></svg><span class="sr-only">Notifications</span></a>
-          <a class="mobile-link" href="collections.html" title="Collections"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span class="sr-only">Collections</span></a>
-          <a class="mobile-link" href="discussion.html" title="Communities"><svg aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 1 1 20 11Z"/></svg><span class="sr-only">Communities</span></a>
-          <a class="mobile-link" href="profile.html" title="Profile"><svg aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg><span class="sr-only">Profile</span></a>
-        </nav>
+        <nav class="mobile-nav" aria-label="Mobile navigation"><a class="mobile-link" href="home.html" title="Home"><svg aria-hidden="true"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M9 20v-6h6v6"/></svg><span class="sr-only">Home</span></a><a class="mobile-link" href="explore.html" aria-current="page" title="Explore"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><span class="sr-only">Explore</span></a><a class="mobile-link" href="compose.html" title="Post"><svg aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 1-3-3l-10 10Z"/><path d="m13.5 7.5 3 3"/></svg><span class="sr-only">Post</span></a><a class="mobile-link" href="notifications.html" title="Notifications"><svg aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 22h4"/></svg><span class="sr-only">Notifications</span></a><a class="mobile-link" href="collections.html" title="Collections"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span class="sr-only">Collections</span></a><a class="mobile-link" href="profile.html" title="Profile"><svg aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg><span class="sr-only">Profile</span></a></nav>
       </main>
     </div>
-    <div class="backdrop" data-open="false"></div>
-    <div class="palette" data-open="false" role="dialog" aria-label="Command palette"><div class="palette-input"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><input placeholder="Jump to a place or action…" aria-label="Command" /></div><nav class="palette-list"><a href="home.html">⌂ <span>Home</span></a><a href="compose.html">✎ <span>Write</span></a><a href="collections.html">▤ <span>Collections</span></a></nav></div>
-    <script src="mockups.js"></script>
+    <div class="backdrop" data-open="false"></div><div class="palette" data-open="false" role="dialog" aria-label="Command palette"><div class="palette-input"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><input placeholder="Search or jump to…" aria-label="Command" /></div><nav class="palette-list"><a href="home.html">Home</a><a href="reader.html">Open repository</a><a href="compose.html">Write a post</a></nav></div><script src="mockups.js"></script>
   </body>
 </html>

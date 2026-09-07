@@ -1,7 +1,6 @@
 (function () {
   var palette = document.querySelector(".palette");
   var backdrop = document.querySelector(".backdrop");
-  var commandButtons = document.querySelectorAll("[data-command]");
 
   function setPalette(open) {
     if (!palette || !backdrop) return;
@@ -13,7 +12,7 @@
     }
   }
 
-  commandButtons.forEach(function (button) {
+  document.querySelectorAll("[data-command]").forEach(function (button) {
     button.addEventListener("click", function () { setPalette(true); });
   });
 
@@ -25,6 +24,15 @@
       setPalette(true);
     }
     if (event.key === "Escape") setPalette(false);
+  });
+
+  document.querySelectorAll("[data-tab-group]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      var group = button.dataset.tabGroup;
+      document.querySelectorAll('[data-tab-group="' + group + '"]').forEach(function (item) {
+        item.setAttribute("aria-selected", String(item === button));
+      });
+    });
   });
 
   document.querySelectorAll("[data-demo-toggle]").forEach(function (button) {

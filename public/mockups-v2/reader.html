@@ -4,71 +4,60 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <base href="/mockups-v2/" />
-    <title>OpenHub — Reader mockup</title>
+    <title>OpenHub — Repository reader</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <p class="mockup-note">OpenHub / 03 reader / source first</p>
+    <p class="mockup-note">OpenHub / repository / code view</p>
     <div class="app">
       <aside class="rail">
-        <a class="brand" href="index.html" aria-label="OpenHub mockups">oh<span>·</span></a>
+        <a class="brand" href="index.html" aria-label="OpenHub mockups">openhub<span>·</span></a>
         <nav class="rail-nav" aria-label="Primary navigation">
-          <a class="rail-link" href="home.html" title="Home"><svg aria-hidden="true"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M9 20v-6h6v6"/></svg></a>
-          <a class="rail-link" href="explore.html" title="Explore"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg></a>
-          <a class="rail-link" href="notifications.html" title="Notifications"><svg aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 22h4"/></svg></a>
-          <a class="rail-link" href="collections.html" title="Collections"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></a>
-          <a class="rail-link" href="discussion.html" title="Communities"><svg aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 1 1 20 11Z"/></svg></a>
-          <a class="rail-link" href="profile.html" title="Profile"><svg aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg></a>
+          <a class="rail-link" href="home.html" title="Home"><svg aria-hidden="true"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M9 20v-6h6v6"/></svg><span>Home</span></a>
+          <a class="rail-link" href="explore.html" title="Explore"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><span>Explore</span></a>
+          <a class="rail-link" href="notifications.html" title="Notifications"><svg aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 22h4"/></svg><span>Notifications</span></a>
+          <a class="rail-link" href="collections.html" title="Collections"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>Collections</span></a>
+          <a class="rail-link" href="discussion.html" title="Discussions"><svg aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 1 1 20 11Z"/></svg><span>Discussions</span></a>
+          <a class="rail-link" href="profile.html" title="Profile"><svg aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg><span>Profile</span></a>
         </nav>
         <div class="rail-spacer"></div>
-        <button class="rail-link" data-command title="Command palette" aria-label="Open command palette"><svg aria-hidden="true"><path d="M5 8h14M5 12h14M5 16h9"/><path d="m17 15 3 3-3 3"/></svg></button>
-        <a class="rail-link" href="compose.html" title="Compose"><svg aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10Z"/><path d="m13.5 7.5 3 3"/></svg></a>
+        <button class="rail-link rail-utility" data-command title="Search OpenHub" aria-label="Search OpenHub"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><span>Search</span></button>
+        <a class="rail-link rail-cta" href="compose.html" title="Write a post"><svg aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10Z"/><path d="m13.5 7.5 3 3"/></svg><span>Post</span></a>
+        <a class="rail-profile" href="profile.html"><span class="avatar">TR</span><span><b>Thraize</b><br />@thraize</span></a>
       </aside>
+
       <main class="main">
-        <header class="topbar">
-          <div class="crumbs"><a href="explore.html">explore</a><span>/</span><strong>vercel/next.js</strong></div>
-          <div class="top-actions"><span class="status"><i></i> main · 4m</span><button class="icon-button" title="Save repository" aria-label="Save repository"><svg aria-hidden="true"><path d="M6 4h12v17l-6-3-6 3Z"/></svg></button><a class="avatar" href="profile.html" aria-label="Open profile">TR</a></div>
-        </header>
-        <div class="page">
-          <section class="content">
-            <div class="reader-header">
-              <div><p class="kicker">/ repository</p><h1 class="reader-title">vercel/next.js</h1><p class="reader-path">packages/next/src/server/web/spec-extension/</p></div>
-              <div class="reader-actions"><button class="icon-button" title="Copy source link" aria-label="Copy source link"><svg aria-hidden="true"><path d="M8 8h10v10H8z"/><path d="M6 16H4V4h12v2"/></svg></button><button class="icon-button" title="Open on GitHub" aria-label="Open on GitHub"><svg aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 13v6H4V5h6"/></svg></button></div>
-            </div>
-            <div class="reader-grid">
-              <nav class="tree" aria-label="Files">
-                <span class="tree-title">Files</span>
-                <a href="#code"><svg aria-hidden="true"><path d="m8 5-4 7 4 7"/><path d="m16 5 4 7-4 7"/></svg>web</a>
-                <a href="#code"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8"/></svg>request.ts</a>
-                <a href="#code" data-active="true"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8"/></svg>response.ts</a>
-                <a href="#code"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8"/></svg>url.ts</a>
-                <a href="#code"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8"/></svg>index.ts</a>
-              </nav>
+        <header class="topbar"><div><span class="topbar-title">Code</span><span class="topbar-subtitle"> / vercel/next.js</span></div><div class="top-actions"><button class="icon-button" data-command title="Search" aria-label="Search"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg></button><a class="avatar" href="profile.html" aria-label="Open profile">TR</a></div></header>
+
+        <div class="repo-page">
+          <details class="repo-header" open>
+            <summary><span class="repo-identity"><span class="repo-eyebrow">Public repository</span><span class="repo-name"><span>vercel</span> / next.js <span class="repo-visibility">Public</span></span></span><svg class="chevron" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+            <div class="repo-header-body">
               <div>
-                <div class="file-tabs" role="tablist" aria-label="Open files"><button class="file-tab" role="tab" aria-selected="false"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/></svg>request.ts</button><button class="file-tab" role="tab" aria-selected="true"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/></svg>response.ts</button><button class="file-tab" role="tab" aria-selected="false"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/></svg>url.ts</button></div>
-                <pre id="code" class="code"><code><span class="line-no">38</span><span class="kw">export</span> <span class="kw">function</span> <span class="fn">NextResponse</span>(body?: BodyInit | null) {
-<span class="line-no">39</span>  <span class="kw">const</span> response = <span class="kw">new</span> Response(body)
-<span class="line-no">40</span>  response.headers.set(<span class="str">"x-nextjs-cache"</span>, <span class="str">"HIT"</span>)
-<span class="line-no">41</span>  <span class="kw">return</span> response
-<span class="line-no">42</span>}
-<span class="line-no">43</span>
-<span class="line-no">44</span><span class="kw">export</span> <span class="kw">function</span> <span class="fn">json</span>&lt;T&gt;(body: T) {
-<span class="line-no">45</span>  <span class="kw">return</span> <span class="fn">NextResponse</span>(JSON.stringify(body))
-<span class="line-no">46</span>}</code></pre>
+                <p class="repo-description">The React Framework for the Web. Source, discussions, and trails stay connected to the exact commit.</p>
+                <div class="repo-topics"><span class="repo-topic">react</span><span class="repo-topic">nextjs</span><span class="repo-topic">typescript</span></div>
+                <div class="repo-stats"><span><strong>132k</strong> stars</span><span><strong>28k</strong> forks</span><span><strong>2.4k</strong> open issues</span><span>Updated 4m ago</span></div>
               </div>
+              <div class="repo-actions"><button class="button"><svg aria-hidden="true"><path d="M6 4h12v17l-6-3-6 3Z"/></svg>Save</button><button class="button"><svg aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>Fork</button></div>
             </div>
-            <div class="section-bar"><h2>Source context</h2><a class="text-action" href="discussion.html">Discuss <span>↗</span></a></div>
-            <div class="panel"><div class="panel-title"><span>response.ts · lines 38–46</span><span class="micro">commit 9d31c2</span></div><p class="subtle" style="margin:0;font-size:13px">The response wrapper keeps cache metadata close to the boundary. Read the surrounding request path before changing the header.</p></div>
-          </section>
-          <aside class="aside">
-            <div class="panel"><div class="panel-title"><span>Repository</span><svg aria-hidden="true"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg></div><p class="reader-title">next.js</p><p class="subtle" style="font-size:12px;margin-bottom:14px">The React framework for the web.</p><div class="chip-row"><span class="chip">TypeScript</span><span class="chip">MIT</span></div></div>
-            <div class="panel"><div class="panel-title"><span>Activity</span><svg aria-hidden="true"><path d="M4 19V5M4 19h16"/><path d="m7 15 3-4 3 2 5-7"/></svg></div><div class="signal"><svg aria-hidden="true"><path d="M4 12h16"/><path d="m13 5 7 7-7 7"/></svg><span><b>24</b> source trails</span></div><div class="signal"><svg aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 1 1 20 11Z"/></svg><span><b>86</b> discussions</span></div></div>
-            <a class="primary" href="compose.html"><svg aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10Z"/><path d="m13.5 7.5 3 3"/></svg>Annotate this file</a>
-          </aside>
+          </details>
+
+          <nav class="repo-tabs" aria-label="Repository sections"><a class="repo-tab" href="#code" aria-current="page"><svg aria-hidden="true"><path d="m8 5-4 7 4 7"/><path d="m16 5 4 7-4 7"/></svg>Code</a><a class="repo-tab" href="#issues"><svg aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v5"/><path d="M12 16h.01"/></svg>Issues <span class="repo-count">42</span></a><a class="repo-tab" href="#pulls"><svg aria-hidden="true"><path d="M6 4v16M6 8h8a3 3 0 0 1 3 3v9"/><circle cx="6" cy="4" r="2"/><circle cx="6" cy="20" r="2"/><circle cx="17" cy="20" r="2"/></svg>Pull requests <span class="repo-count">18</span></a><a class="repo-tab" href="discussion.html"><svg aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 1 1 20 11Z"/></svg>Discussions</a></nav>
+
+          <div class="repo-controls"><div class="repo-controls-left"><button class="branch-button"><svg aria-hidden="true"><path d="M6 4v16M6 8h8a3 3 0 0 1 3 3v9"/><circle cx="6" cy="4" r="2"/><circle cx="6" cy="20" r="2"/><circle cx="17" cy="20" r="2"/></svg>main <svg aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><span class="path-label">packages / next / src / server / web / spec-extension</span></div><div class="repo-controls-right"><label class="search-box"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><input aria-label="Search this repository" placeholder="Search this repository" /></label><button class="button primary" title="Annotate file"><svg aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10Z"/></svg>Annotate</button></div></div>
+
+          <div class="code-layout">
+            <aside class="file-manager" aria-label="Repository files"><div class="file-manager-head"><span>Files</span><button class="icon-button" title="Collapse file manager" aria-label="Collapse file manager"><svg aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg></button></div><div class="file-tree"><a class="tree-row" href="#code"><svg class="tree-folder" aria-hidden="true"><path d="M3 6h6l2 2h10v10H3z"/></svg>web</a><a class="tree-row indent-1" href="#code"><svg class="tree-file" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5"/></svg>request.ts</a><a class="tree-row indent-1 active" href="#code" aria-current="page"><svg class="tree-file" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5"/></svg>response.ts</a><a class="tree-row indent-1" href="#code"><svg class="tree-file" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5"/></svg>url.ts</a><a class="tree-row indent-1" href="#code"><svg class="tree-file" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v5h5"/></svg>index.ts</a><a class="tree-row" href="#code"><svg class="tree-folder" aria-hidden="true"><path d="M3 6h6l2 2h10v10H3z"/></svg>adapter</a><a class="tree-row" href="#code"><svg class="tree-folder" aria-hidden="true"><path d="M3 6h6l2 2h10v10H3z"/></svg>tests</a></div></aside>
+            <section class="editor" id="code" aria-label="Code editor"><header class="editor-head"><span class="editor-path">packages/next/src/server/web/spec-extension/</span><span class="editor-file">response.ts</span><div class="editor-actions"><button class="icon-button" title="Copy file link" aria-label="Copy file link"><svg aria-hidden="true"><path d="M8 8h10v10H8z"/><path d="M6 16H4V4h12v2"/></svg></button><button class="icon-button" title="Open raw file" aria-label="Open raw file"><svg aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 13v6H4V5h6"/></svg></button></div></header><pre class="editor-code"><code><span class="code-line"><span class="line-no">38</span><span class="syntax-keyword">export</span> <span class="syntax-keyword">function</span> <span class="syntax-function">NextResponse</span>(body?: BodyInit | null) {</span><span class="code-line"><span class="line-no">39</span>  <span class="syntax-keyword">const</span> response = <span class="syntax-keyword">new</span> Response(body)</span><span class="code-line"><span class="line-no">40</span>  response.headers.set(<span class="syntax-string">"x-nextjs-cache"</span>, <span class="syntax-string">"HIT"</span>)</span><span class="code-line"><span class="line-no">41</span>  <span class="syntax-keyword">return</span> response</span><span class="code-line"><span class="line-no">42</span>}</span><span class="code-line"><span class="line-no">43</span></span><span class="code-line"><span class="line-no">44</span><span class="syntax-keyword">export</span> <span class="syntax-keyword">function</span> <span class="syntax-function">json</span>&lt;T&gt;(body: T) {</span><span class="code-line"><span class="line-no">45</span>  <span class="syntax-keyword">return</span> <span class="syntax-function">NextResponse</span>(JSON.stringify(body))</span><span class="code-line"><span class="line-no">46</span>}</span><span class="code-line"><span class="line-no">47</span></span><span class="code-line"><span class="line-no">48</span><span class="syntax-comment">// Keep cache metadata close to the response boundary.</span></span><span class="code-line"><span class="line-no">49</span><span class="syntax-keyword">export</span> <span class="syntax-keyword">function</span> <span class="syntax-function">withCache</span>(response: Response) {</span><span class="code-line"><span class="line-no">50</span>  response.headers.set(<span class="syntax-string">"x-nextjs-cache"</span>, <span class="syntax-string">"HIT"</span>)</span><span class="code-line"><span class="line-no">51</span>  <span class="syntax-keyword">return</span> response</span><span class="code-line"><span class="line-no">52</span>}</span></code></pre></section>
+          </div>
+
+          <details class="source-inspector"><summary><span>Source context · response.ts:38–52</span><span>Expand <svg aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span></summary><div class="source-inspector-body"><p>Annotate the exact lines, keep the commit attached, and let replies stay in the feed.</p></div></details>
         </div>
-        <nav class="mobile-nav" aria-label="Mobile navigation"><a class="mobile-link" href="home.html" title="Home"><svg aria-hidden="true"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M9 20v-6h6v6"/></svg><span class="sr-only">Home</span></a><a class="mobile-link" href="explore.html" title="Explore"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><span class="sr-only">Explore</span></a><a class="mobile-link" href="notifications.html" title="Notifications"><svg aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 22h4"/></svg><span class="sr-only">Notifications</span></a><a class="mobile-link" href="collections.html" title="Collections"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span class="sr-only">Collections</span></a><a class="mobile-link" href="discussion.html" title="Communities"><svg aria-hidden="true"><path d="M20 11a7 7 0 0 1-7 7H8l-5 3 1.5-4.5A7 7 0 1 1 20 11Z"/></svg><span class="sr-only">Communities</span></a><a class="mobile-link" href="profile.html" title="Profile"><svg aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg><span class="sr-only">Profile</span></a></nav>
+
+        <nav class="mobile-nav" aria-label="Mobile navigation"><a class="mobile-link" href="home.html" title="Home"><svg aria-hidden="true"><path d="m4 10 8-6 8 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M9 20v-6h6v6"/></svg><span class="sr-only">Home</span></a><a class="mobile-link" href="explore.html" title="Explore"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><span class="sr-only">Explore</span></a><a class="mobile-link" href="compose.html" title="Post"><svg aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 1-3-3l-10 10Z"/><path d="m13.5 7.5 3 3"/></svg><span class="sr-only">Post</span></a><a class="mobile-link" href="notifications.html" title="Notifications"><svg aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 22h4"/></svg><span class="sr-only">Notifications</span></a><a class="mobile-link" href="collections.html" title="Collections"><svg aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span class="sr-only">Collections</span></a><a class="mobile-link" href="profile.html" title="Profile"><svg aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 21a7 7 0 0 1 14 0"/></svg><span class="sr-only">Profile</span></a></nav>
       </main>
     </div>
-    <div class="backdrop" data-open="false"></div><div class="palette" data-open="false" role="dialog" aria-label="Command palette"><div class="palette-input"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><input placeholder="Jump to a place or action…" aria-label="Command" /></div><nav class="palette-list"><a href="home.html">⌂ <span>Home</span></a><a href="compose.html">✎ <span>Write</span></a><a href="discussion.html">◌ <span>Discuss</span></a></nav></div><script src="mockups.js"></script>
+    <div class="backdrop" data-open="false"></div><div class="palette" data-open="false" role="dialog" aria-label="Command palette"><div class="palette-input"><svg aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><input placeholder="Search or jump to…" aria-label="Command" /></div><nav class="palette-list"><a href="home.html">Home</a><a href="explore.html">Explore source</a><a href="compose.html">Write a post</a></nav></div>
+    <script src="mockups.js"></script>
   </body>
 </html>
