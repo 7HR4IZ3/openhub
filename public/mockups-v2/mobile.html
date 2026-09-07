@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenHub — Mobile preview</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 16px; background: #e1e8ed; color: #0f1419; font: 14px system-ui, sans-serif; }
+    header { display: flex; gap: 16px; align-items: center; margin-bottom: 16px; }
+    select { font: inherit; padding: 8px; }
+    main { display: flex; gap: 24px; align-items: start; overflow: auto; }
+    section { flex: none; }
+    h2 { font-size: 14px; }
+    iframe { display: block; border: 0; background: white; height: 760px; }
+  </style>
+</head>
+<body>
+  <header><a href="index.html">All mockups</a><label>Screen <select id="screen"><option value="home">Feed</option><option value="reader">Code</option><option value="explore">Explore</option><option value="discussion">Thread</option><option value="compose">Compose</option><option value="profile">Profile</option><option value="collections">Collections</option><option value="notifications">Notifications</option></select></label></header>
+  <main>
+    <section><h2>390px</h2><iframe title="390px mobile preview" width="390" src="home.html"></iframe></section>
+    <section><h2>360px</h2><iframe title="360px mobile preview" width="360" src="home.html"></iframe></section>
+  </main>
+  <script>
+    document.querySelector('#screen').addEventListener('change', function () {
+      document.querySelectorAll('iframe').forEach(frame => { frame.src = this.value + '.html'; });
+    });
+  </script>
+</body>
+</html>
