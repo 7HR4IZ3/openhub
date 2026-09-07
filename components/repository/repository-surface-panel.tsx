@@ -77,7 +77,7 @@ export function RepositorySurfacePanel({
   return (
     <section
       id="repository-surfaces"
-      className="mt-4 overflow-hidden rounded-xl border border-border bg-card"
+      className="v2-repo-surface v2-repo-surfaces mt-4 overflow-hidden rounded-xl border border-border bg-card"
     >
       <div className="border-b border-border px-5 py-5 sm:px-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
@@ -143,10 +143,10 @@ export function RepositorySurfacePanel({
                 aria-controls={`repository-surface-${tab.id}`}
                 onClick={() => setActiveSurface(tab.id)}
                 className={cn(
-                  "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-md px-3.5 py-2 text-xs font-semibold transition-colors",
+                  "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors",
                   isActive
-                    ? "bg-foreground text-background"
-                    : "text-muted-foreground hover:bg-black/[0.05] hover:text-foreground dark:hover:bg-white/[0.07]",
+                    ? "text-primary-foreground"
+                    : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                 )}
               >
                 <Icon className="h-3.5 w-3.5" />

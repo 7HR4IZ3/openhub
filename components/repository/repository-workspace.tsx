@@ -10,6 +10,7 @@ import {
   BookmarkIcon as Bookmark,
   MagicWandIcon as Bot,
   CheckIcon as Check,
+  ChevronDownIcon as ChevronDown,
   ChevronRightIcon as ChevronRight,
   DotFilledIcon as CircleDot,
   CopyIcon as Copy,
@@ -189,8 +190,8 @@ function RepositoryWorkspaceView({
   }
 
   return (
-    <main className="min-h-[100dvh] bg-background text-foreground dark:bg-background">
-      <header className="border-b border-border bg-background/95 backdrop-blur dark:bg-background/95">
+    <main className="v2-repo-page min-h-[100dvh] bg-background text-foreground dark:bg-background">
+      <header className="v2-repo-topbar border-b border-border bg-background/95 backdrop-blur dark:bg-background/95">
         <div className="mx-auto max-w-[1440px] px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4 text-sm">
             <Link
@@ -209,90 +210,90 @@ function RepositoryWorkspaceView({
             </div>
           </div>
 
-          <div className="mt-5 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                <Github className="h-4 w-4" />
-                <span>{repository.ownerLogin}</span>
-                <span>/</span>
-                <span className="font-semibold text-foreground">
-                  {repository.name}
+          <details className="v2-repo-header mt-5" open>
+            <summary className="v2-repo-summary">
+              <span className="min-w-0">
+                <span className="v2-repo-eyebrow">
+                  {repository.visibility === "public"
+                    ? "Public repository"
+                    : "Private repository"}
                 </span>
-                <span className="rounded-full border border-black/[0.12] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] dark:border-white/[0.14]">
-                  read only
+                <span className="v2-repo-name">
+                  <Github className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <span>{repository.ownerLogin}</span>
+                  <span className="text-muted-foreground">/</span>
+                  <span>{repository.name}</span>
+                  <span className="v2-repo-visibility">read only</span>
                 </span>
+              </span>
+              <ChevronDown className="v2-repo-chevron h-5 w-5" aria-hidden="true" />
+            </summary>
+            <div className="v2-repo-header-body">
+              <div className="min-w-0 flex-1">
+                <p className="v2-repo-description">
+                  {repository.description ??
+                    "A repository ready to be understood."}
+                </p>
+                <div className="mt-4 flex flex-wrap gap-x-5 gap-y-3 text-xs text-muted-foreground">
+                  <RepositoryStat icon={Star} label={formatCount(repository.stars)} />
+                  <RepositoryStat
+                    icon={GitFork}
+                    label={formatCount(repository.forks)}
+                  />
+                  <RepositoryStat icon={GitBranch} label={branchLabel(sourceRef)} />
+                  {repository.primaryLanguage ? (
+                    <RepositoryStat
+                      icon={CircleDot}
+                      label={repository.primaryLanguage}
+                    />
+                  ) : null}
+                  {repository.licenseSpdxId ? (
+                    <RepositoryStat
+                      icon={BookOpen}
+                      label={repository.licenseSpdxId}
+                    />
+                  ) : null}
+                  <span className="inline-flex items-center gap-1.5">
+                    <LockKeyhole className="h-3.5 w-3.5" />
+                    Source stays on {providerDisplayName(repository.provider)}
+                  </span>
+                </div>
               </div>
-              <h1 className="mt-3 max-w-4xl break-words text-2xl font-semibold tracking-tight sm:text-3xl">
-                {repository.name}
-              </h1>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base">
-                {repository.description ??
-                  "A repository ready to be understood."}
-              </p>
-            </div>
 
-            <div className="flex shrink-0 flex-wrap gap-2">
-              <Button
-                asChild
-                variant="outline"
-                className="rounded-md bg-transparent"
-              >
-                <a href={repository.url} target="_blank" rel="noreferrer">
-                  Open on {providerDisplayName(repository.provider)}
-                  <ExternalLink className="h-4 w-4" />
-                </a>
-              </Button>
-              {repository.visibility === "public" &&
-              repository.provider === "github" ? (
-                <>
-                  <RepositoryFollowButton
-                    repository={repository}
-                    convexConfigured={convexConfigured}
-                  />
-                  <RepositorySaveButton
-                    repository={repository}
-                    convexConfigured={convexConfigured}
-                  />
-                </>
-              ) : (
-                <span className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs font-semibold text-muted-foreground">
-                  <LockKeyhole className="h-3.5 w-3.5" />{" "}
-                  {repository.visibility === "private"
-                    ? "Private access"
-                    : `${providerDisplayName(repository.provider)} browse`}
-                </span>
-              )}
+              <div className="v2-repo-actions shrink-0">
+                <Button asChild variant="outline">
+                  <a href={repository.url} target="_blank" rel="noreferrer">
+                    Open on {providerDisplayName(repository.provider)}
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                </Button>
+                {repository.visibility === "public" &&
+                repository.provider === "github" ? (
+                  <>
+                    <RepositoryFollowButton
+                      repository={repository}
+                      convexConfigured={convexConfigured}
+                    />
+                    <RepositorySaveButton
+                      repository={repository}
+                      convexConfigured={convexConfigured}
+                    />
+                  </>
+                ) : (
+                  <span className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs font-semibold text-muted-foreground">
+                    <LockKeyhole className="h-3.5 w-3.5" />{" "}
+                    {repository.visibility === "private"
+                      ? "Private access"
+                      : `${providerDisplayName(repository.provider)} browse`}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
-
-          <div className="mt-7 flex flex-wrap gap-x-5 gap-y-3 text-xs text-muted-foreground">
-            <RepositoryStat icon={Star} label={formatCount(repository.stars)} />
-            <RepositoryStat
-              icon={GitFork}
-              label={formatCount(repository.forks)}
-            />
-            <RepositoryStat icon={GitBranch} label={branchLabel(sourceRef)} />
-            {repository.primaryLanguage ? (
-              <RepositoryStat
-                icon={CircleDot}
-                label={repository.primaryLanguage}
-              />
-            ) : null}
-            {repository.licenseSpdxId ? (
-              <RepositoryStat
-                icon={BookOpen}
-                label={repository.licenseSpdxId}
-              />
-            ) : null}
-            <span className="inline-flex items-center gap-1.5">
-              <LockKeyhole className="h-3.5 w-3.5" />
-              Source stays on {providerDisplayName(repository.provider)}
-            </span>
-          </div>
+          </details>
         </div>
       </header>
 
-      <div className="mx-auto max-w-[1440px] px-4 py-4 sm:px-6 lg:px-8 lg:py-6">
+      <div className="v2-repo-content mx-auto max-w-[1440px] px-4 py-4 sm:px-6 lg:px-8 lg:py-6">
         {copyError ? (
           <p role="alert" className="mb-4 text-sm text-destructive">
             The link could not be copied. Open the source and copy its address
@@ -302,7 +303,7 @@ function RepositoryWorkspaceView({
         <span role="status" className="sr-only">
           {isCopied ? "Source link copied" : ""}
         </span>
-        <div className="mb-4 flex items-center justify-between lg:hidden">
+        <div className="v2-repo-mobile-controls mb-4 flex items-center justify-between lg:hidden">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             Repository files
           </p>
@@ -310,7 +311,7 @@ function RepositoryWorkspaceView({
             type="button"
             variant="outline"
             size="sm"
-            className="rounded-md bg-transparent"
+            className="bg-transparent"
             onClick={() => setIsTreeOpen((open) => !open)}
             aria-expanded={isTreeOpen}
           >
@@ -323,10 +324,10 @@ function RepositoryWorkspaceView({
           </Button>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-[248px_minmax(0,1fr)]">
+        <div className="v2-code-layout grid gap-4 lg:grid-cols-[248px_minmax(0,1fr)]">
           <aside
             className={cn(
-              "h-fit rounded-xl border border-border bg-card border-border dark:bg-card",
+              "v2-file-manager h-fit rounded-xl border border-border bg-card dark:bg-card",
               isTreeOpen ? "block" : "hidden lg:block",
             )}
           >
@@ -361,8 +362,8 @@ function RepositoryWorkspaceView({
             </div>
           </aside>
 
-          <section className="min-w-0 overflow-hidden rounded-xl border border-border bg-card">
-            <div className="flex flex-col gap-3 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <section className="v2-editor min-w-0 overflow-hidden rounded-xl border border-border bg-card">
+            <div className="v2-editor-head flex flex-col gap-3 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
               <div className="flex min-w-0 items-center gap-2 text-sm">
                 <FileCode2 className="h-4 w-4 shrink-0 text-foreground" />
                 <span className="truncate font-mono text-xs sm:text-sm">
@@ -381,7 +382,6 @@ function RepositoryWorkspaceView({
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="rounded-md"
                       onClick={copySourceUrl}
                     >
                       {isCopied ? (
@@ -398,7 +398,6 @@ function RepositoryWorkspaceView({
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="rounded-md"
                         onClick={() => setShowExplainer((visible) => !visible)}
                         disabled={selection === null}
                         title={
@@ -415,7 +414,7 @@ function RepositoryWorkspaceView({
                       asChild
                       variant="outline"
                       size="sm"
-                      className="rounded-md bg-transparent"
+                      className="bg-transparent"
                     >
                       <a href={sourceUrl} target="_blank" rel="noreferrer">
                         GitHub
@@ -455,7 +454,7 @@ function RepositoryWorkspaceView({
                   </div>
                   {discussionHref ? (
                     <div className="flex flex-wrap gap-2">
-                      <Button asChild size="sm" className="shrink-0 rounded-md">
+                      <Button asChild size="sm" className="shrink-0">
                         <Link href={discussionHref}>
                           <MessageSquare className="h-3.5 w-3.5" />
                           {selection ? "Discuss lines" : "Discuss file"}
@@ -466,7 +465,7 @@ function RepositoryWorkspaceView({
                           asChild
                           size="sm"
                           variant="outline"
-                          className="shrink-0 rounded-md bg-transparent"
+                          className="shrink-0 bg-transparent"
                         >
                           <Link href={diffHref}>
                             <GitCompareArrows className="h-3.5 w-3.5" />
@@ -558,7 +557,7 @@ function RepositoryFollowButton({
 }) {
   if (!convexConfigured) {
     return (
-      <Button asChild className="rounded-md">
+      <Button asChild>
         <Link href="/signin">
           <Heart className="h-4 w-4" />
           Follow
@@ -592,7 +591,7 @@ function ConnectedRepositoryFollowButton({
 
   if (!isAuthenticated) {
     return (
-      <Button asChild className="rounded-md">
+      <Button asChild>
         <Link href="/signin">
           <Heart className="h-4 w-4" />
           Follow
@@ -639,7 +638,6 @@ function ConnectedRepositoryFollowButton({
     <div className="flex flex-col items-end gap-1">
       <Button
         type="button"
-        className="rounded-md"
         variant={following ? "secondary" : "default"}
         onClick={() => void toggle()}
         disabled={pending}
@@ -665,7 +663,7 @@ function RepositorySaveButton({
 }) {
   if (!convexConfigured) {
     return (
-      <Button asChild variant="outline" className="rounded-md bg-transparent">
+      <Button asChild variant="outline" className="bg-transparent">
         <Link href="/signin">
           <Bookmark className="h-4 w-4" /> Save
         </Link>
@@ -708,7 +706,7 @@ function ConnectedRepositorySaveButton({
 
   if (!isAuthenticated) {
     return (
-      <Button asChild variant="outline" className="rounded-md bg-transparent">
+      <Button asChild variant="outline" className="bg-transparent">
         <Link href="/signin">
           <Bookmark className="h-4 w-4" /> Save
         </Link>
@@ -826,12 +824,12 @@ function FileTree({
   const parentPath = parentDirectory(treePath);
 
   return (
-    <div className="space-y-0.5">
+    <div className="v2-tree space-y-0.5">
       {treePath ? (
         <Link
           href={workspaceHref(basePath, sourceRef, parentPath)}
           onClick={onNavigate}
-          className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-muted-foreground transition-colors hover:bg-black/[0.05] hover:text-foreground dark:hover:bg-white/[0.06]"
+          className="v2-tree-row flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           <span>Up one level</span>
@@ -841,10 +839,11 @@ function FileTree({
       <Link
         href={workspaceHref(basePath, sourceRef, "")}
         onClick={onNavigate}
+        data-active={currentPath.length === 0 ? "true" : "false"}
         className={cn(
-          "mb-1 flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-semibold transition-colors hover:bg-black/[0.05] dark:hover:bg-white/[0.06]",
+          "v2-tree-row mb-1 flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-semibold transition-colors hover:bg-secondary",
           currentPath.length === 0 &&
-            "bg-accent text-foreground dark:bg-accent text-foreground",
+            "text-foreground",
         )}
       >
         <FolderOpen className="h-3.5 w-3.5" />
@@ -861,10 +860,10 @@ function FileTree({
             key={entry.path}
             href={href}
             onClick={onNavigate}
+            data-active={isActive ? "true" : "false"}
             className={cn(
-              "group flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs transition-colors hover:bg-black/[0.05] dark:hover:bg-white/[0.06]",
-              isActive &&
-                "bg-black/[0.06] font-semibold text-foreground dark:bg-white/[0.08]",
+              "v2-tree-row group flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs transition-colors hover:bg-secondary",
+              isActive && "font-semibold text-foreground",
             )}
           >
             <Icon

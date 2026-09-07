@@ -249,7 +249,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding: 1rem max(1rem, 4vw);
+    padding: 1rem 0;
   }
 
   .v2-repo-summary::-webkit-details-marker {
@@ -302,7 +302,7 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 1.5rem;
-    padding: 0  max(1rem, 4vw) 1.25rem;
+    padding: 0 0 1.25rem;
   }
 
   .v2-repo-description {
@@ -415,11 +415,6 @@
   }
 }
 @media (max-width: 640px) {
-  .v2-repo-summary,
-  .v2-repo-header-body {
-    padding-inline: 1rem;
-  }
-
   .v2-repo-header-body {
     display: block;
   }
