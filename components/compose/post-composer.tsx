@@ -215,7 +215,7 @@ function PostComposerForm({
   }
 
   return (
-    <CurationShell active="Home" eyebrow="compose" title="Write">
+    <CurationShell active="Compose" eyebrow="compose" title="Write">
       <div className="v2-compose-page px-5 py-5 sm:px-8 sm:py-6">
         <div>
           {source !== null ? (

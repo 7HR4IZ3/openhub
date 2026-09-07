@@ -23,7 +23,8 @@ export type CurationSection =
   | "Notifications"
   | "Lists"
   | "Communities"
-  | "Profile";
+  | "Profile"
+  | "Compose";
 const navigation = [
   { label: "Home", href: "/home", icon: HomeIcon },
   { label: "Explore", href: "/explore", icon: GlobeIcon },
@@ -31,6 +32,14 @@ const navigation = [
   { label: "Lists", href: "/lists", icon: ListBulletIcon },
   { label: "Communities", href: "/communities", icon: ChatBubbleIcon },
   { label: "Profile", href: "/profile", icon: PersonIcon },
+] as const;
+const mobileNavigation = [
+  navigation[0],
+  navigation[1],
+  { label: "Compose", href: "/compose", icon: Pencil2Icon },
+  navigation[2],
+  navigation[3],
+  navigation[5],
 ] as const;
 
 export function CurationShell({
@@ -75,7 +84,11 @@ export function CurationShell({
               </Link>
             ))}
           </nav>
-          <Button asChild className="v2-write-button mt-6 w-full">
+          <Button
+            asChild
+            className="v2-write-button mt-6 w-full"
+            data-active={active === "Compose" ? "true" : "false"}
+          >
             <Link href="/compose">
               <Pencil2Icon />
               <span className="v2-write-label">Write a post</span>
@@ -151,7 +164,7 @@ export function CurationShell({
         className="v2-mobile-nav mobile-navigation fixed inset-x-0 bottom-0 z-20 grid grid-cols-6 border-t bg-card px-2 pt-1 lg:hidden"
         aria-label="Mobile navigation"
       >
-        {navigation.map(({ label, href, icon: Icon }) => (
+        {mobileNavigation.map(({ label, href, icon: Icon }) => (
           <Link
             key={href}
             href={href}
