@@ -119,6 +119,11 @@
     background: hsl(var(--background));
   }
 
+  .v2-shell :where(button, a).rounded-md,
+  .v2-repo-page :where(button, a).rounded-md {
+    border-radius: 999px;
+  }
+
   .v2-shell-grid {
     width: 100%;
     grid-template-columns: 232px minmax(0, 1fr);
