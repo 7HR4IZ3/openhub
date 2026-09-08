@@ -287,7 +287,7 @@ function OverviewSurface({
   surfaces: RepositorySurfaces;
 }) {
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.7fr)]">
+    <div className="grid gap-3">
       <div className="grid gap-3 sm:grid-cols-2">
         <SurfaceFact
           icon={History}
@@ -311,11 +311,11 @@ function OverviewSurface({
         />
       </div>
 
-      <div className="rounded-xl border border-border bg-secondary p-4 dark:bg-secondary">
+      <div className="rounded-lg bg-secondary p-3 dark:bg-secondary">
         <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
           Trust and context
         </p>
-        <div className="mt-4 space-y-3 text-sm">
+        <div className="mt-3 space-y-2 text-sm">
           <div className="flex items-start gap-2">
             {repository.isArchived ? (
               <Archive className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
@@ -352,11 +352,11 @@ function OverviewSurface({
       </div>
 
       {repository.topics.length > 0 ? (
-        <div className="lg:col-span-2">
+        <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             Topics
           </p>
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-2 flex flex-wrap gap-2">
             {repository.topics.map((topic) => (
               <span
                 key={topic}
@@ -537,11 +537,11 @@ function ContributorSurface({
   }
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-2 sm:grid-cols-2">
       {contributors.map((contributor) => (
         <div
           key={contributor.login ?? contributor.name ?? "anonymous"}
-          className="flex items-center gap-3 rounded-xl border border-border p-3"
+          className="flex items-center gap-3 rounded-lg bg-secondary p-3"
         >
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-foreground dark:bg-white/[0.08]">
             {initials(contributor.login ?? contributor.name ?? "?")}
@@ -573,12 +573,12 @@ function SurfaceFact({
   value: string;
 }) {
   return (
-    <div className="rounded-xl border border-border p-4">
+    <div className="rounded-lg bg-secondary p-3">
       <Icon className="h-4 w-4 text-muted-foreground" />
-      <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+      <p className="mt-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
         {label}
       </p>
-      <p className="mt-2 text-sm font-semibold">{value}</p>
+      <p className="mt-1 text-sm font-semibold">{value}</p>
     </div>
   );
 }
