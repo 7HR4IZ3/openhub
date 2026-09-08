@@ -282,12 +282,9 @@ export function RepositoryRefPicker({
           ) : null}
         </div>
         <Link
-          href={workspaceHref(
-            repository,
-            sourceRef,
-            currentPath,
-            workspaceBasePath,
-          )}
+          href={`${repository.url}/branches`}
+          target="_blank"
+          rel="noreferrer"
           className="gh-ref-footer"
         >
           View all branches
