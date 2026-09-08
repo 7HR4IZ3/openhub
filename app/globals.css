@@ -1836,6 +1836,18 @@ body {
   border-radius: 7px !important;
 }
 
+.v2-shell :where(.rounded-xl) {
+  border-radius: 8px !important;
+}
+
+.v2-shell :where(.border-border, .border-input) {
+  border-color: hsl(var(--border) / 0.66) !important;
+}
+
+.v2-shell :where(.border-ring) {
+  border-color: hsl(var(--primary) / 0.34) !important;
+}
+
 /* The global app shell is an icon rail, not a second content column. */
 .v2-shell-grid {
   grid-template-columns: 56px minmax(0, 1fr) !important;
