@@ -581,12 +581,20 @@
     inset: 0 auto 0 0;
     z-index: 60;
     width: min(86vw, 21rem);
+    height: 100dvh;
     max-height: none;
     border-radius: 0 0.75rem 0.75rem 0;
     padding-top: env(safe-area-inset-top);
     transform: translateX(-105%);
     transition: transform 180ms ease;
     will-change: transform;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .v2-file-manager > div:nth-child(2) {
+    max-height: none;
+    flex: 1;
   }
 
   .v2-file-manager[data-open="true"] {
@@ -616,6 +624,10 @@
   .v2-repo-actions {
     justify-content: flex-start;
     margin-top: 0.875rem;
+  }
+
+  .v2-editor-action-label {
+    display: none;
   }
 }
 @media (max-width: 767px) {

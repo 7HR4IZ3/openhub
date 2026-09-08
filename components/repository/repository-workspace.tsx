@@ -153,6 +153,14 @@ function RepositoryWorkspaceView({
     },
     [],
   );
+  useEffect(() => {
+    if (!isTreeOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isTreeOpen]);
   const [showExplainer, setShowExplainer] = useState(false);
   const [selectionState, setSelectionState] = useState<{
     fileKey: string;
@@ -421,13 +429,25 @@ function RepositoryWorkspaceView({
                             variant="ghost"
                             size="sm"
                             onClick={copySourceUrl}
+                            aria-label={
+                              isCopied
+                                ? "Copied source link"
+                                : "Copy source link"
+                            }
+                            title={
+                              isCopied
+                                ? "Copied source link"
+                                : "Copy source link"
+                            }
                           >
                             {isCopied ? (
                               <Check className="h-4 w-4" />
                             ) : (
                               <Copy className="h-4 w-4" />
                             )}
-                            {isCopied ? "Copied" : "Copy link"}
+                            <span className="v2-editor-action-label">
+                              {isCopied ? "Copied" : "Copy link"}
+                            </span>
                           </Button>
                           {convexConfigured &&
                           repository.provider === "github" &&
@@ -447,7 +467,9 @@ function RepositoryWorkspaceView({
                               }
                             >
                               <Bot className="h-4 w-4" />
-                              Explain
+                              <span className="v2-editor-action-label">
+                                Explain
+                              </span>
                             </Button>
                           ) : null}
                           <Button
@@ -460,8 +482,12 @@ function RepositoryWorkspaceView({
                               href={sourceUrl}
                               target="_blank"
                               rel="noreferrer"
+                              aria-label="Open source on GitHub"
+                              title="Open source on GitHub"
                             >
-                              GitHub
+                              <span className="v2-editor-action-label">
+                                GitHub
+                              </span>
                               <ArrowUpRight className="h-3.5 w-3.5" />
                             </a>
                           </Button>
