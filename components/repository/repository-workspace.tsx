@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { type MouseEvent, useEffect, useRef, useState } from "react";
 import { useAction, useConvexAuth, useMutation, useQuery } from "convex/react";
 import {
   ArrowLeftIcon as ArrowLeft,
@@ -44,7 +45,10 @@ import {
   type ExplainableSource,
 } from "@/components/ai/source-explainer";
 import { RepositoryAnalyzer } from "@/components/ai/repository-analyzer";
-import { RepositorySurfacePanel } from "@/components/repository/repository-surface-panel";
+import {
+  RepositoryRefPicker,
+  RepositorySurfacePanel,
+} from "@/components/repository/repository-surface-panel";
 import { RepositoryAnalyticsPanel } from "@/components/repository/repository-analytics-panel";
 import { RepositorySponsorship } from "@/components/repository/repository-sponsorship";
 import { Button } from "@/components/ui/button";
@@ -229,7 +233,10 @@ function RepositoryWorkspaceView({
                   <span className="v2-repo-visibility">read only</span>
                 </span>
               </span>
-              <ChevronDown className="v2-repo-chevron h-5 w-5" aria-hidden="true" />
+              <ChevronDown
+                className="v2-repo-chevron h-5 w-5"
+                aria-hidden="true"
+              />
             </summary>
             <div className="v2-repo-header-body">
               <div className="min-w-0 flex-1">
@@ -238,12 +245,18 @@ function RepositoryWorkspaceView({
                     "A repository ready to be understood."}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-x-5 gap-y-3 text-xs text-muted-foreground">
-                  <RepositoryStat icon={Star} label={formatCount(repository.stars)} />
+                  <RepositoryStat
+                    icon={Star}
+                    label={formatCount(repository.stars)}
+                  />
                   <RepositoryStat
                     icon={GitFork}
                     label={formatCount(repository.forks)}
                   />
-                  <RepositoryStat icon={GitBranch} label={branchLabel(sourceRef)} />
+                  <RepositoryStat
+                    icon={GitBranch}
+                    label={branchLabel(sourceRef)}
+                  />
                   {repository.primaryLanguage ? (
                     <RepositoryStat
                       icon={CircleDot}
@@ -293,6 +306,15 @@ function RepositoryWorkspaceView({
               </div>
             </div>
           </details>
+          <div className="v2-branch-row mt-3">
+            <RepositoryRefPicker
+              repository={repository}
+              sourceRef={sourceRef}
+              currentPath={file?.path ?? treePath}
+              workspaceBasePath={basePath}
+              refs={surfaces.refs}
+            />
+          </div>
         </div>
       </header>
 
@@ -306,246 +328,276 @@ function RepositoryWorkspaceView({
         <span role="status" className="sr-only">
           {isCopied ? "Source link copied" : ""}
         </span>
-        <div className="v2-repo-mobile-controls mb-4 flex items-center justify-between lg:hidden">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            Repository files
-          </p>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="bg-transparent"
-            onClick={() => setIsTreeOpen((open) => !open)}
-            aria-expanded={isTreeOpen}
-          >
-            {isTreeOpen ? (
-              <X className="h-4 w-4" />
-            ) : (
-              <Menu className="h-4 w-4" />
-            )}
-            {isTreeOpen ? "Close files" : "Browse files"}
-          </Button>
-        </div>
-
-        <div className="v2-code-layout grid gap-4 lg:grid-cols-[248px_minmax(0,1fr)]">
-          <aside
-            className={cn(
-              "v2-file-manager h-fit rounded-xl border border-border bg-card dark:bg-card",
-              isTreeOpen ? "block" : "hidden lg:block",
-            )}
-          >
-            <div className="border-b border-border px-4 py-3">
-              <div className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">
-                    {repository.name}
-                  </p>
-                  <p className="mt-1 truncate text-xs text-muted-foreground">
-                    {treePath ? "/" + treePath : "Repository root"}
-                  </p>
-                </div>
-                <FolderOpen className="h-4 w-4 shrink-0 text-foreground" />
-              </div>
-            </div>
-            <div className="max-h-[min(68vh,720px)] overflow-y-auto p-2">
-              <FileTree
-                entries={entries}
-                sourceRef={sourceRef}
-                currentPath={file?.path ?? treePath}
-                treePath={treePath}
-                basePath={basePath}
-                onNavigate={() => setIsTreeOpen(false)}
-              />
-            </div>
-            <div className="border-t border-border px-4 py-3 text-xs leading-5 text-muted-foreground">
-              <div className="flex items-start gap-2">
-                <LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                <span>OpenHub never edits or executes this repository.</span>
-              </div>
-            </div>
-          </aside>
-
-          <section className="v2-editor min-w-0 overflow-hidden rounded-xl border border-border bg-card">
-            <div className="v2-editor-head flex flex-col gap-3 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-              <div className="flex min-w-0 items-center gap-2 text-sm">
-                <FileCode2 className="h-4 w-4 shrink-0 text-foreground" />
-                <span className="truncate font-mono text-xs sm:text-sm">
-                  {file?.path ?? (treePath ? treePath + "/" : "Select a file")}
-                </span>
-                {file ? (
-                  <span className="hidden shrink-0 rounded-full bg-black/[0.05] px-2 py-1 font-mono text-[10px] text-muted-foreground sm:inline dark:bg-white/[0.07]">
-                    {shortSha(file.commitSha)}
-                  </span>
-                ) : null}
-              </div>
-              <div className="flex items-center gap-2">
-                {file ? (
-                  <>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={copySourceUrl}
-                    >
-                      {isCopied ? (
-                        <Check className="h-4 w-4" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                      {isCopied ? "Copied" : "Copy link"}
-                    </Button>
-                    {convexConfigured &&
-                    repository.provider === "github" &&
-                    repository.visibility === "public" ? (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowExplainer((visible) => !visible)}
-                        disabled={selection === null}
-                        title={
-                          selection === null
-                            ? "Select lines to explain"
-                            : "Explain selected lines"
-                        }
-                      >
-                        <Bot className="h-4 w-4" />
-                        Explain
-                      </Button>
-                    ) : null}
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="sm"
-                      className="bg-transparent"
-                    >
-                      <a href={sourceUrl} target="_blank" rel="noreferrer">
-                        GitHub
-                        <ArrowUpRight className="h-3.5 w-3.5" />
-                      </a>
-                    </Button>
-                  </>
-                ) : null}
-              </div>
-            </div>
-
-            {file ? (
-              <>
-                <SourceCodeViewer
-                  file={file}
-                  primaryLanguage={repository.primaryLanguage}
-                  onSelectionChange={(nextSelection) =>
-                    setSelectionState({
-                      fileKey,
-                      selection: nextSelection,
-                    })
+        <div className="v2-reader-layout">
+          <div className="v2-reader-main">
+            <div className="v2-code-workspace relative">
+              <div className="v2-repo-mobile-controls lg:hidden">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="v2-explorer-toggle bg-card shadow-sm"
+                  onClick={() => setIsTreeOpen((open) => !open)}
+                  aria-expanded={isTreeOpen}
+                  aria-controls="repository-file-manager"
+                  aria-label={
+                    isTreeOpen ? "Close file explorer" : "Open file explorer"
                   }
+                  title={
+                    isTreeOpen ? "Close file explorer" : "Open file explorer"
+                  }
+                >
+                  {isTreeOpen ? (
+                    <X className="h-4 w-4" />
+                  ) : (
+                    <Menu className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+              {isTreeOpen ? (
+                <button
+                  type="button"
+                  className="v2-file-backdrop lg:hidden"
+                  aria-label="Close file explorer"
+                  onClick={() => setIsTreeOpen(false)}
                 />
-                <div className="flex flex-col gap-3 border-t border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-                  <div className="min-w-0 text-xs text-muted-foreground">
-                    {selection ? (
-                      <>
-                        <span className="font-semibold text-foreground">
-                          Lines {selection.startLineNumber}–
-                          {selection.endLineNumber}
-                        </span>{" "}
-                        selected for discussion.
-                      </>
-                    ) : (
-                      "Select lines in the editor to attach focused context."
-                    )}
-                  </div>
-                  {discussionHref ? (
-                    <div className="flex flex-wrap gap-2">
-                      <Button asChild size="sm" className="shrink-0">
-                        <Link href={discussionHref}>
-                          <MessageSquare className="h-3.5 w-3.5" />
-                          {selection ? "Discuss lines" : "Discuss file"}
-                        </Link>
-                      </Button>
-                      {diffHref ? (
-                        <Button
-                          asChild
-                          size="sm"
-                          variant="outline"
-                          className="shrink-0 bg-transparent"
-                        >
-                          <Link href={diffHref}>
-                            <GitCompareArrows className="h-3.5 w-3.5" />
-                            Discuss diff
-                          </Link>
-                        </Button>
-                      ) : null}
+              ) : null}
+
+              <div className="v2-code-layout grid gap-4 lg:grid-cols-[248px_minmax(0,1fr)]">
+                <aside
+                  id="repository-file-manager"
+                  data-open={isTreeOpen}
+                  className={cn(
+                    "v2-file-manager h-fit rounded-xl border border-border bg-card dark:bg-card",
+                    isTreeOpen
+                      ? "v2-file-manager-open"
+                      : "v2-file-manager-closed",
+                  )}
+                >
+                  <div className="border-b border-border px-4 py-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold">
+                          {repository.name}
+                        </p>
+                        <p className="mt-1 truncate text-xs text-muted-foreground">
+                          {treePath ? "/" + treePath : "Repository root"}
+                        </p>
+                      </div>
+                      <FolderOpen className="h-4 w-4 shrink-0 text-foreground" />
                     </div>
-                  ) : null}
-                </div>
-                {convexConfigured &&
-                repository.provider === "github" &&
-                repository.visibility === "public" &&
-                showExplainer &&
-                selection ? (
-                  <div className="px-4 pb-4 sm:px-5">
-                    <SourceExplainer
-                      source={buildExplainableSource(
-                        repository,
-                        file,
-                        selection,
-                      )}
+                  </div>
+                  <div className="max-h-[min(68vh,720px)] overflow-y-auto p-2">
+                    <FileTree
+                      entries={entries}
+                      sourceRef={sourceRef}
+                      currentPath={file?.path ?? treePath}
+                      treePath={treePath}
+                      basePath={basePath}
+                      onNavigate={() => setIsTreeOpen(false)}
                     />
                   </div>
-                ) : null}
-              </>
-            ) : (
-              <div className="flex min-h-[min(68vh,720px)] flex-col items-center justify-center px-6 text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary dark:bg-white/[0.08]">
-                  <FileText className="h-5 w-5 text-foreground" />
-                </div>
-                <h2 className="mt-5 text-lg font-semibold tracking-[-0.02em]">
-                  Choose a file to start reading
-                </h2>
-                <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-                  The file tree is the beginning of the trail. Open a source
-                  file, pin its commit, and share the exact context later.
-                </p>
+                </aside>
+
+                <section className="v2-editor min-w-0 overflow-hidden rounded-xl border border-border bg-card">
+                  <div className="v2-editor-head flex flex-col gap-3 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+                    <div className="flex min-w-0 items-center gap-2 text-sm">
+                      <FileCode2 className="h-4 w-4 shrink-0 text-foreground" />
+                      <span className="truncate font-mono text-xs sm:text-sm">
+                        {file?.path ??
+                          (treePath ? treePath + "/" : "Select a file")}
+                      </span>
+                      {file ? (
+                        <span className="hidden shrink-0 rounded-full bg-black/[0.05] px-2 py-1 font-mono text-[10px] text-muted-foreground sm:inline dark:bg-white/[0.07]">
+                          {shortSha(file.commitSha)}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {file ? (
+                        <>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={copySourceUrl}
+                          >
+                            {isCopied ? (
+                              <Check className="h-4 w-4" />
+                            ) : (
+                              <Copy className="h-4 w-4" />
+                            )}
+                            {isCopied ? "Copied" : "Copy link"}
+                          </Button>
+                          {convexConfigured &&
+                          repository.provider === "github" &&
+                          repository.visibility === "public" ? (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                setShowExplainer((visible) => !visible)
+                              }
+                              disabled={selection === null}
+                              title={
+                                selection === null
+                                  ? "Select lines to explain"
+                                  : "Explain selected lines"
+                              }
+                            >
+                              <Bot className="h-4 w-4" />
+                              Explain
+                            </Button>
+                          ) : null}
+                          <Button
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className="bg-transparent"
+                          >
+                            <a
+                              href={sourceUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              GitHub
+                              <ArrowUpRight className="h-3.5 w-3.5" />
+                            </a>
+                          </Button>
+                        </>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  {file ? (
+                    <>
+                      <SourceCodeViewer
+                        file={file}
+                        primaryLanguage={repository.primaryLanguage}
+                        onSelectionChange={(nextSelection) =>
+                          setSelectionState({
+                            fileKey,
+                            selection: nextSelection,
+                          })
+                        }
+                      />
+                      <div className="flex flex-col gap-3 border-t border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+                        <div className="min-w-0 text-xs text-muted-foreground">
+                          {selection ? (
+                            <>
+                              <span className="font-semibold text-foreground">
+                                Lines {selection.startLineNumber}–
+                                {selection.endLineNumber}
+                              </span>{" "}
+                              selected for discussion.
+                            </>
+                          ) : (
+                            "Select lines in the editor to attach focused context."
+                          )}
+                        </div>
+                        {discussionHref ? (
+                          <div className="flex flex-wrap gap-2">
+                            <Button asChild size="sm" className="shrink-0">
+                              <Link href={discussionHref}>
+                                <MessageSquare className="h-3.5 w-3.5" />
+                                {selection ? "Discuss lines" : "Discuss file"}
+                              </Link>
+                            </Button>
+                            {diffHref ? (
+                              <Button
+                                asChild
+                                size="sm"
+                                variant="outline"
+                                className="shrink-0 bg-transparent"
+                              >
+                                <Link href={diffHref}>
+                                  <GitCompareArrows className="h-3.5 w-3.5" />
+                                  Discuss diff
+                                </Link>
+                              </Button>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </div>
+                      {convexConfigured &&
+                      repository.provider === "github" &&
+                      repository.visibility === "public" &&
+                      showExplainer &&
+                      selection ? (
+                        <div className="px-4 pb-4 sm:px-5">
+                          <SourceExplainer
+                            source={buildExplainableSource(
+                              repository,
+                              file,
+                              selection,
+                            )}
+                          />
+                        </div>
+                      ) : null}
+                    </>
+                  ) : (
+                    <div className="flex min-h-[min(68vh,720px)] flex-col items-center justify-center px-6 text-center">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary dark:bg-white/[0.08]">
+                        <FileText className="h-5 w-5 text-foreground" />
+                      </div>
+                      <h2 className="mt-5 text-lg font-semibold tracking-[-0.02em]">
+                        Choose a file to start reading
+                      </h2>
+                      <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+                        The file tree is the beginning of the trail. Open a
+                        source file, pin its commit, and share the exact context
+                        later.
+                      </p>
+                    </div>
+                  )}
+                </section>
               </div>
-            )}
-          </section>
-        </div>
-
-        <p className="mt-4 text-xs leading-6 text-muted-foreground">
-          {file
-            ? "Source is pinned to its commit. Select lines to keep the exact context attached to a discussion."
-            : "Open a file to read its source and create a permanent reference."}
-        </p>
-
-        {convexConfigured &&
-        repository.provider === "github" &&
-        (repository.visibility === "public" ||
-          repository.visibility === "private") ? (
-          <div className="mt-4">
-            <RepositoryAnalyzer
-              owner={repository.ownerLogin}
-              name={repository.name}
-              sourceRef={sourceRef}
-              repositoryUrl={repository.url}
-              convexConfigured={convexConfigured}
-            />
+            </div>
           </div>
-        ) : null}
 
-        <RepositorySurfacePanel
-          repository={repository}
-          sourceRef={sourceRef}
-          currentPath={file?.path ?? treePath}
-          surfaces={surfaces}
-          workspaceBasePath={basePath}
-        />
-        {convexConfigured ? (
-          <RepositorySponsorship repositoryId={storedRepositoryId} />
-        ) : null}
-        {convexConfigured ? (
-          <RepositoryAnalyticsPanel repositoryId={storedRepositoryId} />
-        ) : null}
+          <aside className="v2-repo-sidebar">
+            <details className="v2-secondary-details">
+              <summary
+                className="v2-secondary-summary"
+                aria-label="Open repository context"
+                title="Open repository context"
+              >
+                <span className="sr-only">Repository context</span>
+                <CircleDot className="h-4 w-4" aria-hidden="true" />
+                <ChevronDown
+                  className="v2-secondary-chevron h-4 w-4"
+                  aria-hidden="true"
+                />
+              </summary>
+              <div className="v2-secondary-content">
+                {convexConfigured &&
+                repository.provider === "github" &&
+                (repository.visibility === "public" ||
+                  repository.visibility === "private") ? (
+                  <RepositoryAnalyzer
+                    owner={repository.ownerLogin}
+                    name={repository.name}
+                    sourceRef={sourceRef}
+                    repositoryUrl={repository.url}
+                    convexConfigured={convexConfigured}
+                  />
+                ) : null}
+
+                <RepositorySurfacePanel
+                  repository={repository}
+                  surfaces={surfaces}
+                />
+                {convexConfigured ? (
+                  <RepositorySponsorship repositoryId={storedRepositoryId} />
+                ) : null}
+                {convexConfigured ? (
+                  <RepositoryAnalyticsPanel repositoryId={storedRepositoryId} />
+                ) : null}
+              </div>
+            </details>
+          </aside>
+        </div>
       </div>
     </main>
   );
@@ -820,18 +872,53 @@ function FileTree({
   basePath: string;
   onNavigate: () => void;
 }) {
+  const router = useRouter();
+  const prefetchedHrefs = useRef(new Set<string>());
   const sortedEntries = [...entries].sort((a, b) => {
     if (a.kind !== b.kind) return a.kind === "directory" ? -1 : 1;
     return a.name.localeCompare(b.name);
   });
   const parentPath = parentDirectory(treePath);
 
+  function prefetch(href: string) {
+    if (prefetchedHrefs.current.has(href)) return;
+    prefetchedHrefs.current.add(href);
+    void router.prefetch(href);
+  }
+
+  function navigate(event: MouseEvent<HTMLAnchorElement>, href: string) {
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    ) {
+      return;
+    }
+    event.preventDefault();
+    prefetch(href);
+    onNavigate();
+    void router.push(href);
+  }
+
   return (
     <div className="v2-tree space-y-0.5">
       {treePath ? (
         <Link
           href={workspaceHref(basePath, sourceRef, parentPath)}
-          onClick={onNavigate}
+          onClick={(event) =>
+            navigate(event, workspaceHref(basePath, sourceRef, parentPath))
+          }
+          onMouseEnter={() =>
+            prefetch(workspaceHref(basePath, sourceRef, parentPath))
+          }
+          onFocus={() =>
+            prefetch(workspaceHref(basePath, sourceRef, parentPath))
+          }
+          onTouchStart={() =>
+            prefetch(workspaceHref(basePath, sourceRef, parentPath))
+          }
           className="v2-tree-row flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
@@ -841,12 +928,16 @@ function FileTree({
 
       <Link
         href={workspaceHref(basePath, sourceRef, "")}
-        onClick={onNavigate}
+        onClick={(event) =>
+          navigate(event, workspaceHref(basePath, sourceRef, ""))
+        }
+        onMouseEnter={() => prefetch(workspaceHref(basePath, sourceRef, ""))}
+        onFocus={() => prefetch(workspaceHref(basePath, sourceRef, ""))}
+        onTouchStart={() => prefetch(workspaceHref(basePath, sourceRef, ""))}
         data-active={currentPath.length === 0 ? "true" : "false"}
         className={cn(
           "v2-tree-row mb-1 flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-semibold transition-colors hover:bg-secondary",
-          currentPath.length === 0 &&
-            "text-foreground",
+          currentPath.length === 0 && "text-foreground",
         )}
       >
         <FolderOpen className="h-3.5 w-3.5" />
@@ -862,7 +953,10 @@ function FileTree({
           <Link
             key={entry.path}
             href={href}
-            onClick={onNavigate}
+            onClick={(event) => navigate(event, href)}
+            onMouseEnter={() => prefetch(href)}
+            onFocus={() => prefetch(href)}
+            onTouchStart={() => prefetch(href)}
             data-active={isActive ? "true" : "false"}
             className={cn(
               "v2-tree-row group flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs transition-colors hover:bg-secondary",

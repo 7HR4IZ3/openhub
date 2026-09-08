@@ -77,6 +77,7 @@ export function SourceCodeViewer({
           contextmenu: true,
           copyWithSyntaxHighlighting: true,
           domReadOnly: true,
+          fixedOverflowWidgets: true,
           folding: true,
           fontFamily:
             "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
@@ -88,12 +89,18 @@ export function SourceCodeViewer({
               ? "on"
               : (lineNumber) => String(lineNumber + lineNumberOffset - 1),
           minimap: { enabled: false },
+          mouseWheelZoom: false,
           padding: { top: 18, bottom: 24 },
           readOnly: true,
           renderLineHighlight: "line",
           roundedSelection: false,
           scrollBeyondLastLine: false,
           selectOnLineNumbers: true,
+          scrollbar: {
+            alwaysConsumeMouseWheel: false,
+            horizontal: "auto",
+            vertical: "auto",
+          },
           smoothScrolling: false,
           wordWrap: "on",
         }}

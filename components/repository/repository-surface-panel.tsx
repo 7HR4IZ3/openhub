@@ -60,16 +60,10 @@ const surfaceTabs: Array<{
 
 export function RepositorySurfacePanel({
   repository,
-  sourceRef,
-  currentPath,
   surfaces,
-  workspaceBasePath,
 }: {
   repository: NormalizedRepository;
-  sourceRef: string;
-  currentPath: string;
   surfaces: RepositorySurfaces;
-  workspaceBasePath?: string;
 }) {
   const tabButtons = useRef<Array<HTMLButtonElement | null>>([]);
   const [activeSurface, setActiveSurface] = useState<SurfaceId>("overview");
@@ -77,94 +71,70 @@ export function RepositorySurfacePanel({
   return (
     <section
       id="repository-surfaces"
-      className="v2-repo-surface v2-repo-surfaces mt-4 overflow-hidden rounded-xl border border-border bg-card"
+      className="v2-repo-surface v2-repo-surfaces mt-4 overflow-hidden"
     >
-      <div className="border-b border-border px-5 py-5 sm:px-6">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground">
-              Repository surfaces
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em]">
-              The project around the file
-            </h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-              Read the history, decisions, and people around this source without
-              leaving the learning trail.
-            </p>
-          </div>
-          <RepositoryRefPicker
-            repository={repository}
-            sourceRef={sourceRef}
-            currentPath={currentPath}
-            workspaceBasePath={workspaceBasePath}
-            refs={surfaces.refs}
-          />
-        </div>
+      <div
+        className="v2-surface-tabs"
+        role="tablist"
+        aria-label="Repository surfaces"
+      >
+        {surfaceTabs.map((tab, index) => {
+          const Icon = tab.icon;
+          const count = surfaceCount(tab.id, surfaces);
+          const isActive = activeSurface === tab.id;
 
-        <div
-          className="mt-6 flex max-w-full gap-1 overflow-x-auto pb-0.5"
-          role="tablist"
-          aria-label="Repository surfaces"
-        >
-          {surfaceTabs.map((tab, index) => {
-            const Icon = tab.icon;
-            const count = surfaceCount(tab.id, surfaces);
-            const isActive = activeSurface === tab.id;
-
-            return (
-              <button
-                key={tab.id}
-                ref={(node) => {
-                  tabButtons.current[index] = node;
-                }}
-                id={`repository-tab-${tab.id}`}
-                tabIndex={isActive ? 0 : -1}
-                onKeyDown={(event) => {
-                  const next =
-                    event.key === "ArrowRight"
-                      ? (index + 1) % surfaceTabs.length
-                      : event.key === "ArrowLeft"
-                        ? (index + surfaceTabs.length - 1) % surfaceTabs.length
-                        : event.key === "Home"
-                          ? 0
-                          : event.key === "End"
-                            ? surfaceTabs.length - 1
-                            : null;
-                  if (next !== null) {
-                    event.preventDefault();
-                    setActiveSurface(surfaceTabs[next].id);
-                    tabButtons.current[next]?.focus();
-                  }
-                }}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                aria-controls={`repository-surface-${tab.id}`}
-                onClick={() => setActiveSurface(tab.id)}
-                className={cn(
-                  "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors",
-                  isActive
-                    ? "text-primary-foreground"
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground",
-                )}
-              >
-                <Icon className="h-3.5 w-3.5" />
-                {tab.label}
-                {count > 0 ? (
-                  <span
-                    className={cn(
-                      "font-mono text-[10px]",
-                      isActive ? "text-background/70" : "text-muted-foreground",
-                    )}
-                  >
-                    {count}
-                  </span>
-                ) : null}
-              </button>
-            );
-          })}
-        </div>
+          return (
+            <button
+              key={tab.id}
+              ref={(node) => {
+                tabButtons.current[index] = node;
+              }}
+              id={`repository-tab-${tab.id}`}
+              tabIndex={isActive ? 0 : -1}
+              onKeyDown={(event) => {
+                const next =
+                  event.key === "ArrowRight"
+                    ? (index + 1) % surfaceTabs.length
+                    : event.key === "ArrowLeft"
+                      ? (index + surfaceTabs.length - 1) % surfaceTabs.length
+                      : event.key === "Home"
+                        ? 0
+                        : event.key === "End"
+                          ? surfaceTabs.length - 1
+                          : null;
+                if (next !== null) {
+                  event.preventDefault();
+                  setActiveSurface(surfaceTabs[next].id);
+                  tabButtons.current[next]?.focus();
+                }
+              }}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              aria-controls={`repository-surface-${tab.id}`}
+              onClick={() => setActiveSurface(tab.id)}
+              className={cn(
+                "inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors",
+                isActive
+                  ? "text-primary-foreground"
+                  : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+              )}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {tab.label}
+              {count > 0 ? (
+                <span
+                  className={cn(
+                    "font-mono text-[10px]",
+                    isActive ? "text-background/70" : "text-muted-foreground",
+                  )}
+                >
+                  {count}
+                </span>
+              ) : null}
+            </button>
+          );
+        })}
       </div>
 
       <div
@@ -172,7 +142,7 @@ export function RepositorySurfacePanel({
         role="tabpanel"
         aria-labelledby={`repository-tab-${activeSurface}`}
         tabIndex={0}
-        className="p-5 sm:p-6"
+        className="p-3 sm:p-4"
       >
         {activeSurface === "overview" ? (
           <OverviewSurface repository={repository} surfaces={surfaces} />
@@ -197,7 +167,7 @@ export function RepositorySurfacePanel({
   );
 }
 
-function RepositoryRefPicker({
+export function RepositoryRefPicker({
   repository,
   sourceRef,
   currentPath,
@@ -214,23 +184,15 @@ function RepositoryRefPicker({
   const tags = refs.filter((ref) => ref.kind === "tag");
 
   return (
-    <details className="group relative shrink-0">
-      <summary className="flex cursor-pointer list-none items-center gap-2 rounded-md border border-input bg-transparent px-3.5 py-2 text-xs font-semibold transition-colors hover:border-ring dark:border-white/[0.12] dark:hover:border-ring">
+    <details className="v2-ref-picker group relative shrink-0">
+      <summary className="flex cursor-pointer list-none items-center gap-2 rounded-full border border-input bg-card px-3 py-2 text-xs font-semibold transition-colors hover:border-ring dark:border-white/[0.12] dark:hover:border-ring">
         <GitBranch className="h-3.5 w-3.5 text-foreground" />
         <span className="max-w-40 truncate font-mono">
           {refLabel(sourceRef)}
         </span>
         <ChevronDown className="h-3.5 w-3.5 text-muted-foreground transition-transform group-open:rotate-180" />
       </summary>
-      <div className="absolute right-0 z-20 mt-2 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-black/[0.12] bg-card p-2 shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:border-white/[0.12] dark:bg-card">
-        <div className="px-2.5 py-2">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            Read from a ref
-          </p>
-          <p className="mt-1 text-xs leading-5 text-muted-foreground">
-            Every file remains read-only and source-backed.
-          </p>
-        </div>
+      <div className="absolute right-0 z-20 mt-2 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-border bg-card p-2 shadow-[0_8px_30px_hsl(var(--foreground)/0.12)] dark:border-white/[0.12] dark:bg-card">
         <RefGroup
           label="Branches"
           icon={GitBranch}
@@ -297,9 +259,8 @@ function RefGroup({
                 workspaceBasePath,
               )}
               className={cn(
-                "flex items-center gap-2 rounded-xl px-2.5 py-2 text-xs transition-colors hover:bg-black/[0.05] dark:hover:bg-white/[0.06]",
-                isActive &&
-                  "bg-accent text-foreground dark:bg-accent text-foreground",
+                "v2-ref-row flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs transition-colors hover:bg-secondary",
+                isActive && "bg-accent text-foreground",
               )}
             >
               <span className="min-w-0 flex-1 truncate font-mono">

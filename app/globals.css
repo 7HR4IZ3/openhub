@@ -138,7 +138,9 @@
   .v2-rail-link {
     border-radius: 999px;
     font-size: 0.9375rem;
-    transition: background-color 160ms ease, color 160ms ease;
+    transition:
+      background-color 160ms ease,
+      color 160ms ease;
   }
 
   .v2-rail-link:hover,
@@ -287,7 +289,8 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 0.25rem;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      monospace;
     font-size: 1rem;
     font-weight: 700;
   }
@@ -321,6 +324,50 @@
 
   .v2-repo-header[open] .v2-repo-chevron {
     transform: rotate(180deg);
+  }
+
+  .v2-branch-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .v2-reader-layout {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .v2-reader-main,
+  .v2-code-workspace,
+  .v2-repo-sidebar {
+    min-width: 0;
+  }
+
+  .v2-secondary-summary {
+    display: flex;
+    min-height: 2.75rem;
+    cursor: pointer;
+    list-style: none;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .v2-secondary-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .v2-secondary-chevron {
+    transition: transform 160ms ease;
+  }
+
+  .v2-secondary-details[open] .v2-secondary-chevron {
+    transform: rotate(180deg);
+  }
+
+  .v2-secondary-content {
+    min-width: 0;
   }
 
   .v2-repo-header-body {
@@ -360,6 +407,47 @@
     overflow: hidden;
   }
 
+  .v2-repo-surface {
+    border: 0;
+    background: transparent;
+  }
+
+  .v2-surface-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.25rem;
+    border-bottom: 1px solid hsl(var(--border));
+    padding: 0.25rem;
+  }
+
+  .v2-surface-tabs [role="tab"] {
+    min-width: 0;
+    min-height: 2.5rem;
+    justify-content: flex-start;
+    overflow: hidden;
+    padding: 0.5rem 0.625rem;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .v2-repo-surfaces [role="tabpanel"] {
+    min-width: 0;
+  }
+
+  .v2-ref-picker summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .v2-ref-row[data-active="true"] {
+    background: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+  }
+
+  .v2-file-backdrop,
+  .v2-repo-mobile-controls {
+    display: none;
+  }
+
   .v2-editor {
     overflow: hidden;
   }
@@ -391,6 +479,26 @@
 @media (min-width: 1280px) {
   .v2-shell-grid {
     grid-template-columns: 232px minmax(0, 1fr) 272px;
+  }
+
+  .v2-reader-layout {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start;
+  }
+
+  .v2-repo-sidebar {
+    position: sticky;
+    top: 6rem;
+    max-height: calc(100dvh - 7rem);
+    overflow-y: auto;
+  }
+
+  .v2-secondary-summary {
+    display: none;
+  }
+
+  .v2-secondary-content {
+    display: block !important;
   }
 }
 @media (min-width: 1024px) and (max-width: 1279px) {
@@ -443,6 +551,62 @@
   .v2-main {
     border-inline: 0;
   }
+
+  .v2-repo-mobile-controls {
+    position: fixed;
+    top: calc(4.75rem + env(safe-area-inset-top));
+    right: 0.75rem;
+    z-index: 70;
+    display: block;
+  }
+
+  .v2-explorer-toggle {
+    min-height: 2.75rem;
+    min-width: 2.75rem;
+  }
+
+  .v2-file-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: block;
+    cursor: default;
+    border: 0;
+    background: hsl(var(--foreground) / 0.24);
+    backdrop-filter: blur(2px);
+  }
+
+  .v2-file-manager {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 60;
+    width: min(86vw, 21rem);
+    max-height: none;
+    border-radius: 0 0.75rem 0.75rem 0;
+    padding-top: env(safe-area-inset-top);
+    transform: translateX(-105%);
+    transition: transform 180ms ease;
+    will-change: transform;
+  }
+
+  .v2-file-manager[data-open="true"] {
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+
+  .v2-file-manager[data-open="false"] {
+    pointer-events: none;
+  }
+
+  .v2-secondary-summary {
+    border-top: 1px solid hsl(var(--border));
+    border-bottom: 1px solid hsl(var(--border));
+    padding-inline: 0.25rem;
+  }
+
+  .v2-secondary-content {
+    padding-top: 0.25rem;
+  }
 }
 @media (max-width: 640px) {
   .v2-repo-header-body {
@@ -459,6 +623,16 @@
   textarea,
   select {
     font-size: 16px;
+  }
+
+  .v2-editor .monaco-editor,
+  .v2-editor .monaco-editor .overflow-guard {
+    touch-action: pan-x pan-y;
+  }
+
+  .v2-editor .monaco-editor textarea.inputarea {
+    font-size: 16px !important;
+    -webkit-text-size-adjust: 100%;
   }
 }
 @media (prefers-reduced-motion: reduce) {
