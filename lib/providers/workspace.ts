@@ -55,10 +55,6 @@ export async function loadRepositoryView(
     }
 
     entries = await provider.getTree({ owner, name, ref: sourceRef, path: treePath || undefined });
-    if (requestedPath === null) {
-      const readme = entries.find((entry) => entry.kind === "file" && /^readme(?:\.[^/]+)?$/i.test(entry.name));
-      if (readme !== undefined) file = await provider.getFile({ owner, name, path: readme.path, ref: sourceRef });
-    }
 
     return { kind: "success", repository, sourceRef, treePath, entries, file, surfaces };
   } catch (error) {
