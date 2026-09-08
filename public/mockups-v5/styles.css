@@ -880,6 +880,9 @@ kbd {
   .source-path {
     font-size: 10px;
   }
+  .jump input {
+    font-size: 16px;
+  }
   .source-path a:first-child,
   .source-path i:first-of-type {
     display: none;
