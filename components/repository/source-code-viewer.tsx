@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useTheme } from "next-themes";
 import type { editor } from "monaco-editor";
 import { useEffect, useState } from "react";
 
@@ -30,7 +29,6 @@ export function SourceCodeViewer({
   lineNumberOffset?: number;
   onSelectionChange?: (selection: CodeSelection | null) => void;
 }) {
-  const { resolvedTheme } = useTheme();
   const [editorInstance, setEditorInstance] =
     useState<editor.IStandaloneCodeEditor | null>(null);
 
@@ -70,8 +68,39 @@ export function SourceCodeViewer({
         height="min(68vh, 720px)"
         language={languageForPath(file.path, primaryLanguage)}
         value={file.text}
-        onMount={(instance) => setEditorInstance(instance)}
-        theme={resolvedTheme === "dark" ? "vs-dark" : "light"}
+        onMount={(instance, monaco) => {
+          monaco.editor.defineTheme("github-dark", {
+            base: "vs-dark",
+            inherit: true,
+            rules: [
+              { token: "comment", foreground: "8b949e" },
+              { token: "keyword", foreground: "ff7b72" },
+              { token: "string", foreground: "a5d6ff" },
+              { token: "number", foreground: "79c0ff" },
+              { token: "type", foreground: "ffa657" },
+              { token: "delimiter", foreground: "c9d1d9" },
+            ],
+            colors: {
+              "editor.background": "#0d1117",
+              "editor.foreground": "#c9d1d9",
+              "editorGutter.background": "#0d1117",
+              "editorLineNumber.foreground": "#8b949e",
+              "editorLineNumber.activeForeground": "#c9d1d9",
+              editorLineHighlightBackground: "#0d1117",
+              "editor.selectionBackground": "#264f78",
+              "editorIndentGuide.background": "#21262d",
+              "editorIndentGuide.activeBackground": "#30363d",
+              "editorWidget.background": "#161b22",
+              "editorWidget.border": "#30363d",
+              "scrollbarSlider.background": "#30363d",
+              "scrollbarSlider.hoverBackground": "#484f58",
+              "scrollbarSlider.activeBackground": "#6e7681",
+            },
+          });
+          monaco.editor.setTheme("github-dark");
+          setEditorInstance(instance);
+        }}
+        theme="github-dark"
         options={{
           automaticLayout: true,
           contextmenu: true,
@@ -92,7 +121,7 @@ export function SourceCodeViewer({
           mouseWheelZoom: false,
           padding: { top: 18, bottom: 24 },
           readOnly: true,
-          renderLineHighlight: "line",
+          renderLineHighlight: "none",
           roundedSelection: false,
           scrollBeyondLastLine: false,
           selectOnLineNumbers: true,
@@ -102,7 +131,8 @@ export function SourceCodeViewer({
             vertical: "auto",
           },
           smoothScrolling: false,
-          wordWrap: "on",
+          wordWrap: "off",
+          lineHeight: 20,
         }}
       />
     </div>

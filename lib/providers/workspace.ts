@@ -29,16 +29,28 @@ export async function loadRepositoryView(
 ): Promise<RepositoryViewResult> {
   try {
     const repository = await provider.getRepository({ owner, name });
-    if (repository === null || repository.visibility !== "public") return { kind: "not-found" };
+    if (repository === null || repository.visibility !== "public")
+      return { kind: "not-found" };
 
-    let sourceRef = safeRef(readParam(query.ref), repository.defaultBranch ?? "main");
+    let sourceRef = safeRef(
+      readParam(query.ref),
+      repository.defaultBranch ?? "main",
+    );
     const fallbackRef = repository.defaultBranch ?? "main";
     let surfaces = emptyRepositorySurfaces();
     try {
-      surfaces = await provider.getRepositorySurfaces({ owner, name, ref: sourceRef });
+      surfaces = await provider.getRepositorySurfaces({
+        owner,
+        name,
+        ref: sourceRef,
+      });
       if (surfaces.resolvedRefSha === null && sourceRef !== fallbackRef) {
         sourceRef = fallbackRef;
-        surfaces = await provider.getRepositorySurfaces({ owner, name, ref: sourceRef });
+        surfaces = await provider.getRepositorySurfaces({
+          owner,
+          name,
+          ref: sourceRef,
+        });
       }
     } catch (error) {
       console.error("Repository surfaces failed", error);
@@ -50,13 +62,31 @@ export async function loadRepositoryView(
     let treePath = requestedPath ?? "";
 
     if (requestedPath !== null) {
-      file = await provider.getFile({ owner, name, path: requestedPath, ref: sourceRef });
+      file = await provider.getFile({
+        owner,
+        name,
+        path: requestedPath,
+        ref: sourceRef,
+      });
       if (file !== null) treePath = parentDirectory(file.path);
     }
 
-    entries = await provider.getTree({ owner, name, ref: sourceRef, path: treePath || undefined });
+    entries = await provider.getTree({
+      owner,
+      name,
+      ref: sourceRef,
+      path: treePath || undefined,
+    });
 
-    return { kind: "success", repository, sourceRef, treePath, entries, file, surfaces };
+    return {
+      kind: "success",
+      repository,
+      sourceRef,
+      treePath,
+      entries,
+      file,
+      surfaces,
+    };
   } catch (error) {
     console.error("Repository workspace failed", error);
     return { kind: "error" };
@@ -72,20 +102,36 @@ export function isRepositorySegment(value: string) {
 }
 
 export function isRepositoryOwner(value: string, provider: string) {
-  if (provider === "gitlab") return value.split("/").every(isRepositorySegment) && value.length <= 240;
+  if (provider === "gitlab")
+    return value.split("/").every(isRepositorySegment) && value.length <= 240;
   return isRepositorySegment(value);
 }
 
 function safeRef(value: string | undefined, fallback: string) {
-  if (value === undefined || value.length === 0 || value.length > 120 || value.includes("..") || !/^[a-zA-Z0-9._/-]+$/.test(value)) return fallback;
+  if (
+    value === undefined ||
+    value.length === 0 ||
+    value.length > 120 ||
+    value.includes("..") ||
+    !/^[a-zA-Z0-9._/-]+$/.test(value)
+  )
+    return fallback;
   return value;
 }
 
 function safePath(value: string | undefined) {
-  if (value === undefined || value.length === 0 || value.length > 1000) return null;
+  if (value === undefined || value.length === 0 || value.length > 1000)
+    return null;
   const normalized = value.replace(/^\/+/, "");
   const segments = normalized.split("/");
-  if (normalized.length === 0 || normalized.includes(String.fromCharCode(0)) || segments.some((segment) => segment.length === 0 || segment === "." || segment === "..")) return null;
+  if (
+    normalized.length === 0 ||
+    normalized.includes(String.fromCharCode(0)) ||
+    segments.some(
+      (segment) => segment.length === 0 || segment === "." || segment === "..",
+    )
+  )
+    return null;
   return normalized;
 }
 
@@ -95,5 +141,14 @@ function parentDirectory(path: string) {
 }
 
 function emptyRepositorySurfaces(): RepositorySurfaces {
-  return { refs: [], commits: [], issues: [], pullRequests: [], releases: [], contributors: [], license: null, resolvedRefSha: null };
+  return {
+    refs: [],
+    commits: [],
+    issues: [],
+    pullRequests: [],
+    releases: [],
+    contributors: [],
+    license: null,
+    resolvedRefSha: null,
+  };
 }

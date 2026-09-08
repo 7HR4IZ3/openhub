@@ -7,7 +7,6 @@ import { useAction, useConvexAuth, useMutation, useQuery } from "convex/react";
 import {
   ArrowLeftIcon as ArrowLeft,
   ArrowTopRightIcon as ArrowUpRight,
-  ReaderIcon as BookOpen,
   BookmarkIcon as Bookmark,
   MagicWandIcon as Bot,
   CheckIcon as Check,
@@ -15,24 +14,20 @@ import {
   ChevronRightIcon as ChevronRight,
   DotFilledIcon as CircleDot,
   CopyIcon as Copy,
-  ExternalLinkIcon as ExternalLink,
+  CounterClockwiseClockIcon as HistoryIcon,
   FileTextIcon as FileCode2,
-  FileTextIcon as FileText,
   ArchiveIcon as Folder,
   OpenInNewWindowIcon as FolderOpen,
-  Share2Icon as GitBranch,
-  Share2Icon as GitFork,
   SwitchIcon as GitCompareArrows,
   GitHubLogoIcon as Github,
   HeartIcon as Heart,
-  LockClosedIcon as LockKeyhole,
   HamburgerMenuIcon as Menu,
+  MagnifyingGlassIcon as Search,
   ChatBubbleIcon as MessageSquare,
-  StarIcon as Star,
+  DotsHorizontalIcon as MoreHorizontal,
   Cross2Icon as X,
 } from "@radix-ui/react-icons";
 
-import type { AppIcon } from "@/components/ui/icon";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 
@@ -187,6 +182,10 @@ function RepositoryWorkspaceView({
       : null;
 
   const isCopied = copiedUrl === sourceUrl;
+  const currentPath = file?.path ?? treePath;
+  const isRoot = file === null && treePath.length === 0;
+  const latestCommit = surfaces.commits[0] ?? null;
+  const [treeQuery, setTreeQuery] = useState("");
 
   async function copySourceUrl() {
     setCopyError(false);
@@ -202,405 +201,385 @@ function RepositoryWorkspaceView({
   }
 
   return (
-    <main className="v2-repo-page min-h-[100dvh] bg-background text-foreground dark:bg-background">
-      <header className="v2-repo-topbar border-b border-border bg-background/95 backdrop-blur dark:bg-background/95">
-        <div className="mx-auto max-w-[1440px] px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-4 text-sm">
+    <main className="gh-repo-page min-h-[100dvh]">
+      <header className="gh-repo-header">
+        <div className="gh-repo-shell">
+          <div className="gh-repo-identity">
             <Link
               href="/explore"
-              className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
+              className="gh-repo-back gh-icon-control"
+              aria-label="Back to explore"
+              title="Back to explore"
             >
-              <ArrowLeft className="h-4 w-4" />
-              Explore
+              <ArrowLeft className="h-5 w-5" />
             </Link>
-            <div className="flex items-center gap-3">
-              <span className="hidden items-center gap-1.5 text-xs text-muted-foreground sm:inline-flex">
-                <CircleDot className="h-3.5 w-3.5 text-foreground" />
-                Source from {providerDisplayName(repository.provider)}
-              </span>
-              <AccountMenu />
-            </div>
-          </div>
-
-          <h1 className="sr-only">
-            {repository.ownerLogin}/{repository.name}
-          </h1>
-          <details className="v2-repo-header mt-5" open>
-            <summary className="v2-repo-summary">
-              <span className="min-w-0">
-                <span className="v2-repo-eyebrow">
-                  {repository.visibility === "public"
-                    ? "Public repository"
-                    : "Private repository"}
-                </span>
-                <span className="v2-repo-name">
-                  <Github className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  <span>{repository.ownerLogin}</span>
-                  <span className="text-muted-foreground">/</span>
-                  <span>{repository.name}</span>
-                  <span className="v2-repo-visibility">read only</span>
-                </span>
-              </span>
-              <ChevronDown
-                className="v2-repo-chevron h-5 w-5"
-                aria-hidden="true"
-              />
-            </summary>
-            <div className="v2-repo-header-body">
-              <div className="min-w-0 flex-1">
-                <p className="v2-repo-description">
-                  {repository.description ??
-                    "A repository ready to be understood."}
-                </p>
-                <div className="mt-4 flex flex-wrap gap-x-5 gap-y-3 text-xs text-muted-foreground">
-                  <RepositoryStat
-                    icon={Star}
-                    label={formatCount(repository.stars)}
-                  />
-                  <RepositoryStat
-                    icon={GitFork}
-                    label={formatCount(repository.forks)}
-                  />
-                  <RepositoryStat
-                    icon={GitBranch}
-                    label={branchLabel(sourceRef)}
-                  />
-                  {repository.primaryLanguage ? (
-                    <RepositoryStat
-                      icon={CircleDot}
-                      label={repository.primaryLanguage}
-                    />
-                  ) : null}
-                  {repository.licenseSpdxId ? (
-                    <RepositoryStat
-                      icon={BookOpen}
-                      label={repository.licenseSpdxId}
-                    />
-                  ) : null}
-                  <span className="inline-flex items-center gap-1.5">
-                    <LockKeyhole className="h-3.5 w-3.5" />
-                    Source stays on {providerDisplayName(repository.provider)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="v2-repo-actions shrink-0">
-                <Button asChild variant="outline">
-                  <a href={repository.url} target="_blank" rel="noreferrer">
-                    Open on {providerDisplayName(repository.provider)}
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                </Button>
-                {repository.visibility === "public" &&
-                repository.provider === "github" ? (
-                  <>
-                    <RepositoryFollowButton
-                      repository={repository}
-                      convexConfigured={convexConfigured}
-                    />
-                    <RepositorySaveButton
-                      repository={repository}
-                      convexConfigured={convexConfigured}
-                    />
-                  </>
-                ) : (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-xs font-semibold text-muted-foreground">
-                    <LockKeyhole className="h-3.5 w-3.5" />{" "}
-                    {repository.visibility === "private"
-                      ? "Private access"
-                      : `${providerDisplayName(repository.provider)} browse`}
-                  </span>
-                )}
-              </div>
-            </div>
-          </details>
-          <div className="v2-branch-row mt-3">
-            <RepositoryRefPicker
-              repository={repository}
-              sourceRef={sourceRef}
-              currentPath={file?.path ?? treePath}
-              workspaceBasePath={basePath}
-              refs={surfaces.refs}
+            <Github
+              className="gh-repo-mark h-6 w-6 shrink-0"
+              aria-hidden="true"
             />
+            <h1 className="gh-repo-title">
+              <Link href={basePath} className="gh-link">
+                {repository.ownerLogin}
+              </Link>
+              <span className="gh-slash">/</span>
+              <span>{repository.name}</span>
+              <span className="gh-visibility">
+                {repository.visibility === "public" ? "Public" : "Private"}
+              </span>
+            </h1>
+            <div className="gh-repo-header-actions">
+              <div className="gh-account-menu">
+                <AccountMenu />
+              </div>
+              <button
+                type="button"
+                className="gh-icon-control"
+                aria-label="Repository actions"
+                title="Repository actions"
+              >
+                <MoreHorizontal className="h-5 w-5" />
+              </button>
+            </div>
           </div>
+          <nav className="gh-repo-tabs" aria-label="Repository sections">
+            <Link href={basePath} className="gh-repo-tab gh-repo-tab-active">
+              <FileCode2 className="h-5 w-5" />
+              <span>Code</span>
+            </Link>
+            <a
+              href={`${repository.url}/issues`}
+              target="_blank"
+              rel="noreferrer"
+              className="gh-repo-tab"
+            >
+              <CircleDot className="h-5 w-5" />
+              <span>Issues</span>
+              {repository.openIssues > 0 ? (
+                <span className="gh-issue-count">{repository.openIssues}</span>
+              ) : null}
+            </a>
+          </nav>
         </div>
       </header>
 
-      <div className="v2-repo-content mx-auto max-w-[1440px] px-4 py-4 sm:px-6 lg:px-8 lg:py-6">
+      <div className="gh-repo-shell gh-repo-content">
         {copyError ? (
-          <p role="alert" className="mb-4 text-sm text-destructive">
-            The link could not be copied. Open the source and copy its address
-            instead.
+          <p role="alert" className="gh-inline-alert">
+            Link unavailable. Copy it from the provider instead.
           </p>
         ) : null}
         <span role="status" className="sr-only">
           {isCopied ? "Source link copied" : ""}
         </span>
-        <div className="v2-reader-layout">
-          <div className="v2-reader-main">
-            <div className="v2-code-workspace relative">
-              <div className="v2-repo-mobile-controls lg:hidden">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  className="v2-explorer-toggle bg-card shadow-sm"
-                  onClick={() => setIsTreeOpen((open) => !open)}
-                  aria-expanded={isTreeOpen}
-                  aria-controls="repository-file-manager"
-                  aria-label={
-                    isTreeOpen ? "Close file explorer" : "Open file explorer"
-                  }
-                  title={
-                    isTreeOpen ? "Close file explorer" : "Open file explorer"
-                  }
-                >
-                  {isTreeOpen ? (
-                    <X className="h-4 w-4" />
-                  ) : (
-                    <Menu className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              {isTreeOpen ? (
+
+        <div
+          className={cn("gh-file-toolbar", isRoot && "gh-file-toolbar-root")}
+        >
+          {!isRoot ? (
+            <Link
+              href={workspaceHref(basePath, sourceRef, treePath)}
+              className="gh-files-back"
+              aria-label="Back to files"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              <span>Files</span>
+            </Link>
+          ) : null}
+          <RepositoryRefPicker
+            repository={repository}
+            sourceRef={sourceRef}
+            currentPath={currentPath}
+            workspaceBasePath={basePath}
+            refs={surfaces.refs}
+          />
+          {isRoot ? (
+            <Button asChild className="gh-code-button">
+              <a href={repository.url} target="_blank" rel="noreferrer">
+                Code
+                <ChevronDown className="h-5 w-5" />
+              </a>
+            </Button>
+          ) : null}
+          <button
+            type="button"
+            className="gh-icon-control gh-toolbar-more"
+            aria-label="More repository actions"
+            title="More repository actions"
+          >
+            <MoreHorizontal className="h-5 w-5" />
+          </button>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="gh-icon-control gh-explorer-toggle"
+            onClick={() => setIsTreeOpen((open) => !open)}
+            aria-expanded={isTreeOpen}
+            aria-controls="repository-file-manager"
+            aria-label={
+              isTreeOpen ? "Close file explorer" : "Open file explorer"
+            }
+            title={isTreeOpen ? "Close file explorer" : "Open file explorer"}
+          >
+            {isTreeOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </Button>
+        </div>
+
+        {isTreeOpen ? (
+          <button
+            type="button"
+            className="gh-file-backdrop"
+            aria-label="Close file explorer"
+            onClick={() => setIsTreeOpen(false)}
+          />
+        ) : null}
+
+        <div className="gh-page-grid">
+          <div className="gh-workspace-grid">
+            <aside
+              id="repository-file-manager"
+              data-open={isTreeOpen}
+              className={cn(
+                "gh-file-drawer",
+                isTreeOpen ? "gh-file-drawer-open" : "gh-file-drawer-closed",
+              )}
+            >
+              <div className="gh-file-drawer-head">
+                <div className="min-w-0">
+                  <strong>Files</strong>
+                  <span>{treePath ? `/${treePath}` : repository.name}</span>
+                </div>
                 <button
                   type="button"
-                  className="v2-file-backdrop lg:hidden"
+                  className="gh-icon-control gh-drawer-close"
                   aria-label="Close file explorer"
                   onClick={() => setIsTreeOpen(false)}
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <label className="gh-file-search">
+                <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
+                <span className="sr-only">Go to file</span>
+                <input
+                  type="search"
+                  value={treeQuery}
+                  onChange={(event) => setTreeQuery(event.target.value)}
+                  placeholder="Go to file"
+                  autoComplete="off"
+                />
+              </label>
+              <div className="gh-file-drawer-scroll">
+                <FileTree
+                  entries={filterTreeEntries(entries, treeQuery)}
+                  sourceRef={sourceRef}
+                  currentPath={currentPath}
+                  treePath={treePath}
+                  basePath={basePath}
+                  onNavigate={() => setIsTreeOpen(false)}
+                />
+              </div>
+            </aside>
+
+            <div className="gh-page-main">
+              {file || treePath ? (
+                <RepositoryBreadcrumb
+                  repository={repository}
+                  sourceRef={sourceRef}
+                  path={file?.path ?? treePath}
+                  basePath={basePath}
+                  isFile={file !== null}
                 />
               ) : null}
 
-              <div className="v2-code-layout grid gap-4 lg:grid-cols-[248px_minmax(0,1fr)]">
-                <aside
-                  id="repository-file-manager"
-                  data-open={isTreeOpen}
-                  className={cn(
-                    "v2-file-manager h-fit rounded-xl border border-border bg-card dark:bg-card",
-                    isTreeOpen
-                      ? "v2-file-manager-open"
-                      : "v2-file-manager-closed",
-                  )}
-                >
-                  <div className="border-b border-border px-4 py-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold">
-                          {repository.name}
-                        </p>
-                        <p className="mt-1 truncate text-xs text-muted-foreground">
-                          {treePath ? "/" + treePath : "Repository root"}
-                        </p>
+              {file ? (
+                <>
+                  <RepositoryCommitRow commit={latestCommit} />
+                  <div className="gh-file-stats">
+                    {file.text.split(/\r?\n/).length} lines (
+                    {file.text.split(/\r?\n/).length} loc)
+                    <span aria-hidden="true">·</span>
+                    {formatBytes(file.byteSize)}
+                  </div>
+                  <section className="gh-code-panel" aria-label="Source code">
+                    <div className="gh-code-toolbar">
+                      <div
+                        className="gh-code-tabs"
+                        role="tablist"
+                        aria-label="File view"
+                      >
+                        <button
+                          type="button"
+                          role="tab"
+                          aria-selected="true"
+                          className="gh-code-tab gh-code-tab-active"
+                        >
+                          Code
+                        </button>
+                        <button
+                          type="button"
+                          role="tab"
+                          aria-selected="false"
+                          className="gh-code-tab"
+                          disabled
+                        >
+                          Blame
+                        </button>
                       </div>
-                      <FolderOpen className="h-4 w-4 shrink-0 text-foreground" />
-                    </div>
-                  </div>
-                  <div className="max-h-[min(68vh,720px)] overflow-y-auto p-2">
-                    <FileTree
-                      entries={entries}
-                      sourceRef={sourceRef}
-                      currentPath={file?.path ?? treePath}
-                      treePath={treePath}
-                      basePath={basePath}
-                      onNavigate={() => setIsTreeOpen(false)}
-                    />
-                  </div>
-                </aside>
-
-                <section className="v2-editor min-w-0 overflow-hidden rounded-xl border border-border bg-card">
-                  <div className="v2-editor-head flex flex-col gap-3 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-                    <div className="flex min-w-0 items-center gap-2 text-sm">
-                      <FileCode2 className="h-4 w-4 shrink-0 text-foreground" />
-                      <span className="truncate font-mono text-xs sm:text-sm">
-                        {file?.path ??
-                          (treePath ? treePath + "/" : "Select a file")}
-                      </span>
-                      {file ? (
-                        <span className="hidden shrink-0 rounded-full bg-black/[0.05] px-2 py-1 font-mono text-[10px] text-muted-foreground sm:inline dark:bg-white/[0.07]">
-                          {shortSha(file.commitSha)}
-                        </span>
-                      ) : null}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {file ? (
-                        <>
-                          <Button
+                      <div className="gh-code-actions">
+                        <button
+                          type="button"
+                          className="gh-icon-control"
+                          onClick={copySourceUrl}
+                          aria-label={
+                            isCopied ? "Copied source link" : "Copy source link"
+                          }
+                          title={
+                            isCopied ? "Copied source link" : "Copy source link"
+                          }
+                        >
+                          {isCopied ? (
+                            <Check className="h-5 w-5" />
+                          ) : (
+                            <Copy className="h-5 w-5" />
+                          )}
+                        </button>
+                        {convexConfigured &&
+                        repository.provider === "github" &&
+                        repository.visibility === "public" ? (
+                          <button
                             type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={copySourceUrl}
+                            className="gh-icon-control"
+                            onClick={() =>
+                              setShowExplainer((visible) => !visible)
+                            }
+                            disabled={selection === null}
                             aria-label={
-                              isCopied
-                                ? "Copied source link"
-                                : "Copy source link"
+                              selection === null
+                                ? "Select lines to explain"
+                                : "Explain selected lines"
                             }
                             title={
-                              isCopied
-                                ? "Copied source link"
-                                : "Copy source link"
+                              selection === null
+                                ? "Select lines to explain"
+                                : "Explain selected lines"
                             }
                           >
-                            {isCopied ? (
-                              <Check className="h-4 w-4" />
-                            ) : (
-                              <Copy className="h-4 w-4" />
-                            )}
-                            <span className="v2-editor-action-label">
-                              {isCopied ? "Copied" : "Copy link"}
-                            </span>
-                          </Button>
-                          {convexConfigured &&
-                          repository.provider === "github" &&
-                          repository.visibility === "public" ? (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() =>
-                                setShowExplainer((visible) => !visible)
-                              }
-                              disabled={selection === null}
-                              title={
-                                selection === null
-                                  ? "Select lines to explain"
-                                  : "Explain selected lines"
-                              }
-                            >
-                              <Bot className="h-4 w-4" />
-                              <span className="v2-editor-action-label">
-                                Explain
-                              </span>
-                            </Button>
-                          ) : null}
+                            <Bot className="h-5 w-5" />
+                          </button>
+                        ) : null}
+                        <a
+                          href={sourceUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="gh-icon-control"
+                          aria-label="Open source on provider"
+                          title="Open source on provider"
+                        >
+                          <ArrowUpRight className="h-5 w-5" />
+                        </a>
+                        <button
+                          type="button"
+                          className="gh-icon-control"
+                          aria-label="More file actions"
+                          title="More file actions"
+                        >
+                          <MoreHorizontal className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+                    <SourceCodeViewer
+                      file={file}
+                      primaryLanguage={repository.primaryLanguage}
+                      onSelectionChange={(nextSelection) =>
+                        setSelectionState({ fileKey, selection: nextSelection })
+                      }
+                    />
+                    <div className="gh-code-footer">
+                      <span className="gh-code-footer-meta">
+                        {selection
+                          ? `Lines ${selection.startLineNumber}–${selection.endLineNumber}`
+                          : shortSha(file.commitSha)}
+                      </span>
+                      {discussionHref ? (
+                        <div className="gh-code-footer-actions">
                           <Button
                             asChild
-                            variant="outline"
                             size="sm"
-                            className="bg-transparent"
+                            className="gh-footer-button"
                           >
-                            <a
-                              href={sourceUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              aria-label="Open source on GitHub"
-                              title="Open source on GitHub"
-                            >
-                              <span className="v2-editor-action-label">
-                                GitHub
-                              </span>
-                              <ArrowUpRight className="h-3.5 w-3.5" />
-                            </a>
+                            <Link href={discussionHref}>
+                              <MessageSquare className="h-4 w-4" />
+                              <span>Discuss</span>
+                            </Link>
                           </Button>
-                        </>
-                      ) : null}
-                    </div>
-                  </div>
-
-                  {file ? (
-                    <>
-                      <SourceCodeViewer
-                        file={file}
-                        primaryLanguage={repository.primaryLanguage}
-                        onSelectionChange={(nextSelection) =>
-                          setSelectionState({
-                            fileKey,
-                            selection: nextSelection,
-                          })
-                        }
-                      />
-                      <div className="flex flex-col gap-3 border-t border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-                        <div className="min-w-0 text-xs text-muted-foreground">
-                          {selection ? (
-                            <>
-                              <span className="font-semibold text-foreground">
-                                Lines {selection.startLineNumber}–
-                                {selection.endLineNumber}
-                              </span>{" "}
-                              selected for discussion.
-                            </>
-                          ) : (
-                            "Select lines in the editor to attach focused context."
-                          )}
-                        </div>
-                        {discussionHref ? (
-                          <div className="flex flex-wrap gap-2">
-                            <Button asChild size="sm" className="shrink-0">
-                              <Link href={discussionHref}>
-                                <MessageSquare className="h-3.5 w-3.5" />
-                                {selection ? "Discuss lines" : "Discuss file"}
+                          {diffHref ? (
+                            <Button
+                              asChild
+                              size="sm"
+                              variant="outline"
+                              className="gh-footer-button"
+                            >
+                              <Link href={diffHref}>
+                                <GitCompareArrows className="h-4 w-4" />
+                                <span>Diff</span>
                               </Link>
                             </Button>
-                            {diffHref ? (
-                              <Button
-                                asChild
-                                size="sm"
-                                variant="outline"
-                                className="shrink-0 bg-transparent"
-                              >
-                                <Link href={diffHref}>
-                                  <GitCompareArrows className="h-3.5 w-3.5" />
-                                  Discuss diff
-                                </Link>
-                              </Button>
-                            ) : null}
-                          </div>
-                        ) : null}
-                      </div>
-                      {convexConfigured &&
-                      repository.provider === "github" &&
-                      repository.visibility === "public" &&
-                      showExplainer &&
-                      selection ? (
-                        <div className="px-4 pb-4 sm:px-5">
-                          <SourceExplainer
-                            source={buildExplainableSource(
-                              repository,
-                              file,
-                              selection,
-                            )}
-                          />
+                          ) : null}
                         </div>
                       ) : null}
-                    </>
-                  ) : (
-                    <div className="flex min-h-[min(68vh,720px)] flex-col items-center justify-center px-6 text-center">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary dark:bg-white/[0.08]">
-                        <FileText className="h-5 w-5 text-foreground" />
-                      </div>
-                      <h2 className="mt-5 text-lg font-semibold tracking-[-0.02em]">
-                        Choose a file to start reading
-                      </h2>
-                      <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-                        The file tree is the beginning of the trail. Open a
-                        source file, pin its commit, and share the exact context
-                        later.
-                      </p>
                     </div>
-                  )}
-                </section>
-              </div>
+                    {convexConfigured &&
+                    repository.provider === "github" &&
+                    repository.visibility === "public" &&
+                    showExplainer &&
+                    selection ? (
+                      <div className="gh-explainer">
+                        <SourceExplainer
+                          source={buildExplainableSource(
+                            repository,
+                            file,
+                            selection,
+                          )}
+                        />
+                      </div>
+                    ) : null}
+                  </section>
+                </>
+              ) : (
+                <div className="gh-directory-view">
+                  <RepositoryCommitRow commit={latestCommit} />
+                  <RepositoryDirectoryList
+                    repository={repository}
+                    sourceRef={sourceRef}
+                    treePath={treePath}
+                    entries={entries}
+                    basePath={basePath}
+                    showHeader={treePath.length > 0}
+                    latestCommitAt={latestCommit?.committedAt ?? null}
+                    onNavigate={() => setIsTreeOpen(false)}
+                  />
+                </div>
+              )}
             </div>
           </div>
 
-          <aside className="v2-repo-sidebar">
-            <details className="v2-secondary-details">
+          <aside className="gh-context-drawer">
+            <details>
               <summary
-                className="v2-secondary-summary"
+                className="gh-context-summary"
                 aria-label="Open repository context"
                 title="Open repository context"
               >
-                <span className="sr-only">Repository context</span>
-                <CircleDot className="h-4 w-4" aria-hidden="true" />
-                <ChevronDown
-                  className="v2-secondary-chevron h-4 w-4"
-                  aria-hidden="true"
-                />
+                <CircleDot className="h-5 w-5" aria-hidden="true" />
+                <ChevronDown className="h-4 w-4" aria-hidden="true" />
               </summary>
-              <div className="v2-secondary-content">
-                {convexConfigured &&
-                repository.provider === "github" &&
-                (repository.visibility === "public" ||
-                  repository.visibility === "private") ? (
+              <div className="gh-context-content">
+                {convexConfigured && repository.provider === "github" ? (
                   <RepositoryAnalyzer
                     owner={repository.ownerLogin}
                     name={repository.name}
@@ -609,7 +588,19 @@ function RepositoryWorkspaceView({
                     convexConfigured={convexConfigured}
                   />
                 ) : null}
-
+                {repository.visibility === "public" &&
+                repository.provider === "github" ? (
+                  <div className="gh-context-actions">
+                    <RepositoryFollowButton
+                      repository={repository}
+                      convexConfigured={convexConfigured}
+                    />
+                    <RepositorySaveButton
+                      repository={repository}
+                      convexConfigured={convexConfigured}
+                    />
+                  </div>
+                ) : null}
                 <RepositorySurfacePanel
                   repository={repository}
                   surfaces={surfaces}
@@ -883,28 +874,188 @@ function ConnectedRepositorySaveButton({
   );
 }
 
-function FileTree({
-  entries,
+function RepositoryCommitRow({
+  commit,
+}: {
+  commit: RepositorySurfaces["commits"][number] | null;
+}) {
+  if (commit === null) return null;
+
+  const author = commit.authorLogin ?? commit.authorName ?? "Anonymous";
+  return (
+    <a
+      href={commit.url}
+      target="_blank"
+      rel="noreferrer"
+      className="gh-commit-row"
+      title={commit.message}
+    >
+      <span className="gh-avatar" aria-hidden="true">
+        {initials(author)}
+      </span>
+      <span className="gh-commit-author">
+        <strong>{author}</strong>
+        <span>{formatRelativeDate(commit.committedAt)}</span>
+      </span>
+      <span className="gh-commit-message">{commit.message}</span>
+      <span className="gh-commit-actions" aria-hidden="true">
+        <MoreHorizontal className="h-5 w-5" />
+        <HistoryIcon className="h-5 w-5" />
+      </span>
+    </a>
+  );
+}
+
+function RepositoryBreadcrumb({
+  repository,
   sourceRef,
-  currentPath,
-  treePath,
+  path,
   basePath,
+  isFile,
+}: {
+  repository: NormalizedRepository;
+  sourceRef: string;
+  path: string;
+  basePath: string;
+  isFile: boolean;
+}) {
+  const segments = path.split("/").filter(Boolean);
+  return (
+    <nav className="gh-breadcrumb" aria-label="Repository path">
+      <Link href={workspaceHref(basePath, sourceRef, "")} className="gh-link">
+        {repository.name}
+      </Link>
+      {segments.map((segment, index) => {
+        const segmentPath = segments.slice(0, index + 1).join("/");
+        const isLast = index === segments.length - 1;
+        const isCurrentFile = isFile && isLast;
+        return (
+          <span key={segmentPath} className="gh-breadcrumb-segment">
+            <span className="gh-breadcrumb-slash" aria-hidden="true">
+              /
+            </span>
+            {isCurrentFile ? (
+              <strong className="gh-breadcrumb-current">{segment}</strong>
+            ) : (
+              <Link
+                href={workspaceHref(basePath, sourceRef, segmentPath)}
+                className="gh-link"
+              >
+                {segment}
+              </Link>
+            )}
+          </span>
+        );
+      })}
+      {isFile ? (
+        <button
+          type="button"
+          className="gh-icon-control gh-copy-path"
+          aria-label="Copy file path"
+          title="Copy file path"
+          onClick={() => void navigator.clipboard?.writeText(path)}
+        >
+          <Copy className="h-5 w-5" />
+        </button>
+      ) : null}
+    </nav>
+  );
+}
+
+function RepositoryDirectoryList({
+  repository,
+  sourceRef,
+  treePath,
+  entries,
+  basePath,
+  showHeader,
+  latestCommitAt,
   onNavigate,
 }: {
-  entries: RepositoryTreeEntry[];
+  repository: NormalizedRepository;
   sourceRef: string;
-  currentPath: string;
   treePath: string;
+  entries: RepositoryTreeEntry[];
   basePath: string;
+  showHeader: boolean;
+  latestCommitAt: string | null;
   onNavigate: () => void;
 }) {
-  const router = useRouter();
-  const prefetchedHrefs = useRef(new Set<string>());
+  const { prefetch, navigate } = useRepositoryNavigation(onNavigate);
   const sortedEntries = [...entries].sort((a, b) => {
     if (a.kind !== b.kind) return a.kind === "directory" ? -1 : 1;
     return a.name.localeCompare(b.name);
   });
   const parentPath = parentDirectory(treePath);
+  const rows = treePath
+    ? [
+        {
+          name: "..",
+          path: parentPath,
+          kind: "directory" as const,
+          oid: "parent",
+          byteSize: null,
+          parent: true,
+        },
+        ...sortedEntries.map((entry) => ({ ...entry, parent: false })),
+      ]
+    : sortedEntries.map((entry) => ({ ...entry, parent: false }));
+
+  return (
+    <div className="gh-file-list">
+      {showHeader ? (
+        <div className="gh-file-list-header">
+          <span>Name</span>
+          <span>Last commit date</span>
+        </div>
+      ) : null}
+      {rows.map((entry) => {
+        const href = workspaceHref(basePath, sourceRef, entry.path);
+        const Icon = entry.kind === "directory" ? Folder : FileCode2;
+        return (
+          <Link
+            key={entry.parent ? "parent" : entry.path}
+            href={href}
+            onClick={(event) => navigate(event, href)}
+            onMouseEnter={() => prefetch(href)}
+            onFocus={() => prefetch(href)}
+            onTouchStart={() => prefetch(href)}
+            className={cn("gh-file-row", entry.parent && "gh-file-row-parent")}
+          >
+            <span className="gh-file-name">
+              {entry.parent ? (
+                <ChevronRight className="h-5 w-5 rotate-180 text-muted-foreground" />
+              ) : (
+                <Icon className="h-5 w-5 shrink-0 text-muted-foreground" />
+              )}
+              <span className="min-w-0 truncate">{entry.name}</span>
+            </span>
+            <span className="gh-file-date">
+              {entry.parent ? "" : formatRelativeDate(latestCommitAt)}
+            </span>
+          </Link>
+        );
+      })}
+      {rows.length === 0 ? (
+        <p className="gh-file-empty">This directory is empty.</p>
+      ) : null}
+      {!treePath && rows.length > 0 ? (
+        <div className="gh-file-list-footer">
+          <Link
+            href={workspaceHref(basePath, sourceRef, "")}
+            className="gh-link"
+          >
+            View all files
+          </Link>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function useRepositoryNavigation(onNavigate: () => void) {
+  const router = useRouter();
+  const prefetchedHrefs = useRef(new Set<string>());
 
   function prefetch(href: string) {
     if (prefetchedHrefs.current.has(href)) return;
@@ -928,8 +1079,41 @@ function FileTree({
     void router.push(href);
   }
 
+  return { prefetch, navigate };
+}
+
+function filterTreeEntries(entries: RepositoryTreeEntry[], query: string) {
+  const normalizedQuery = query.trim().toLowerCase();
+  if (!normalizedQuery) return entries;
+  return entries.filter((entry) =>
+    entry.path.toLowerCase().includes(normalizedQuery),
+  );
+}
+
+function FileTree({
+  entries,
+  sourceRef,
+  currentPath,
+  treePath,
+  basePath,
+  onNavigate,
+}: {
+  entries: RepositoryTreeEntry[];
+  sourceRef: string;
+  currentPath: string;
+  treePath: string;
+  basePath: string;
+  onNavigate: () => void;
+}) {
+  const { prefetch, navigate } = useRepositoryNavigation(onNavigate);
+  const sortedEntries = [...entries].sort((a, b) => {
+    if (a.kind !== b.kind) return a.kind === "directory" ? -1 : 1;
+    return a.name.localeCompare(b.name);
+  });
+  const parentPath = parentDirectory(treePath);
+
   return (
-    <div className="v2-tree space-y-0.5">
+    <div className="gh-tree">
       {treePath ? (
         <Link
           href={workspaceHref(basePath, sourceRef, parentPath)}
@@ -945,7 +1129,7 @@ function FileTree({
           onTouchStart={() =>
             prefetch(workspaceHref(basePath, sourceRef, parentPath))
           }
-          className="v2-tree-row flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          className="gh-tree-row"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           <span>Up one level</span>
@@ -962,8 +1146,8 @@ function FileTree({
         onTouchStart={() => prefetch(workspaceHref(basePath, sourceRef, ""))}
         data-active={currentPath.length === 0 ? "true" : "false"}
         className={cn(
-          "v2-tree-row mb-1 flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-semibold transition-colors hover:bg-secondary",
-          currentPath.length === 0 && "text-foreground",
+          "gh-tree-row gh-tree-root",
+          currentPath.length === 0 && "gh-tree-row-active",
         )}
       >
         <FolderOpen className="h-3.5 w-3.5" />
@@ -985,8 +1169,8 @@ function FileTree({
             onTouchStart={() => prefetch(href)}
             data-active={isActive ? "true" : "false"}
             className={cn(
-              "v2-tree-row group flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs transition-colors hover:bg-secondary",
-              isActive && "font-semibold text-foreground",
+              "gh-tree-row group",
+              isActive && "gh-tree-row-active",
             )}
           >
             <Icon
@@ -1008,26 +1192,9 @@ function FileTree({
       })}
 
       {sortedEntries.length === 0 ? (
-        <p className="px-2.5 py-4 text-xs leading-5 text-muted-foreground">
-          This directory has no readable entries.
-        </p>
+        <p className="gh-tree-empty">This directory has no readable entries.</p>
       ) : null}
     </div>
-  );
-}
-
-function RepositoryStat({
-  icon: Icon,
-  label,
-}: {
-  icon: AppIcon;
-  label: string;
-}) {
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      <Icon className="h-3.5 w-3.5" />
-      {label}
-    </span>
   );
 }
 
@@ -1141,29 +1308,38 @@ function parentDirectory(path: string) {
   return separator === -1 ? "" : path.slice(0, separator);
 }
 
-function formatCount(value: number) {
-  return new Intl.NumberFormat("en", {
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(value);
-}
-
-function branchLabel(value: string) {
-  return value.length === 40
-    ? shortSha(value)
-    : value.replace(/^refs\/heads\//, "");
-}
-
 function shortSha(value: string) {
   return value.slice(0, 7);
 }
 
-function providerDisplayName(provider: NormalizedRepository["provider"]) {
-  return provider === "github"
-    ? "GitHub"
-    : provider === "gitlab"
-      ? "GitLab"
-      : provider === "bitbucket"
-        ? "Bitbucket"
-        : "Codeberg";
+function formatRelativeDate(value: string | null) {
+  if (value === null) return "";
+  const timestamp = new Date(value).valueOf();
+  if (Number.isNaN(timestamp)) return "";
+  const days = Math.max(0, Math.floor((Date.now() - timestamp) / 86_400_000));
+  if (days === 0) return "today";
+  if (days === 1) return "yesterday";
+  if (days < 30) return `${days} days ago`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months} ${months === 1 ? "month" : "months"} ago`;
+  const years = Math.floor(months / 12);
+  return `${years} ${years === 1 ? "year" : "years"} ago`;
+}
+
+function formatBytes(value: number | null) {
+  if (value === null || !Number.isFinite(value)) return "size unavailable";
+  if (value < 1024) return `${value} B`;
+  if (value < 1024 * 1024) return `${(value / 1024).toFixed(2)} KB`;
+  return `${(value / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+function initials(value: string) {
+  const letters = value
+    .split(/[^a-zA-Z0-9]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+  return letters || "?";
 }

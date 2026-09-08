@@ -18,9 +18,11 @@ import {
   GlobeIcon as Globe2,
   CounterClockwiseClockIcon as History,
   InfoCircledIcon as Info,
+  MagnifyingGlassIcon as Search,
   CubeIcon as PackageOpen,
   BookmarkIcon as Tag,
   PersonIcon as Users,
+  Cross2Icon as X,
 } from "@radix-ui/react-icons";
 
 import type { AppIcon } from "@/components/ui/icon";
@@ -182,100 +184,116 @@ export function RepositoryRefPicker({
 }) {
   const branches = refs.filter((ref) => ref.kind === "branch");
   const tags = refs.filter((ref) => ref.kind === "tag");
+  const detailsRef = useRef<HTMLDetailsElement | null>(null);
+  const [activeKind, setActiveKind] = useState<"branch" | "tag">("branch");
+  const [query, setQuery] = useState("");
+  const visibleRefs = (activeKind === "branch" ? branches : tags).filter(
+    (ref) => {
+      const normalizedQuery = query.trim().toLowerCase();
+      if (!normalizedQuery) return true;
+      return `${ref.name} ${ref.ref}`.toLowerCase().includes(normalizedQuery);
+    },
+  );
 
   return (
-    <details className="v2-ref-picker group relative shrink-0">
-      <summary className="flex cursor-pointer list-none items-center gap-2 rounded-full border border-input bg-card px-3 py-2 text-xs font-semibold transition-colors hover:border-ring dark:border-white/[0.12] dark:hover:border-ring">
-        <GitBranch className="h-3.5 w-3.5 text-foreground" />
-        <span className="max-w-40 truncate font-mono">
+    <details ref={detailsRef} className="gh-ref-picker group relative shrink-0">
+      <summary className="gh-control gh-ref-trigger">
+        <GitBranch className="h-5 w-5 shrink-0 text-muted-foreground" />
+        <span className="min-w-0 flex-1 truncate font-mono text-base">
           {refLabel(sourceRef)}
         </span>
-        <ChevronDown className="h-3.5 w-3.5 text-muted-foreground transition-transform group-open:rotate-180" />
+        <ChevronDown className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
       </summary>
-      <div className="absolute right-0 z-20 mt-2 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-xl border border-border bg-card p-2 shadow-[0_8px_30px_hsl(var(--foreground)/0.12)] dark:border-white/[0.12] dark:bg-card">
-        <RefGroup
-          label="Branches"
-          icon={GitBranch}
-          refs={branches}
-          repository={repository}
-          sourceRef={sourceRef}
-          currentPath={currentPath}
-          workspaceBasePath={workspaceBasePath}
-        />
-        <RefGroup
-          label="Tags"
-          icon={Tag}
-          refs={tags}
-          repository={repository}
-          sourceRef={sourceRef}
-          currentPath={currentPath}
-          workspaceBasePath={workspaceBasePath}
-        />
-        {refs.length === 0 ? (
-          <p className="px-2.5 py-3 text-xs text-muted-foreground">
-            The provider did not return any refs for this repository.
-          </p>
-        ) : null}
+      <div className="gh-ref-menu">
+        <div className="gh-ref-menu-header">
+          <p>Switch branches/tags</p>
+          <button
+            type="button"
+            className="gh-icon-control"
+            aria-label="Close branch picker"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              if (detailsRef.current) detailsRef.current.open = false;
+            }}
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <label className="gh-ref-search">
+          <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
+          <span className="sr-only">Find a branch or tag</span>
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Find a branch..."
+            autoComplete="off"
+          />
+        </label>
+        <div className="gh-ref-tabs" role="tablist" aria-label="Ref kind">
+          {(["branch", "tag"] as const).map((kind) => {
+            const active = activeKind === kind;
+            const label = kind === "branch" ? "Branches" : "Tags";
+            return (
+              <button
+                key={kind}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                className={cn("gh-ref-tab", active && "gh-ref-tab-active")}
+                onClick={() => setActiveKind(kind)}
+              >
+                {label}
+                <span className="gh-ref-count">
+                  {kind === "branch" ? branches.length : tags.length}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <div className="gh-ref-list" role="listbox" aria-label="Available refs">
+          {visibleRefs.map((ref) => {
+            const isActive = isSameRef(ref, sourceRef);
+            return (
+              <Link
+                key={ref.ref}
+                href={workspaceHref(
+                  repository,
+                  ref.ref,
+                  currentPath,
+                  workspaceBasePath,
+                )}
+                role="option"
+                aria-selected={isActive}
+                className={cn("gh-ref-row", isActive && "gh-ref-row-active")}
+              >
+                <span className="min-w-0 flex-1 truncate font-mono">
+                  {ref.name}
+                </span>
+                {isActive ? <span className="gh-ref-check">✓</span> : null}
+              </Link>
+            );
+          })}
+          {visibleRefs.length === 0 ? (
+            <p className="gh-ref-empty">
+              {refs.length === 0 ? "No refs returned" : "No matching refs"}
+            </p>
+          ) : null}
+        </div>
+        <Link
+          href={workspaceHref(
+            repository,
+            sourceRef,
+            currentPath,
+            workspaceBasePath,
+          )}
+          className="gh-ref-footer"
+        >
+          View all branches
+        </Link>
       </div>
     </details>
-  );
-}
-
-function RefGroup({
-  label,
-  icon: Icon,
-  refs,
-  repository,
-  sourceRef,
-  currentPath,
-  workspaceBasePath,
-}: {
-  label: string;
-  icon: AppIcon;
-  refs: RepositoryRef[];
-  repository: NormalizedRepository;
-  sourceRef: string;
-  currentPath: string;
-  workspaceBasePath?: string;
-}) {
-  if (refs.length === 0) return null;
-
-  return (
-    <div className="mt-2 border-t border-border pt-2">
-      <p className="flex items-center gap-2 px-2.5 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-        <Icon className="h-3 w-3" />
-        {label}
-      </p>
-      <div className="max-h-48 overflow-y-auto">
-        {refs.map((ref) => {
-          const isActive = isSameRef(ref, sourceRef);
-          return (
-            <Link
-              key={ref.ref}
-              href={workspaceHref(
-                repository,
-                ref.ref,
-                currentPath,
-                workspaceBasePath,
-              )}
-              className={cn(
-                "v2-ref-row flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs transition-colors hover:bg-secondary",
-                isActive && "bg-accent text-foreground",
-              )}
-            >
-              <span className="min-w-0 flex-1 truncate font-mono">
-                {ref.name}
-              </span>
-              {ref.targetSha ? (
-                <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
-                  {ref.targetSha.slice(0, 7)}
-                </span>
-              ) : null}
-            </Link>
-          );
-        })}
-      </div>
-    </div>
   );
 }
 
