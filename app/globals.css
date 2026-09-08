@@ -663,6 +663,11 @@
     flex: 1 1 auto;
   }
 
+  .gh-repo-page .gh-ref-picker {
+    min-width: 0;
+    flex-shrink: 1 !important;
+  }
+
   .gh-file-toolbar:not(.gh-file-toolbar-root) .gh-ref-picker {
     min-width: 10rem;
   }
@@ -1659,6 +1664,7 @@
   }
 
   .gh-repo-page .gh-file-toolbar:not(.gh-file-toolbar-root) .gh-ref-picker {
+    min-width: 0;
     flex: 1 1 10rem;
   }
 
