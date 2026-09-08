@@ -346,11 +346,13 @@
   .v2-secondary-summary {
     display: flex;
     min-height: 2.75rem;
+    width: 2.75rem;
     cursor: pointer;
     list-style: none;
     align-items: center;
     justify-content: flex-end;
     gap: 0.5rem;
+    padding-inline: 0;
     color: hsl(var(--muted-foreground));
   }
 
@@ -482,7 +484,7 @@
   }
 
   .v2-reader-layout {
-    grid-template-columns: minmax(0, 1fr) 300px;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: start;
   }
 
@@ -490,15 +492,30 @@
     position: sticky;
     top: 6rem;
     max-height: calc(100dvh - 7rem);
-    overflow-y: auto;
+    overflow: visible;
   }
 
   .v2-secondary-summary {
-    display: none;
+    border: 1px solid hsl(var(--border));
+    border-radius: 999px;
+    background: hsl(var(--card));
+    padding-inline: 0.75rem;
   }
 
-  .v2-secondary-content {
-    display: block !important;
+  .v2-secondary-details[open] .v2-secondary-summary {
+    width: 300px;
+    justify-content: space-between;
+    border-radius: 0.75rem 0.75rem 0 0;
+  }
+
+  .v2-secondary-details[open] .v2-secondary-content {
+    width: 300px;
+    max-height: calc(100dvh - 10rem);
+    overflow-y: auto;
+    border: 1px solid hsl(var(--border));
+    border-top: 0;
+    border-radius: 0 0 0.75rem 0.75rem;
+    background: hsl(var(--card));
   }
 }
 @media (min-width: 1024px) and (max-width: 1279px) {
@@ -537,6 +554,11 @@
 
   .v2-rail .v2-write-button svg {
     margin: 0;
+  }
+}
+@media (max-width: 1279px) {
+  .v2-secondary-summary {
+    width: 100%;
   }
 }
 @media (max-width: 1023px) {
