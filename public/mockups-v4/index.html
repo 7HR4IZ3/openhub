@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3f1eb" />
+    <title>OpenHub · Source workspace concept</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="concept-banner">
+      <span>OpenHub / source workspace / concept 04</span>
+      <span>Static mockup · no product data changed</span>
+    </div>
+
+    <div class="app-shell">
+      <header class="appbar">
+        <a class="wordmark" href="#top" aria-label="OpenHub home"
+          >openhub<span>·</span></a
+        >
+        <div class="appbar-location" aria-label="Current location">
+          <span>workspace</span><i>/</i><strong>openhub</strong>
+        </div>
+        <div class="appbar-actions">
+          <button
+            class="icon-button quiet"
+            type="button"
+            data-command-open
+            aria-label="Open command menu"
+            title="Open command menu"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="6.5" />
+              <path d="m16 16 4.5 4.5M8.5 11h5M11 8.5v5" />
+            </svg>
+          </button>
+          <button class="avatar-button" type="button" aria-label="Open profile">
+            T
+          </button>
+        </div>
+      </header>
+
+      <div class="app-grid" id="top">
+        <aside class="app-rail" aria-label="Primary navigation">
+          <nav>
+            <a
+              class="rail-link active"
+              href="#reader"
+              aria-label="Reader"
+              title="Reader"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 4.5h14v15H5zM8 8h8M8 12h5M8 16h8" />
+              </svg>
+              <span>Read</span>
+            </a>
+            <a
+              class="rail-link"
+              href="#activity"
+              aria-label="Activity"
+              title="Activity"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 16.5 8.5 12l3 3L20 6.5" />
+                <path d="M16 6.5h4v4" />
+              </svg>
+              <span>Flow</span>
+            </a>
+            <a class="rail-link" href="#saved" aria-label="Saved" title="Saved">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M7 5.5A2.5 2.5 0 0 1 9.5 3h8A2.5 2.5 0 0 1 20 5.5v15l-6.5-3.5L7 20.5z"
+                />
+              </svg>
+              <span>Saved</span>
+            </a>
+          </nav>
+          <button
+            class="rail-link rail-bottom"
+            type="button"
+            data-context-open
+            aria-label="Open repository context"
+            title="Repository context"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="8.5" />
+              <path d="M12 8v4l2.5 2.5" />
+            </svg>
+            <span>More</span>
+          </button>
+        </aside>
+
+        <main class="reader" id="reader">
+          <section class="repo-bar" aria-label="Repository overview">
+            <div class="repo-identity">
+              <button
+                class="icon-button back-button"
+                type="button"
+                aria-label="Back to explore"
+                title="Back to explore"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m14.5 5-7 7 7 7M8 12h11" />
+                </svg>
+              </button>
+              <div class="repo-mark" aria-hidden="true">oh</div>
+              <div class="repo-copy">
+                <p class="eyebrow">Repository</p>
+                <h1>openhub <span class="visibility">public</span></h1>
+                <p class="repo-owner">7HR4IZ3 / openhub</p>
+              </div>
+            </div>
+            <div class="repo-actions">
+              <button
+                class="ref-button"
+                type="button"
+                data-ref-open
+                aria-expanded="false"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M6 4v16M6 8h7a3 3 0 0 0 0-6H6M6 16h8a3 3 0 0 1 0 6H6"
+                  />
+                </svg>
+                <span data-ref-label>main</span>
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m7 9 5 5 5-5" />
+                </svg>
+              </button>
+              <button
+                class="icon-button quiet"
+                type="button"
+                aria-label="Save repository"
+                title="Save repository"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M7 5.5A2.5 2.5 0 0 1 9.5 3h8A2.5 2.5 0 0 1 20 5.5v15l-6.5-3.5L7 20.5z"
+                  />
+                </svg>
+              </button>
+              <button
+                class="icon-button quiet"
+                type="button"
+                aria-label="Repository actions"
+                title="Repository actions"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="5" cy="12" r="1" />
+                  <circle cx="12" cy="12" r="1" />
+                  <circle cx="19" cy="12" r="1" />
+                </svg>
+              </button>
+            </div>
+          </section>
+
+          <nav class="mode-bar" aria-label="Repository views" data-mode-group>
+            <button
+              class="mode-button selected"
+              type="button"
+              data-mode="reader"
+              aria-selected="true"
+            >
+              Reader
+            </button>
+            <button
+              class="mode-button"
+              type="button"
+              data-mode="activity"
+              aria-selected="false"
+            >
+              Activity <span class="mode-count">12</span>
+            </button>
+            <button
+              class="mode-button"
+              type="button"
+              data-mode="history"
+              aria-selected="false"
+            >
+              History
+            </button>
+            <button
+              class="mode-button mode-context"
+              type="button"
+              data-context-open
+              aria-label="Open context panel"
+              title="Open context panel"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="8.5" />
+                <path d="M12 8v4l2.5 2.5" />
+              </svg>
+              <span>Context</span>
+            </button>
+          </nav>
+
+          <section class="source-frame" aria-label="Source workspace">
+            <aside class="explorer" data-explorer data-open="false">
+              <header class="explorer-head">
+                <div>
+                  <p class="eyebrow">Source</p>
+                  <h2>Files</h2>
+                </div>
+                <button
+                  class="icon-button quiet explorer-close"
+                  type="button"
+                  data-explorer-close
+                  aria-label="Close files"
+                  title="Close files"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="m6 6 12 12M18 6 6 18" />
+                  </svg>
+                </button>
+              </header>
+              <div
+                class="explorer-switcher"
+                role="tablist"
+                aria-label="Source navigation"
+              >
+                <button
+                  class="switcher-button selected"
+                  type="button"
+                  role="tab"
+                  aria-selected="true"
+                >
+                  Tree
+                </button>
+                <button
+                  class="switcher-button"
+                  type="button"
+                  role="tab"
+                  aria-selected="false"
+                >
+                  Search
+                </button>
+              </div>
+              <div class="explorer-path">
+                <span>openhub</span><i>/</i><strong data-tree-path>src</strong>
+              </div>
+              <div class="tree" role="tree" aria-label="Repository files">
+                <button
+                  class="tree-row folder"
+                  type="button"
+                  data-folder="src"
+                  aria-expanded="true"
+                >
+                  <span class="tree-caret">⌄</span
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3.5 7.5h6l2 2h9v9h-17z" /></svg
+                  ><span>src</span>
+                </button>
+                <div class="tree-children" data-tree-children>
+                  <button
+                    class="tree-row file active"
+                    type="button"
+                    data-file="app.ts"
+                    data-language="TypeScript"
+                  >
+                    <span class="tree-indent"></span
+                    ><svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M6 3.5h8l4 4v13H6zM14 3.5v4h4" /></svg
+                    ><span>app.ts</span>
+                  </button>
+                  <button
+                    class="tree-row file"
+                    type="button"
+                    data-file="reader.tsx"
+                    data-language="TSX"
+                  >
+                    <span class="tree-indent"></span
+                    ><svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M6 3.5h8l4 4v13H6zM14 3.5v4h4" /></svg
+                    ><span>reader.tsx</span>
+                  </button>
+                  <button
+                    class="tree-row file"
+                    type="button"
+                    data-file="workspace.css"
+                    data-language="CSS"
+                  >
+                    <span class="tree-indent"></span
+                    ><svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M6 3.5h8l4 4v13H6zM14 3.5v4h4" /></svg
+                    ><span>workspace.css</span>
+                  </button>
+                </div>
+                <button
+                  class="tree-row folder"
+                  type="button"
+                  data-folder="docs"
+                  aria-expanded="false"
+                >
+                  <span class="tree-caret">›</span
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3.5 7.5h6l2 2h9v9h-17z" /></svg
+                  ><span>docs</span>
+                </button>
+                <button
+                  class="tree-row folder"
+                  type="button"
+                  data-folder="convex"
+                  aria-expanded="false"
+                >
+                  <span class="tree-caret">›</span
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3.5 7.5h6l2 2h9v9h-17z" /></svg
+                  ><span>convex</span>
+                </button>
+                <button
+                  class="tree-row file"
+                  type="button"
+                  data-file="README.md"
+                  data-language="Markdown"
+                >
+                  <span class="tree-caret empty"></span
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 3.5h8l4 4v13H6zM14 3.5v4h4" /></svg
+                  ><span>README.md</span>
+                </button>
+                <button
+                  class="tree-row file"
+                  type="button"
+                  data-file="package.json"
+                  data-language="JSON"
+                >
+                  <span class="tree-caret empty"></span
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 3.5h8l4 4v13H6zM14 3.5v4h4" /></svg
+                  ><span>package.json</span>
+                </button>
+              </div>
+              <button class="explorer-footer" type="button" data-explorer-close>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+                <span>Open full tree</span>
+              </button>
+            </aside>
+
+            <div class="editor">
+              <header class="editor-head">
+                <div class="editor-file">
+                  <p class="eyebrow">
+                    Source / <span data-editor-language>TypeScript</span>
+                  </p>
+                  <h2 data-editor-file>app.ts</h2>
+                </div>
+                <div class="editor-actions">
+                  <button
+                    class="icon-button quiet"
+                    type="button"
+                    aria-label="Copy source link"
+                    title="Copy source link"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="8" y="8" width="11" height="11" rx="1.5" />
+                      <path
+                        d="M16 8V5a1.5 1.5 0 0 0-1.5-1.5h-9A1.5 1.5 0 0 0 4 5v9A1.5 1.5 0 0 0 5.5 15H8"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    class="icon-button quiet"
+                    type="button"
+                    data-explorer-open
+                    aria-label="Open files"
+                    title="Open files"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M4 6.5h16v11H4zM9 6.5V4h6v2.5M9 17.5v2.5h6v-2.5"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    class="icon-button quiet"
+                    type="button"
+                    data-context-open
+                    aria-label="Open context"
+                    title="Open context"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 5.5h16v13H4zM8 9h8M8 12h5M8 15h7" />
+                    </svg>
+                  </button>
+                </div>
+              </header>
+              <div class="editor-meta">
+                <span data-editor-stat>109 lines</span><span>·</span
+                ><span>3.56 KB</span><span class="commit-dot"></span
+                ><span>updated 6 months ago</span>
+              </div>
+              <div class="code-editor" aria-label="Source code" role="region">
+                <div class="code-lines" data-code>
+                  <div>
+                    <span>1</span
+                    ><code
+                      ><em>import</em> { createReader } <em>from</em>
+                      <mark>"@openhub/core"</mark>;</code
+                    >
+                  </div>
+                  <div><span>2</span><code></code></div>
+                  <div>
+                    <span>3</span
+                    ><code><em>const</em> reader = createReader({</code>
+                  </div>
+                  <div>
+                    <span>4</span><code> source: <mark>"public"</mark>,</code>
+                  </div>
+                  <div>
+                    <span>5</span
+                    ><code> mode: <mark>"context-first"</mark>,</code>
+                  </div>
+                  <div><span>6</span><code>});</code></div>
+                  <div><span>7</span><code></code></div>
+                  <div>
+                    <span>8</span><code><em>export default</em> reader;</code>
+                  </div>
+                  <div><span>9</span><code></code></div>
+                  <div>
+                    <span>10</span
+                    ><code><em>// source stays readable</em></code>
+                  </div>
+                </div>
+              </div>
+              <footer class="editor-foot">
+                <span class="sha">f4e9c8a</span>
+                <div class="editor-foot-actions">
+                  <button type="button" class="text-action">Discuss</button>
+                  <button type="button" class="text-action">Compare</button>
+                </div>
+              </footer>
+            </div>
+          </section>
+
+          <section class="activity-panel" id="activity" hidden>
+            <div class="empty-panel">
+              <span class="panel-number">02</span>
+              <h2>Activity around this source.</h2>
+              <p>
+                Notes, questions, and changes appear here without competing with
+                the reader.
+              </p>
+            </div>
+          </section>
+          <section class="history-panel" id="history" hidden>
+            <div class="empty-panel">
+              <span class="panel-number">03</span>
+              <h2>Trace the file.</h2>
+              <p>
+                Commits stay close to the source so the story is visible when
+                you need it.
+              </p>
+            </div>
+          </section>
+        </main>
+
+        <aside
+          class="context-panel"
+          data-context
+          data-open="false"
+          aria-label="Repository context"
+        >
+          <header class="context-head">
+            <div>
+              <p class="eyebrow">OpenHub</p>
+              <h2>Context</h2>
+            </div>
+            <button
+              class="icon-button quiet"
+              type="button"
+              data-context-close
+              aria-label="Close context"
+              title="Close context"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m6 6 12 12M18 6 6 18" />
+              </svg>
+            </button>
+          </header>
+          <div class="context-block">
+            <p class="eyebrow">Repository pulse</p>
+            <div class="pulse-row">
+              <strong>18</strong><span>people reading this week</span>
+            </div>
+            <div class="pulse-bar"><span></span></div>
+          </div>
+          <div class="context-block">
+            <p class="eyebrow">At a glance</p>
+            <div class="stat-list">
+              <div><span>Language</span><strong>TypeScript</strong></div>
+              <div><span>Open issues</span><strong>12</strong></div>
+              <div><span>License</span><strong>MIT</strong></div>
+            </div>
+          </div>
+          <div class="context-block context-note">
+            <p class="eyebrow">Why it matters</p>
+            <p>
+              This reader keeps source, people, and discussion in one quiet
+              surface.
+            </p>
+            <button class="text-action" type="button">
+              Add a note <span>↗</span>
+            </button>
+          </div>
+          <button class="context-footer" type="button" data-context-close>
+            Done
+          </button>
+        </aside>
+      </div>
+    </div>
+
+    <button
+      class="mobile-explorer-toggle"
+      type="button"
+      data-explorer-open
+      aria-label="Open file explorer"
+      title="Open file explorer"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 6.5h16v11H4zM9 6.5V4h6v2.5M9 17.5v2.5h6v-2.5" />
+      </svg>
+    </button>
+    <nav class="mobile-bar" aria-label="Mobile navigation">
+      <a
+        class="mobile-link active"
+        href="#reader"
+        aria-label="Reader"
+        title="Reader"
+        ><svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 4.5h14v15H5zM8 8h8M8 12h5M8 16h8" /></svg
+      ></a>
+      <a
+        class="mobile-link"
+        href="#activity"
+        aria-label="Activity"
+        title="Activity"
+        ><svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 16.5 8.5 12l3 3L20 6.5" />
+          <path d="M16 6.5h4v4" /></svg
+      ></a>
+      <button
+        class="mobile-link"
+        type="button"
+        data-context-open
+        aria-label="Context"
+        title="Context"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="8.5" />
+          <path d="M12 8v4l2.5 2.5" />
+        </svg>
+      </button>
+      <a class="mobile-link" href="#saved" aria-label="Saved" title="Saved"
+        ><svg viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M7 5.5A2.5 2.5 0 0 1 9.5 3h8A2.5 2.5 0 0 1 20 5.5v15l-6.5-3.5L7 20.5z"
+          /></svg
+      ></a>
+    </nav>
+
+    <div class="backdrop" data-backdrop hidden></div>
+
+    <div
+      class="ref-popover"
+      data-ref-popover
+      hidden
+      role="dialog"
+      aria-label="Switch source ref"
+    >
+      <header>
+        <div>
+          <p class="eyebrow">Source ref</p>
+          <h2>Switch ref</h2>
+        </div>
+        <button
+          class="icon-button quiet"
+          type="button"
+          data-ref-close
+          aria-label="Close ref picker"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m6 6 12 12M18 6 6 18" />
+          </svg>
+        </button>
+      </header>
+      <label class="ref-search"
+        ><svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="6.5" />
+          <path d="m16 16 4.5 4.5" /></svg
+        ><span class="sr-only">Find a branch</span
+        ><input type="search" placeholder="Find a branch" data-ref-search
+      /></label>
+      <div class="ref-tabs" role="tablist">
+        <button type="button" class="selected" role="tab">
+          Branches <span>8</span></button
+        ><button type="button" role="tab">Tags <span>4</span></button>
+      </div>
+      <div class="ref-list" data-ref-list>
+        <button type="button" class="ref-row active" data-ref="main">
+          <span>main</span
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m5 12 4 4L19 6" />
+          </svg>
+        </button>
+        <button type="button" class="ref-row" data-ref="feat/reader-context">
+          <span>feat/reader-context</span>
+        </button>
+        <button type="button" class="ref-row" data-ref="fix/mobile-reader">
+          <span>fix/mobile-reader</span>
+        </button>
+        <button type="button" class="ref-row" data-ref="docs/source-model">
+          <span>docs/source-model</span>
+        </button>
+      </div>
+      <a class="ref-footer" href="#branches">View all refs <span>↗</span></a>
+    </div>
+
+    <div
+      class="command-popover"
+      data-command
+      hidden
+      role="dialog"
+      aria-label="Command menu"
+    >
+      <label class="ref-search"
+        ><svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="6.5" />
+          <path d="m16 16 4.5 4.5" /></svg
+        ><span class="sr-only">Search OpenHub</span
+        ><input type="search" placeholder="Search OpenHub"
+      /></label>
+      <div class="command-list">
+        <button type="button">Open a repository <kbd>O</kbd></button
+        ><button type="button">Jump to a file <kbd>G</kbd></button
+        ><button type="button">Write a note <kbd>N</kbd></button>
+      </div>
+    </div>
+    <script src="mockups.js"></script>
+  </body>
+</html>
