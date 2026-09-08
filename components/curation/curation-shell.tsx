@@ -62,20 +62,22 @@ export function CurationShell({
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
-      <div className="v2-shell-grid mx-auto grid min-h-[100dvh] max-w-[1440px] lg:grid-cols-[216px_minmax(0,1fr)] xl:grid-cols-[216px_minmax(0,1fr)_272px]">
-        <aside className="v2-rail sticky top-0 hidden h-[100dvh] flex-col overflow-y-auto px-5 py-7 lg:flex">
+      <div className="v2-shell-grid mx-auto grid min-h-[100dvh] max-w-[1440px] lg:grid-cols-[56px_minmax(0,1fr)] xl:grid-cols-[56px_minmax(0,1fr)_240px]">
+        <aside className="v2-rail sticky top-0 hidden h-[100dvh] flex-col overflow-y-auto px-2 py-5 lg:flex">
           <Link href="/home" aria-label="OpenHub home" className="v2-brand-link">
-            <OpenHubMark className="v2-brand" />
+            <OpenHubMark compact className="v2-brand" />
           </Link>
-          <nav className="mt-10 space-y-1" aria-label="Primary navigation">
+          <nav className="mt-8 space-y-1" aria-label="Primary navigation">
             {navigation.map(({ label, href, icon: Icon }) => (
               <Link
                 key={href}
                 href={href}
                 aria-current={active === label ? "page" : undefined}
+                aria-label={label}
+                title={label}
                 data-active={active === label ? "true" : "false"}
                 className={cn(
-                  "v2-rail-link flex min-h-11 items-center gap-3 rounded-full px-3 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
+                  "v2-rail-link flex min-h-10 items-center justify-center rounded-md px-0 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
                   active === label && "font-semibold text-foreground",
                 )}
               >
@@ -91,18 +93,20 @@ export function CurationShell({
           >
             <Link href="/compose">
               <Pencil2Icon />
-              <span className="v2-write-label">Write a post</span>
+              <span className="v2-write-label sr-only">Write a post</span>
             </Link>
           </Button>
-          <div className="v2-rail-footer mt-auto space-y-4 pt-12">
+          <div className="v2-rail-footer mt-auto space-y-4 pt-8">
             <Link
               href="/settings/safety"
-              className="block px-3 text-xs text-muted-foreground hover:text-foreground"
+              className="sr-only"
+              aria-label="Safety and control"
+              title="Safety and control"
             >
               Safety and control
             </Link>
-            <div className="flex items-center justify-between border-t pt-4">
-              <span className="text-xs text-muted-foreground">Appearance</span>
+            <div className="flex items-center justify-center border-t pt-4">
+              <span className="sr-only">Appearance</span>
               <ThemeToggle />
             </div>
           </div>
@@ -147,11 +151,7 @@ export function CurationShell({
               </Button>
             </div>
           </header>
-          {description ? (
-            <p className="line-clamp-1 max-w-2xl px-5 py-3 text-xs leading-5 text-muted-foreground sm:px-8">
-              {description}
-            </p>
-          ) : null}
+          {description ? <p className="sr-only">{description}</p> : null}
           {children}
         </main>
         <aside className="v2-side-column hidden px-6 py-7 xl:block">

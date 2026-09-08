@@ -4,57 +4,57 @@
 
 @layer base {
   :root {
-    --background: 210 25% 97%;
-    --foreground: 210 25% 8%;
-    --card: 0 0% 100%;
-    --card-foreground: 210 25% 8%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 210 25% 8%;
-    --primary: 203 89% 53%;
+    --background: 40 24% 95%;
+    --foreground: 225 5% 13%;
+    --card: 42 33% 98%;
+    --card-foreground: 225 5% 13%;
+    --popover: 42 33% 98%;
+    --popover-foreground: 225 5% 13%;
+    --primary: 12 52% 52%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 20% 97%;
-    --secondary-foreground: 210 25% 8%;
-    --muted: 210 20% 97%;
-    --muted-foreground: 207 18% 36%;
-    --accent: 200 80% 95%;
-    --accent-foreground: 203 70% 44%;
-    --destructive: 355 73% 47%;
+    --secondary: 42 18% 91%;
+    --secondary-foreground: 225 5% 13%;
+    --muted: 40 14% 91%;
+    --muted-foreground: 225 5% 42%;
+    --accent: 12 51% 90%;
+    --accent-foreground: 12 52% 36%;
+    --destructive: 0 55% 46%;
     --destructive-foreground: 0 0% 100%;
-    --border: 204 25% 90%;
-    --input: 204 20% 84%;
-    --ring: 203 89% 53%;
-    --chart-1: 203 89% 53%;
-    --chart-2: 146 51% 32%;
-    --chart-3: 265 72% 56%;
-    --chart-4: 355 73% 47%;
-    --chart-5: 207 18% 36%;
+    --border: 40 9% 80%;
+    --input: 40 9% 75%;
+    --ring: 12 52% 52%;
+    --chart-1: 12 52% 52%;
+    --chart-2: 142 30% 42%;
+    --chart-3: 265 28% 52%;
+    --chart-4: 0 55% 46%;
+    --chart-5: 225 5% 42%;
     --radius: 0.5rem;
   }
   .dark {
-    --background: 210 27% 12%;
-    --foreground: 210 15% 97%;
-    --card: 210 27% 15%;
-    --card-foreground: 210 15% 97%;
-    --popover: 210 27% 15%;
-    --popover-foreground: 210 15% 97%;
-    --primary: 203 89% 53%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 207 24% 21%;
-    --secondary-foreground: 210 15% 97%;
-    --muted: 207 24% 21%;
-    --muted-foreground: 207 18% 62%;
-    --accent: 203 58% 32%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 355 73% 61%;
-    --destructive-foreground: 210 27% 12%;
-    --border: 207 20% 28%;
-    --input: 207 20% 35%;
-    --ring: 203 89% 53%;
-    --chart-1: 203 89% 53%;
-    --chart-2: 146 51% 52%;
-    --chart-3: 265 72% 70%;
-    --chart-4: 355 73% 61%;
-    --chart-5: 207 18% 62%;
+    --background: 225 7% 7%;
+    --foreground: 42 24% 94%;
+    --card: 225 7% 10%;
+    --card-foreground: 42 24% 94%;
+    --popover: 225 7% 11%;
+    --popover-foreground: 42 24% 94%;
+    --primary: 12 77% 74%;
+    --primary-foreground: 225 7% 10%;
+    --secondary: 225 7% 14%;
+    --secondary-foreground: 42 24% 94%;
+    --muted: 225 7% 14%;
+    --muted-foreground: 225 5% 62%;
+    --accent: 12 18% 19%;
+    --accent-foreground: 12 77% 74%;
+    --destructive: 0 65% 65%;
+    --destructive-foreground: 225 7% 10%;
+    --border: 225 7% 22%;
+    --input: 225 7% 27%;
+    --ring: 12 77% 74%;
+    --chart-1: 12 77% 74%;
+    --chart-2: 110 35% 58%;
+    --chart-3: 265 65% 75%;
+    --chart-4: 0 65% 65%;
+    --chart-5: 225 5% 62%;
   }
   * {
     @apply border-border;
@@ -1805,5 +1805,857 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* OpenHub compact interface: quiet surfaces, warm paper canvas, and content-first density. */
+:root {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+* {
+  border-color: hsl(var(--border) / 0.72);
+}
+
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+/* The global app shell is an icon rail, not a second content column. */
+.v2-shell-grid {
+  grid-template-columns: 56px minmax(0, 1fr) !important;
+}
+
+.v2-rail {
+  border-right: 0 !important;
+  background: hsl(var(--background) / 0.94) !important;
+  backdrop-filter: none !important;
+}
+
+.v2-brand-link {
+  display: inline-flex;
+  width: 40px;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  margin-inline: auto;
+}
+
+.v2-brand .relative {
+  border-radius: 7px;
+  box-shadow: none !important;
+}
+
+.v2-rail nav {
+  width: 40px;
+  margin-inline: auto;
+}
+
+.v2-rail .v2-nav-label {
+  display: none;
+}
+
+.v2-rail-link {
+  width: 40px;
+  min-height: 40px !important;
+  justify-content: center;
+  gap: 0;
+  border-radius: 7px !important;
+  padding-inline: 0 !important;
+  font-size: 0;
+}
+
+.v2-rail-link:hover,
+.v2-rail-link[data-active="true"] {
+  background: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+.v2-write-button {
+  width: 40px !important;
+  min-height: 40px !important;
+  margin-inline: auto;
+  border-color: transparent !important;
+  border-radius: 7px !important;
+  padding-inline: 0 !important;
+  box-shadow: none !important;
+}
+
+.v2-rail-footer {
+  width: 40px;
+  margin-inline: auto;
+}
+
+.v2-rail-footer .border-t {
+  border-top-color: hsl(var(--border) / 0.55) !important;
+}
+
+.v2-topbar {
+  min-height: 52px !important;
+  border-bottom-color: hsl(var(--border) / 0.58) !important;
+  background: hsl(var(--background) / 0.9) !important;
+  padding-block: 0 !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.v2-topbar h1 {
+  font-size: 0.875rem !important;
+  letter-spacing: -0.01em;
+}
+
+.v2-main {
+  border-inline: 0 !important;
+  background: hsl(var(--card)) !important;
+}
+
+.v2-main > .sr-only + * {
+  /* Keep the first content block close to the compact topbar. */
+  margin-top: 0;
+}
+
+.v2-mobile-nav {
+  border-top-color: hsl(var(--border) / 0.66) !important;
+  background: hsl(var(--background) / 0.94) !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.v2-mobile-link {
+  min-height: 44px !important;
+  border-radius: 7px !important;
+}
+
+.v2-mobile-link[data-active="true"] {
+  background: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+.v2-tabs {
+  border-bottom-color: hsl(var(--border) / 0.62) !important;
+}
+
+.v2-tabs > button {
+  min-height: 3rem !important;
+  padding-inline: 0.75rem !important;
+}
+
+.v2-composer-inline,
+.v2-feed-heading,
+.v2-post {
+  border-color: hsl(var(--border) / 0.58) !important;
+}
+
+.v2-composer-prompt {
+  min-height: 2.5rem !important;
+  border-color: hsl(var(--border) / 0.78) !important;
+  border-radius: 7px !important;
+  background: hsl(var(--secondary)) !important;
+}
+
+.v2-source-card {
+  border-color: hsl(var(--border) / 0.58) !important;
+  border-radius: 7px !important;
+  background: hsl(var(--muted)) !important;
+}
+
+.v2-compose-card,
+.v2-empty-state {
+  box-shadow: none !important;
+}
+
+@media (min-width: 1280px) {
+  .v2-shell-grid {
+    grid-template-columns: 56px minmax(0, 1fr) 240px !important;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .v2-shell-grid {
+    grid-template-columns: 56px minmax(0, 1fr) !important;
+  }
+
+  .v2-rail {
+    align-items: center;
+    padding-inline: 0.5rem !important;
+  }
+
+  .v2-rail .v2-rail-footer,
+  .v2-rail .v2-write-label {
+    display: block;
+  }
+}
+
+/* Repository reader: the code pane owns the page while secondary context stays out of flow. */
+.gh-repo-page {
+  --background: 40 24% 95%;
+  --foreground: 225 5% 13%;
+  --card: 42 33% 98%;
+  --card-foreground: 225 5% 13%;
+  --popover: 42 33% 98%;
+  --popover-foreground: 225 5% 13%;
+  --primary: 12 52% 52%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 42 18% 91%;
+  --secondary-foreground: 225 5% 13%;
+  --muted: 40 14% 91%;
+  --muted-foreground: 225 5% 42%;
+  --accent: 12 51% 90%;
+  --accent-foreground: 12 52% 36%;
+  --border: 40 9% 80%;
+  --input: 40 9% 75%;
+  --ring: 12 52% 52%;
+  background: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.dark .gh-repo-page {
+  --background: 225 7% 7%;
+  --foreground: 42 24% 94%;
+  --card: 225 7% 10%;
+  --card-foreground: 42 24% 94%;
+  --popover: 225 7% 11%;
+  --popover-foreground: 42 24% 94%;
+  --primary: 12 77% 74%;
+  --primary-foreground: 225 7% 10%;
+  --secondary: 225 7% 14%;
+  --secondary-foreground: 42 24% 94%;
+  --muted: 225 7% 14%;
+  --muted-foreground: 225 5% 62%;
+  --accent: 12 18% 19%;
+  --accent-foreground: 12 77% 74%;
+  --border: 225 7% 22%;
+  --input: 225 7% 27%;
+  --ring: 12 77% 74%;
+}
+
+.gh-repo-page :where(.gh-repo-header, .gh-repo-content, .gh-file-drawer, .gh-file-list, .gh-code-panel, .gh-context-content, .gh-ref-menu) {
+  border-color: hsl(var(--border) / 0.72) !important;
+  background: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.gh-repo-page .gh-repo-header {
+  border-bottom-color: hsl(var(--border) / 0.66) !important;
+}
+
+.gh-repo-page .gh-repo-shell {
+  max-width: 1180px;
+  padding-inline: 1rem;
+}
+
+.gh-repo-page .gh-repo-identity {
+  min-height: 52px;
+  gap: 0.5rem;
+}
+
+.gh-repo-page .gh-repo-mark {
+  color: hsl(var(--foreground)) !important;
+}
+
+.gh-repo-page .gh-repo-title {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  letter-spacing: -0.01em;
+}
+
+.gh-repo-page .gh-link {
+  color: hsl(var(--primary)) !important;
+}
+
+.gh-repo-page .gh-slash,
+.gh-repo-page .gh-commit-message,
+.gh-repo-page .gh-commit-actions,
+.gh-repo-page .gh-file-date,
+.gh-repo-page .gh-file-stats,
+.gh-repo-page .gh-tree-empty,
+.gh-repo-page .gh-file-empty {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.gh-repo-page .gh-visibility {
+  border-color: hsl(var(--border) / 0.78) !important;
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 0.625rem;
+}
+
+.gh-repo-page .gh-icon-control {
+  min-height: 2.5rem;
+  min-width: 2.5rem;
+  border-color: transparent !important;
+  border-radius: 7px !important;
+  background: transparent !important;
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.gh-repo-page .gh-icon-control:hover:not(:disabled) {
+  border-color: transparent !important;
+  background: hsl(var(--secondary)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.gh-repo-page .gh-repo-tabs {
+  min-height: 42px;
+  gap: 0;
+  border-bottom: 0;
+}
+
+.gh-repo-page .gh-repo-tab {
+  min-height: 42px;
+  gap: 0.4rem;
+  border-bottom-width: 2px;
+  padding-inline: 0.625rem;
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 0.75rem;
+}
+
+.gh-repo-page .gh-repo-tab:hover,
+.gh-repo-page .gh-repo-tab-active {
+  color: hsl(var(--foreground)) !important;
+}
+
+.gh-repo-page .gh-repo-tab-active {
+  border-bottom-color: hsl(var(--primary)) !important;
+}
+
+.gh-repo-page .gh-issue-count {
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  background: hsl(var(--secondary)) !important;
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 0.625rem;
+}
+
+.gh-repo-page .gh-repo-content {
+  padding-block: 0.75rem 2rem;
+}
+
+.gh-repo-page .gh-inline-alert {
+  border-color: hsl(var(--destructive) / 0.42) !important;
+  border-radius: 7px;
+  background: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+  font-size: 0.75rem;
+}
+
+.gh-repo-page .gh-file-toolbar {
+  min-height: 46px;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.gh-repo-page .gh-files-back {
+  min-height: 36px;
+  gap: 0.4rem;
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 0.75rem;
+}
+
+.gh-repo-page .gh-files-back:hover {
+  color: hsl(var(--foreground)) !important;
+}
+
+.gh-repo-page .gh-code-button {
+  min-height: 36px;
+  border-color: transparent !important;
+  border-radius: 7px !important;
+  background: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  font-size: 0.75rem;
+  box-shadow: none !important;
+}
+
+.gh-repo-page .gh-code-button:hover {
+  background: hsl(var(--primary) / 0.88) !important;
+}
+
+.gh-repo-page .gh-page-grid {
+  position: relative;
+  display: block;
+}
+
+.gh-repo-page .gh-workspace-grid {
+  grid-template-columns: minmax(12rem, 14rem) minmax(0, 1fr);
+  gap: 0.625rem;
+}
+
+.gh-repo-page .gh-file-drawer {
+  top: 0.75rem;
+  max-height: calc(100dvh - 1.5rem);
+  border-radius: 8px;
+  background: hsl(var(--muted)) !important;
+}
+
+.gh-repo-page .gh-file-drawer-head {
+  min-height: 42px;
+  border-bottom-color: hsl(var(--border) / 0.58) !important;
+  padding: 0.5rem 0.625rem;
+}
+
+.gh-repo-page .gh-file-drawer-head strong {
+  color: hsl(var(--foreground)) !important;
+  font-size: 0.75rem;
+}
+
+.gh-repo-page .gh-file-drawer-head span {
+  margin-top: 0.1rem;
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 0.625rem;
+}
+
+.gh-repo-page .gh-file-search,
+.gh-repo-page .gh-ref-search {
+  min-height: 34px;
+  gap: 0.5rem;
+  border-color: hsl(var(--border) / 0.78) !important;
+  border-radius: 6px;
+  background: hsl(var(--card)) !important;
+  padding-inline: 0.625rem;
+}
+
+.gh-repo-page .gh-file-search {
+  margin: 0.5rem;
+}
+
+.gh-repo-page .gh-file-search input,
+.gh-repo-page .gh-ref-search input {
+  color: hsl(var(--foreground)) !important;
+  font-size: 0.75rem;
+}
+
+.gh-repo-page .gh-file-search input::placeholder,
+.gh-repo-page .gh-ref-search input::placeholder {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.gh-repo-page .gh-file-drawer-scroll {
+  padding: 0.375rem;
+}
+
+.gh-repo-page .gh-tree {
+  gap: 0.0625rem;
+}
+
+.gh-repo-page .gh-tree-row {
+  min-height: 30px;
+  border-radius: 5px;
+  padding: 0.375rem 0.5rem;
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 0.6875rem;
+}
+
+.gh-repo-page .gh-tree-row:hover,
+.gh-repo-page .gh-tree-row-active {
+  background: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+.gh-repo-page .gh-tree-root {
+  border-bottom-color: hsl(var(--border) / 0.5) !important;
+}
+
+.gh-repo-page .gh-breadcrumb {
+  gap: 0.15rem;
+  margin-bottom: 0.5rem;
+  color: hsl(var(--muted-foreground)) !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+}
+
+.gh-repo-page .gh-breadcrumb-current {
+  color: hsl(var(--foreground)) !important;
+}
+
+.gh-repo-page .gh-commit-row {
+  min-height: 48px;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-color: hsl(var(--border) / 0.58) !important;
+  border-radius: 8px;
+  background: transparent !important;
+  padding: 0.5rem 0.625rem;
+}
+
+.gh-repo-page .gh-commit-row:hover {
+  background: hsl(var(--secondary) / 0.55) !important;
+}
+
+.gh-repo-page .gh-avatar {
+  width: 1.875rem;
+  height: 1.875rem;
+  border-color: hsl(var(--border) / 0.68) !important;
+  background: hsl(var(--secondary)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.gh-repo-page .gh-commit-author strong {
+  color: hsl(var(--foreground)) !important;
+  font-size: 0.75rem;
+}
+
+.gh-repo-page .gh-commit-author span {
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 0.6875rem;
+}
+
+.gh-repo-page .gh-file-stats {
+  margin: 0.375rem 0 0.5rem;
+  font-size: 0.6875rem;
+}
+
+.gh-repo-page .gh-file-list {
+  border-radius: 8px;
+  background: hsl(var(--card)) !important;
+}
+
+.gh-repo-page .gh-file-list-header,
+.gh-repo-page .gh-file-row {
+  min-height: 42px;
+  gap: 0.75rem;
+  border-bottom-color: hsl(var(--border) / 0.52) !important;
+  padding-inline: 0.75rem;
+}
+
+.gh-repo-page .gh-file-list-header {
+  min-height: 34px;
+  background: hsl(var(--muted)) !important;
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 0.6875rem;
+}
+
+.gh-repo-page .gh-file-row {
+  color: hsl(var(--foreground)) !important;
+}
+
+.gh-repo-page .gh-file-row:hover {
+  background: hsl(var(--secondary) / 0.62) !important;
+}
+
+.gh-repo-page .gh-file-name {
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.gh-repo-page .gh-file-list-footer {
+  min-height: 36px;
+  border-top-color: hsl(var(--border) / 0.52) !important;
+  font-size: 0.75rem;
+}
+
+.gh-repo-page .gh-code-panel {
+  border-radius: 8px;
+  background: #fbfaf7 !important;
+}
+
+.dark .gh-repo-page .gh-code-panel {
+  background: #17191e !important;
+}
+
+.gh-repo-page .gh-code-toolbar {
+  min-height: 42px;
+  border-bottom-color: hsl(var(--border) / 0.58) !important;
+  background: hsl(var(--muted)) !important;
+  padding: 0.375rem 0.5rem;
+}
+
+.gh-repo-page .gh-code-tabs {
+  border: 0 !important;
+  border-radius: 6px;
+}
+
+.gh-repo-page .gh-code-tab {
+  min-height: 30px;
+  border: 0 !important;
+  border-radius: 5px;
+  background: transparent !important;
+  color: hsl(var(--muted-foreground)) !important;
+  padding-inline: 0.625rem;
+  font-size: 0.6875rem;
+}
+
+.gh-repo-page .gh-code-tab-active {
+  background: hsl(var(--card)) !important;
+  box-shadow: inset 0 -2px hsl(var(--primary)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.gh-repo-page .gh-code-actions .gh-icon-control {
+  min-height: 32px;
+  min-width: 32px;
+}
+
+.gh-repo-page .gh-code-footer {
+  min-height: 38px;
+  border-top-color: hsl(var(--border) / 0.55) !important;
+  padding: 0.375rem 0.5rem;
+}
+
+.gh-repo-page .gh-code-footer-meta {
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 0.625rem;
+}
+
+.gh-repo-page .gh-footer-button {
+  min-height: 30px;
+  border-radius: 6px !important;
+  font-size: 0.6875rem;
+  box-shadow: none !important;
+}
+
+.gh-repo-page .gh-explainer {
+  border-top-color: hsl(var(--border) / 0.55) !important;
+  padding: 0.75rem;
+}
+
+.gh-repo-page .gh-context-drawer {
+  position: fixed;
+  top: 72px;
+  right: 1rem;
+  z-index: 45;
+}
+
+.gh-repo-page .gh-context-summary {
+  min-height: 36px;
+  min-width: 36px;
+  border-color: hsl(var(--border) / 0.72) !important;
+  border-radius: 7px;
+  background: hsl(var(--card)) !important;
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.gh-repo-page .gh-context-summary:hover {
+  background: hsl(var(--secondary)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.gh-repo-page .gh-context-content {
+  top: 42px;
+  width: min(20rem, calc(100vw - 2rem));
+  max-height: calc(100dvh - 6rem);
+  border-radius: 8px;
+  background: hsl(var(--card)) !important;
+  padding: 0.625rem;
+  box-shadow: 0 14px 38px hsl(var(--foreground) / 0.12);
+}
+
+.gh-repo-page .gh-context-content .v2-surface-tabs {
+  border-bottom-color: hsl(var(--border) / 0.55) !important;
+}
+
+.gh-repo-page .gh-context-content .v2-surface-tabs [role="tab"] {
+  min-height: 32px;
+  border-radius: 5px;
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 0.6875rem;
+}
+
+.gh-repo-page .gh-context-content .v2-repo-surfaces [role="tab"][aria-selected="true"] {
+  background: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+.gh-repo-page .gh-context-content .v2-repo-surface {
+  margin-top: 0.5rem !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.gh-repo-page .gh-context-content .v2-surface-tabs {
+  gap: 0.125rem;
+  padding: 0 0 0.25rem;
+}
+
+.gh-repo-page .gh-context-content .v2-surface-tabs [role="tab"] svg {
+  display: none;
+}
+
+.gh-repo-page .gh-context-content .v2-repo-surfaces [role="tabpanel"] {
+  padding: 0.5rem 0 0 !important;
+}
+
+.gh-repo-page .gh-context-content section.rounded-xl {
+  margin-top: 0.5rem !important;
+  border-color: hsl(var(--border) / 0.58) !important;
+  border-radius: 7px !important;
+  padding: 0.625rem !important;
+  box-shadow: none !important;
+}
+
+.gh-repo-page .gh-context-content section.rounded-xl > div:first-child {
+  gap: 0.5rem;
+}
+
+.gh-repo-page .gh-context-content section.rounded-xl > div:first-child > div:first-child {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}
+
+.gh-repo-page .gh-context-content section.rounded-xl h2 {
+  font-size: 0.75rem;
+}
+
+.gh-repo-page .gh-context-content section.rounded-xl p {
+  font-size: 0.625rem;
+  line-height: 1.45;
+}
+
+.gh-repo-page .gh-context-content section.rounded-xl .mt-4 {
+  margin-top: 0.625rem !important;
+}
+
+.gh-repo-page .gh-context-content section.rounded-xl .rounded-xl {
+  border-radius: 6px !important;
+}
+
+.gh-repo-page .gh-ref-trigger {
+  min-height: 36px;
+  gap: 0.5rem;
+  border-color: hsl(var(--border) / 0.78) !important;
+  border-radius: 7px !important;
+  background: hsl(var(--secondary)) !important;
+  color: hsl(var(--foreground)) !important;
+  padding-inline: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.gh-repo-page .gh-ref-menu {
+  top: calc(100% + 0.375rem);
+  width: min(24rem, calc(100vw - 2rem));
+  border-radius: 8px;
+  background: hsl(var(--card)) !important;
+  box-shadow: 0 14px 38px hsl(var(--foreground) / 0.15);
+}
+
+.gh-repo-page .gh-ref-menu-header {
+  min-height: 42px;
+  padding: 0.5rem 0.75rem 0.25rem;
+}
+
+.gh-repo-page .gh-ref-menu-header p {
+  font-size: 0.8125rem;
+}
+
+.gh-repo-page .gh-ref-search {
+  margin: 0 0.75rem 0.5rem;
+}
+
+.gh-repo-page .gh-ref-tabs {
+  border-bottom-color: hsl(var(--border) / 0.55) !important;
+  padding-inline: 0.75rem;
+}
+
+.gh-repo-page .gh-ref-tab {
+  min-height: 34px;
+  padding-inline: 0.75rem;
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 0.6875rem;
+}
+
+.gh-repo-page .gh-ref-tab-active {
+  border-bottom-color: hsl(var(--primary)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.gh-repo-page .gh-ref-list {
+  padding: 0.375rem 0.75rem;
+}
+
+.gh-repo-page .gh-ref-row {
+  min-height: 32px;
+  border-radius: 5px;
+  color: hsl(var(--muted-foreground)) !important;
+  font-size: 0.6875rem;
+}
+
+.gh-repo-page .gh-ref-row:hover,
+.gh-repo-page .gh-ref-row-active {
+  background: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+.gh-repo-page .gh-ref-check {
+  color: hsl(var(--primary)) !important;
+}
+
+.gh-repo-page .gh-ref-footer {
+  min-height: 38px;
+  border-top-color: hsl(var(--border) / 0.55) !important;
+  padding-inline: 0.75rem;
+  color: hsl(var(--primary)) !important;
+  font-size: 0.6875rem;
+}
+
+@media (max-width: 1023px) {
+  .gh-repo-page .gh-context-drawer {
+    top: calc(58px + env(safe-area-inset-top));
+    right: 0.75rem;
+  }
+
+  .gh-repo-page .gh-context-content {
+    top: 42px;
+    bottom: auto;
+  }
+
+  .gh-repo-page .gh-file-drawer {
+    width: min(20rem, 86vw);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .gh-repo-page .gh-file-backdrop {
+    background: hsl(var(--foreground) / 0.2) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .gh-repo-page .gh-repo-shell {
+    padding-inline: 0.75rem;
+  }
+
+  .gh-repo-page .gh-repo-identity {
+    min-height: 46px;
+  }
+
+  .gh-repo-page .gh-repo-title {
+    font-size: 0.75rem;
+  }
+
+  .gh-repo-page .gh-repo-tab {
+    min-height: 38px;
+    font-size: 0.6875rem;
+  }
+
+  .gh-repo-page .gh-file-toolbar {
+    gap: 0.375rem;
+  }
+
+  .gh-repo-page .gh-file-list {
+    margin-inline: -0.75rem;
+    border-inline: 0;
+    border-radius: 0;
+  }
+
+  .gh-repo-page .gh-file-list-header,
+  .gh-repo-page .gh-file-row {
+    min-height: 40px;
+    padding-inline: 0.75rem;
+  }
+
+  .gh-repo-page .gh-commit-row {
+    min-height: 44px;
+    padding-inline: 0.625rem;
+  }
+
+  .gh-repo-page .gh-code-toolbar {
+    min-height: 38px;
+    padding-inline: 0.375rem;
+  }
+
+  .gh-repo-page .gh-code-footer {
+    padding-inline: 0.375rem;
   }
 }

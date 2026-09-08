@@ -28,7 +28,7 @@ export default function RootLayout({
       // class attribute on it */}
       <html lang="en" suppressHydrationWarning>
         <body className="font-sans antialiased">
-          <ThemeProvider attribute="class">
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <ConvexClientProvider>{children}</ConvexClientProvider>
           </ThemeProvider>
         </body>

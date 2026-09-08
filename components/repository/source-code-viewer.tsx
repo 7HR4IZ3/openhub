@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import type { editor } from "monaco-editor";
 import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 
 import type { RepositoryFile } from "@/lib/providers/types";
 
@@ -31,6 +32,8 @@ export function SourceCodeViewer({
 }) {
   const [editorInstance, setEditorInstance] =
     useState<editor.IStandaloneCodeEditor | null>(null);
+  const { resolvedTheme } = useTheme();
+  const monacoTheme = resolvedTheme === "dark" ? "openhub-dark" : "openhub-light";
 
   useEffect(() => {
     if (editorInstance === null || onSelectionChange === undefined) return;
@@ -69,38 +72,66 @@ export function SourceCodeViewer({
         language={languageForPath(file.path, primaryLanguage)}
         value={file.text}
         onMount={(instance, monaco) => {
-          monaco.editor.defineTheme("github-dark", {
+          monaco.editor.defineTheme("openhub-light", {
+            base: "vs",
+            inherit: true,
+            rules: [
+              { token: "comment", foreground: "8c8b86" },
+              { token: "keyword", foreground: "76529b" },
+              { token: "string", foreground: "3f7951" },
+              { token: "number", foreground: "376a93" },
+              { token: "type", foreground: "9a552e" },
+              { token: "delimiter", foreground: "45454a" },
+            ],
+            colors: {
+              "editor.background": "#fbfaf7",
+              "editor.foreground": "#202124",
+              "editorGutter.background": "#fbfaf7",
+              "editorLineNumber.foreground": "#95938d",
+              "editorLineNumber.activeForeground": "#696b70",
+              editorLineHighlightBackground: "#f5f3ee",
+              "editor.selectionBackground": "#f2ddd6",
+              "editorIndentGuide.background": "#e5e2db",
+              "editorIndentGuide.activeBackground": "#cbc8c0",
+              "editorWidget.background": "#efede7",
+              "editorWidget.border": "#cbc8c0",
+              "scrollbarSlider.background": "#cbc8c0",
+              "scrollbarSlider.hoverBackground": "#aaa69e",
+              "scrollbarSlider.activeBackground": "#95938d",
+            },
+          });
+          monaco.editor.defineTheme("openhub-dark", {
             base: "vs-dark",
             inherit: true,
             rules: [
-              { token: "comment", foreground: "8b949e" },
-              { token: "keyword", foreground: "ff7b72" },
-              { token: "string", foreground: "a5d6ff" },
-              { token: "number", foreground: "79c0ff" },
-              { token: "type", foreground: "ffa657" },
-              { token: "delimiter", foreground: "c9d1d9" },
+              { token: "comment", foreground: "959aa5" },
+              { token: "keyword", foreground: "f39a86" },
+              { token: "string", foreground: "9ed0ad" },
+              { token: "number", foreground: "9ac2e8" },
+              { token: "type", foreground: "f0b17b" },
+              { token: "delimiter", foreground: "f2f0eb" },
             ],
             colors: {
-              "editor.background": "#0d1117",
-              "editor.foreground": "#c9d1d9",
-              "editorGutter.background": "#0d1117",
-              "editorLineNumber.foreground": "#8b949e",
-              "editorLineNumber.activeForeground": "#c9d1d9",
-              editorLineHighlightBackground: "#0d1117",
-              "editor.selectionBackground": "#264f78",
-              "editorIndentGuide.background": "#21262d",
-              "editorIndentGuide.activeBackground": "#30363d",
-              "editorWidget.background": "#161b22",
-              "editorWidget.border": "#30363d",
-              "scrollbarSlider.background": "#30363d",
-              "scrollbarSlider.hoverBackground": "#484f58",
-              "scrollbarSlider.activeBackground": "#6e7681",
+              "editor.background": "#17191e",
+              "editor.foreground": "#f2f0eb",
+              "editorGutter.background": "#17191e",
+              "editorLineNumber.foreground": "#959aa5",
+              "editorLineNumber.activeForeground": "#f2f0eb",
+              editorLineHighlightBackground: "#1c1e24",
+              "editor.selectionBackground": "#392827",
+              "editorIndentGuide.background": "#262932",
+              "editorIndentGuide.activeBackground": "#30333c",
+              "editorWidget.background": "#1c1e24",
+              "editorWidget.border": "#30333c",
+              "scrollbarSlider.background": "#30333c",
+              "scrollbarSlider.hoverBackground": "#4b4e58",
+              "scrollbarSlider.activeBackground": "#6b6f7b",
             },
           });
-          monaco.editor.setTheme("github-dark");
+          monaco.editor.setTheme(monacoTheme);
           setEditorInstance(instance);
         }}
-        theme="github-dark"
+        theme={monacoTheme}
         options={{
           automaticLayout: true,
           contextmenu: true,
