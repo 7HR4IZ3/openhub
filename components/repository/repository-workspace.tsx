@@ -554,7 +554,6 @@ function RepositoryWorkspaceView({
                 <div className="gh-directory-view">
                   <RepositoryCommitRow commit={latestCommit} />
                   <RepositoryDirectoryList
-                    repository={repository}
                     sourceRef={sourceRef}
                     treePath={treePath}
                     entries={entries}
@@ -963,7 +962,6 @@ function RepositoryBreadcrumb({
 }
 
 function RepositoryDirectoryList({
-  repository,
   sourceRef,
   treePath,
   entries,
@@ -972,7 +970,6 @@ function RepositoryDirectoryList({
   latestCommitAt,
   onNavigate,
 }: {
-  repository: NormalizedRepository;
   sourceRef: string;
   treePath: string;
   entries: RepositoryTreeEntry[];
