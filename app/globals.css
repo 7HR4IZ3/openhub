@@ -595,6 +595,7 @@
   .v2-file-manager > div:nth-child(2) {
     max-height: none;
     flex: 1;
+    -webkit-overflow-scrolling: touch;
   }
 
   .v2-file-manager[data-open="true"] {
