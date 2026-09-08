@@ -185,7 +185,9 @@ export function RepositoryRefPicker({
   const branches = refs.filter((ref) => ref.kind === "branch");
   const tags = refs.filter((ref) => ref.kind === "tag");
   const detailsRef = useRef<HTMLDetailsElement | null>(null);
-  const [activeKind, setActiveKind] = useState<"branch" | "tag">("branch");
+  const [activeKind, setActiveKind] = useState<"branch" | "tag">(
+    branches.length > 0 ? "branch" : "tag",
+  );
   const [query, setQuery] = useState("");
   const visibleRefs = (activeKind === "branch" ? branches : tags).filter(
     (ref) => {
