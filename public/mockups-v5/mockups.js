@@ -101,7 +101,7 @@
     "workspace.css": [
       ":root {",
       "  --reader-width: 860px;",
-      "  --accent: <mark>#f39a86</mark>;",
+      "  --accent: <mark>#c45b43</mark>;",
       "}",
     ],
     "README.md": [

@@ -16,4 +16,4 @@ The concept keeps the useful source browsing structure—stable repository conte
 - notes and history use compact rows so secondary views remain scannable.
 - search inputs use a 16px mobile type size to avoid iOS focus zoom.
 
-The visual language is OpenHub-specific: charcoal surfaces, ember signal color, quiet separators, compact monospace labels, and a code pane that behaves like the primary product surface.
+The visual language is OpenHub-specific: warm paper surfaces, an ember signal color, quiet separators, compact monospace labels, and a code pane that behaves like the primary product surface. Files have one clear entry point on mobile; there is no duplicate floating file control or file-header toggle.

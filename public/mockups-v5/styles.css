@@ -1,21 +1,21 @@
 :root {
-  color-scheme: dark;
-  --bg: #111216;
-  --bar: #17181d;
-  --panel: #1c1e24;
-  --panel-2: #22252d;
-  --line: #30333c;
-  --line-soft: #25272e;
-  --ink: #f2f0eb;
-  --muted: #9a9ca4;
-  --faint: #686c77;
-  --signal: #f39a86;
-  --signal-soft: #392827;
-  --code: #17191e;
-  --code-line: #262932;
-  --code-key: #d5a6ff;
-  --code-string: #a8d995;
-  --code-number: #8fc7ff;
+  color-scheme: light;
+  --bg: #f5f3ee;
+  --bar: #ebe8e1;
+  --panel: #efede7;
+  --panel-2: #e4e1d9;
+  --line: #cbc8c0;
+  --line-soft: #dedbd3;
+  --ink: #202124;
+  --muted: #696b70;
+  --faint: #95938d;
+  --signal: #c45b43;
+  --signal-soft: #f2ddd6;
+  --code: #fbfaf7;
+  --code-line: #e5e2db;
+  --code-key: #76529b;
+  --code-string: #3f7951;
+  --code-number: #376a93;
   --sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -155,7 +155,7 @@ svg {
   color: var(--muted);
 }
 .icon-button:hover {
-  border-color: #4a4e59;
+  border-color: #aaa69e;
   background: var(--panel-2);
   color: var(--ink);
 }
@@ -277,7 +277,7 @@ svg {
   font: 11px var(--mono);
 }
 .ref-button:hover {
-  border-color: #4a4e59;
+  border-color: #aaa69e;
   background: var(--panel-2);
 }
 .ref-button svg {
@@ -526,7 +526,7 @@ svg {
   min-height: 21px;
 }
 .code-lines > div:hover {
-  background: rgb(255 255 255 / 0.035);
+  background: rgb(32 33 36 / 0.04);
 }
 .code-lines > div > span {
   padding-right: 12px;
@@ -638,7 +638,6 @@ svg {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.mobile-explorer,
 .mobile-nav {
   display: none;
 }
@@ -961,26 +960,6 @@ kbd {
     min-height: 35px;
     padding-inline: 11px;
   }
-  .mobile-explorer {
-    display: inline-flex;
-    position: fixed;
-    right: 13px;
-    bottom: 73px;
-    z-index: 50;
-    min-width: 43px;
-    min-height: 43px;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--signal);
-    border-radius: 50%;
-    background: var(--signal);
-    color: #1b1515;
-    box-shadow: 0 8px 25px rgb(0 0 0 / 0.3);
-  }
-  .mobile-explorer svg {
-    width: 19px;
-    height: 19px;
-  }
   .mobile-nav {
     display: grid;
     position: fixed;
@@ -992,7 +971,7 @@ kbd {
     min-height: 58px;
     align-items: center;
     border-top: 1px solid var(--line);
-    background: rgb(23 24 29 / 0.96);
+    background: rgb(235 232 225 / 0.96);
     padding: 4px 10px env(safe-area-inset-bottom);
     backdrop-filter: blur(16px);
   }
