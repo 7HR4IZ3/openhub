@@ -1826,6 +1826,16 @@ body {
   color: hsl(var(--foreground));
 }
 
+.v2-shell :where(button, a).rounded-md,
+.v2-repo-page :where(button, a).rounded-md {
+  border-radius: 7px !important;
+}
+
+.v2-explore-search input,
+.v2-home-search a {
+  border-radius: 7px !important;
+}
+
 /* The global app shell is an icon rail, not a second content column. */
 .v2-shell-grid {
   grid-template-columns: 56px minmax(0, 1fr) !important;
