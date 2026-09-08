@@ -339,10 +339,16 @@ function RepositoryWorkspaceView({
         ) : null}
 
         <div className="gh-page-grid">
-          <div className="gh-workspace-grid">
+          <div
+            className={cn(
+              "gh-workspace-grid",
+              !file && "gh-directory-workspace",
+            )}
+          >
             <aside
               id="repository-file-manager"
               data-open={isTreeOpen}
+              data-directory={file === null ? "true" : "false"}
               className={cn(
                 "gh-file-drawer",
                 isTreeOpen ? "gh-file-drawer-open" : "gh-file-drawer-closed",

@@ -519,6 +519,11 @@
     color: #c9d1d9;
   }
 
+  .gh-repo-back {
+    border-color: transparent;
+    background: transparent;
+  }
+
   .gh-repo-title {
     display: flex;
     min-width: 0;
@@ -1545,6 +1550,14 @@
     display: none;
   }
 
+  .gh-repo-page .gh-directory-workspace {
+    display: block;
+  }
+
+  .gh-repo-page .gh-file-drawer[data-directory="true"] {
+    display: none;
+  }
+
   .gh-repo-page .gh-file-drawer {
     transform: none;
   }
@@ -1628,6 +1641,10 @@
 @media (max-width: 640px) {
   .gh-repo-page .gh-repo-shell {
     padding-inline: 1rem;
+  }
+
+  .gh-repo-page .gh-repo-back {
+    display: none;
   }
 
   .gh-repo-page .gh-repo-identity {
