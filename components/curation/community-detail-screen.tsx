@@ -187,21 +187,21 @@ function ConnectedCommunityDetail({
                 "A technical circle for source-backed discussion."}
             </p>
           </div>
-          <Button
-            type="button"
-            variant={active ? "secondary" : "default"}
-            className="shrink-0 rounded-md"
-            onClick={() => void toggleMembership()}
-            disabled={!isAuthenticated || pending}
-          >
-            {!isAuthenticated
-              ? "Sign in to join"
-              : pending
-                ? "Saving…"
-                : active
-                  ? "Leave circle"
-                  : "Join circle"}
-          </Button>
+          {!isAuthenticated ? (
+            <Button asChild className="shrink-0 rounded-md">
+              <Link href="/signin">Sign in to join</Link>
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              variant={active ? "secondary" : "default"}
+              className="shrink-0 rounded-md"
+              onClick={() => void toggleMembership()}
+              disabled={pending}
+            >
+              {pending ? "Saving…" : active ? "Leave circle" : "Join circle"}
+            </Button>
+          )}
         </div>
         {error ? (
           <p role="alert" className="mt-4 text-xs text-destructive">
@@ -220,16 +220,20 @@ function ConnectedCommunityDetail({
                   Start a discussion <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </Button>
-            ) : (
-              <Button
-                type="button"
-                className="rounded-md"
-                onClick={() => void toggleMembership()}
-                disabled={!isAuthenticated || pending}
-              >
-                {isAuthenticated ? "Join to post" : "Sign in to join"}
-              </Button>
-            )}
+            ) : !isAuthenticated ? (
+                <Button asChild className="rounded-md">
+                  <Link href="/signin">Sign in to join</Link>
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  className="rounded-md"
+                  onClick={() => void toggleMembership()}
+                  disabled={pending}
+                >
+                  Join to post
+                </Button>
+              )}
             <span className="text-xs text-muted-foreground">{posts.results.length} posts</span>
           </div>
         </div>

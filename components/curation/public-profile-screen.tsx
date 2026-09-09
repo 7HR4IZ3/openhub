@@ -127,6 +127,7 @@ function ConnectedPublicProfile({ profile }: { profile: Doc<"profiles"> }) {
       : "skip",
   );
   const [pending, setPending] = useState(false);
+  const [followError, setFollowError] = useState<string | null>(null);
   const githubUrl =
     profile.githubProfileUrl ??
     `https://github.com/${profile.githubLogin ?? profile.handle}`;
@@ -134,11 +135,18 @@ function ConnectedPublicProfile({ profile }: { profile: Doc<"profiles"> }) {
   async function toggleFollow() {
     if (!isAuthenticated || pending) return;
     setPending(true);
+    setFollowError(null);
     try {
       await setFollow({
         target: { kind: "person", userId: profile.userId },
         following: !following,
       });
+    } catch (error) {
+      setFollowError(
+        error instanceof Error
+          ? error.message
+          : "Follow state could not be updated",
+      );
     } finally {
       setPending(false);
     }
@@ -196,6 +204,11 @@ function ConnectedPublicProfile({ profile }: { profile: Doc<"profiles"> }) {
             ) : null}
           </div>
         </div>
+        {followError ? (
+          <p role="alert" className="mt-4 text-xs text-destructive">
+            {followError}
+          </p>
+        ) : null}
         <div className="mt-5 flex flex-wrap gap-2 text-xs text-muted-foreground">
           {profile.interests.map((interest) => (
             <span

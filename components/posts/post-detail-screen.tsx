@@ -34,6 +34,8 @@ import {
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import {
+  CurationErrorBoundary,
+  CurationErrorState,
   CurationEmptyState,
   CurationLoading,
 } from "@/components/curation/curation-states";
@@ -55,7 +57,23 @@ export function PostDetailScreen({
 }) {
   if (!convexConfigured) return <PostSetupState />;
 
-  return <ConnectedPostDetailScreen postId={postId as PostId} />;
+  return (
+    <CurationErrorBoundary
+      fallback={(reset) => (
+        <CurationShell active="Home" eyebrow="post" title="Discussion">
+          <div className="p-5 sm:p-7">
+            <CurationErrorState
+              title="This discussion could not load."
+              body="Try again to reconnect the post and its replies."
+              onRetry={reset}
+            />
+          </div>
+        </CurationShell>
+      )}
+    >
+      <ConnectedPostDetailScreen postId={postId as PostId} />
+    </CurationErrorBoundary>
+  );
 }
 
 function ConnectedPostDetailScreen({ postId }: { postId: PostId }) {

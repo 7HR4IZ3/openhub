@@ -1,6 +1,10 @@
 "use client";
 
 import { CurationShell } from "@/components/curation/curation-shell";
+import {
+  CurationErrorBoundary,
+  CurationErrorState,
+} from "@/components/curation/curation-states";
 import { Button } from "@/components/ui/button";
 import {
   ArrowTopRightIcon as ArrowUpRight,
@@ -204,7 +208,20 @@ function OpenHubSearchResults({
   convexConfigured: boolean;
 }) {
   if (!convexConfigured) return null;
-  return <ConnectedOpenHubSearchResults query={query} />;
+  return (
+    <CurationErrorBoundary
+      fallback={(reset) => (
+        <CurationErrorState
+          className="mt-6"
+          title="OpenHub results could not load."
+          body="Try again to reconnect people, posts, lists, and communities."
+          onRetry={reset}
+        />
+      )}
+    >
+      <ConnectedOpenHubSearchResults query={query} />
+    </CurationErrorBoundary>
+  );
 }
 
 function ConnectedOpenHubSearchResults({ query }: { query: string }) {
