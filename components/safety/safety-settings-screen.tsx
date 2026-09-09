@@ -106,7 +106,6 @@ function ConnectedSafetySettings() {
       active="Profile"
       eyebrow="safety"
       title="Safety and control"
-      description="Shape what reaches your trail. Blocking and muting are private settings and never appear in public profiles."
     >
       <section className="border-b border-border p-5 sm:p-7">
         <div className="flex items-start gap-3 rounded-xl bg-secondary p-5 dark:bg-secondary">
@@ -130,7 +129,7 @@ function ConnectedSafetySettings() {
         <SafetyPanel
           icon={Ban}
           title="Blocked people"
-          description="Blocked accounts cannot appear in your feed or interact with your posts."
+          description="Blocked accounts stay out of your feed."
         >
           <div className="space-y-2">
             {blocks.results.map((block) => (
@@ -187,7 +186,7 @@ function ConnectedSafetySettings() {
         <SafetyPanel
           icon={VolumeX}
           title="Muted targets"
-          description="Mute a person or repository from its context menu. Topic and category mutes are stored here too."
+          description="Muted sources stay out of your feed."
         >
           <div className="space-y-2">
             {mutes.results.map((mute) => (
@@ -236,7 +235,7 @@ function ConnectedSafetySettings() {
         <SafetyPanel
           icon={Filter}
           title="Keyword filters"
-          description="Hide posts containing words or phrases you do not want in your reading trail."
+          description="Filter words from your reading trail."
         >
           <label
             htmlFor="keyword-filter"
@@ -312,7 +311,7 @@ function ConnectedSafetySettings() {
         <SafetyPanel
           icon={LockKeyhole}
           title="Privacy boundary"
-          description="OpenHub only displays and caches provider content. Blocking and moderation never grant access to private repositories."
+          description="Private provider content stays private."
         >
           <p className="text-sm leading-6 text-muted-foreground">
             Private repository access is always checked against the provider

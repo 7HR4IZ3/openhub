@@ -142,14 +142,11 @@ function ConnectedYourLists() {
       >
         <div className="flex items-end justify-between gap-3">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              Start intentionally
-            </p>
             <h2
               id="new-list-heading"
               className="mt-2 text-xl font-semibold tracking-[-0.035em]"
             >
-              Choose a list shape
+              New list
             </h2>
           </div>
           <Button
@@ -170,12 +167,12 @@ function ConnectedYourLists() {
             <ListVisibilityCard
               icon={Globe2}
               title="Public trail"
-              body="Share a useful path through repositories and help someone else start learning."
+              body="Share a path through repositories."
             />
             <ListVisibilityCard
               icon={LockKeyhole}
               title="Private notebook"
-              body="Keep a personal queue of code, questions, and references while you work through them."
+              body="Keep a private queue of source and questions."
               privateList
             />
           </div>
@@ -447,18 +444,15 @@ function ListVisibilityCard({
   privateList?: boolean;
 }) {
   return (
-    <article className="rounded-xl border border-border p-5">
+    <article className="rounded-lg bg-secondary/60 p-4">
       <div className="flex items-center justify-between gap-3">
         <Icon className="h-5 w-5 text-foreground" />
-        <span className="rounded-full border border-border px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">
+        <span className="rounded-md bg-background/70 px-2 py-1 text-[11px] font-semibold text-muted-foreground">
           {privateList ? "Only you" : "Public by choice"}
         </span>
       </div>
-      <h3 className="mt-6 text-sm font-semibold">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">{body}</p>
-      <p className="mt-5 text-xs font-semibold text-muted-foreground">
-        Use the create button above
-      </p>
+      <h3 className="mt-4 text-sm font-semibold">{title}</h3>
+      <p className="mt-1 text-sm leading-5 text-muted-foreground">{body}</p>
     </article>
   );
 }

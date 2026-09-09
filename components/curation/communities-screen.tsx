@@ -178,7 +178,7 @@ function CommunityCard({
   }
 
   return (
-    <article className="rounded-xl border border-border p-4">
+    <article className="rounded-lg bg-secondary/60 p-4">
       <div className="flex items-center justify-between gap-3">
         <Users className="h-5 w-5 text-foreground" />
         <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -191,11 +191,10 @@ function CommunityCard({
       >
         {community.name}
       </Link>
-      <p className="mt-2 line-clamp-2 text-sm leading-5 text-muted-foreground">
-        {community.description ||
-          "A technical circle for source-backed discussion."}
+      <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
+        {community.description || "Source-backed discussion"}
       </p>
-      <div className="mt-5 flex items-center justify-between gap-3">
+      <div className="mt-4 flex items-center justify-between gap-3">
         <Button
           type="button"
           variant={joined ? "secondary" : "outline"}
