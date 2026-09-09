@@ -4,6 +4,8 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  CurationErrorBoundary,
+  CurationErrorState,
   CurationEmptyState,
   CurationLoading,
 } from "@/components/curation/curation-states";
@@ -41,7 +43,23 @@ export function BountiesScreen({
         </div>
       </CurationShell>
     );
-  return <ConnectedBounties />;
+  return (
+    <CurationErrorBoundary
+      fallback={(reset) => (
+        <CurationShell active="Explore" eyebrow="tasks" title="Tasks and bounties">
+          <div className="p-5 sm:p-7">
+            <CurationErrorState
+              title="Tasks could not load."
+              body="Try again to reconnect the public task board."
+              onRetry={reset}
+            />
+          </div>
+        </CurationShell>
+      )}
+    >
+      <ConnectedBounties />
+    </CurationErrorBoundary>
+  );
 }
 
 function ConnectedBounties() {
@@ -69,18 +87,19 @@ function ConnectedBounties() {
               Open tasks with a clear next step.
             </h2>
           </div>
-          <Button
-            type="button"
-            className="rounded-md"
-            onClick={() => setCreating((value) => !value)}
-            disabled={!isAuthenticated}
-          >
-            {isAuthenticated
-              ? creating
-                ? "Close form"
-                : "Post a task"
-              : "Sign in to post"}
-          </Button>
+          {isAuthenticated ? (
+            <Button
+              type="button"
+              className="rounded-md"
+              onClick={() => setCreating((value) => !value)}
+            >
+              {creating ? "Close form" : "Post a task"}
+            </Button>
+          ) : (
+            <Button asChild className="rounded-md">
+              <Link href="/signin">Sign in to post</Link>
+            </Button>
+          )}
         </div>
         {creating ? (
           <CreateBountyForm onCreated={() => setCreating(false)} />
@@ -106,8 +125,16 @@ function ConnectedBounties() {
             <CurationLoading label="Loading open tasks…" />
           </div>
         ) : null}
+        {listings.results.length === 0 && listings.status.toString() === "Error" ? (
+          <CurationErrorState
+            className="mt-5"
+            title="Open tasks could not load."
+            body="Try again to refresh the public task board."
+          />
+        ) : null}
         {listings.results.length === 0 &&
-        listings.status !== "LoadingFirstPage" ? (
+        listings.status !== "LoadingFirstPage" &&
+        listings.status.toString() !== "Error" ? (
           <CurationEmptyState
             className="mt-5"
             icon={CircleDollarSign}

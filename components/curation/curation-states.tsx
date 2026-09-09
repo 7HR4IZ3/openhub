@@ -1,8 +1,11 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ArrowTopRightIcon as ArrowUpRight } from "@radix-ui/react-icons";
 import type { AppIcon } from "@/components/ui/icon";
 import Link from "next/link";
+import { Component, type ErrorInfo, type ReactNode } from "react";
 
 export function CurationLoading({
   label = "Loading your trail…",
@@ -101,4 +104,71 @@ export function CurationStatus({
       <p className="mt-1 text-sm leading-6 text-muted-foreground">{body}</p>
     </div>
   );
+}
+
+export function CurationErrorState({
+  title = "Could not load this view.",
+  body = "The connection failed before the latest data arrived.",
+  onRetry,
+  className,
+}: {
+  title?: string;
+  body?: string;
+  onRetry?: () => void;
+  className?: string;
+}) {
+  return (
+    <div
+      role="alert"
+      className={cn(
+        "v2-status rounded-xl border border-destructive/30 bg-destructive/[0.04] p-4",
+        className,
+      )}
+    >
+      <p className="text-sm font-semibold">{title}</p>
+      <p className="mt-1 text-sm leading-6 text-muted-foreground">{body}</p>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="mt-3 rounded-md"
+        onClick={onRetry ?? (() => window.location.reload())}
+      >
+        Try again
+      </Button>
+    </div>
+  );
+}
+
+export class CurationErrorBoundary extends Component<
+  {
+    children: ReactNode;
+    fallback?: (reset: () => void) => ReactNode;
+  },
+  { hasError: boolean }
+> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("Curation view failed", error, info);
+  }
+
+  private reset = () => this.setState({ hasError: false });
+
+  render() {
+    if (!this.state.hasError) return this.props.children;
+    return this.props.fallback ? (
+      this.props.fallback(this.reset)
+    ) : (
+      <CurationErrorState
+        title="This view could not load."
+        body="Try again to reconnect the latest data."
+        onRetry={this.reset}
+      />
+    );
+  }
 }

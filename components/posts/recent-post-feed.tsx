@@ -13,6 +13,7 @@ import {
 import { api } from "@/convex/_generated/api";
 import { PostBody } from "@/components/posts/post-body";
 import {
+  CurationErrorState,
   CurationEmptyState,
   CurationLoading,
 } from "@/components/curation/curation-states";
@@ -63,6 +64,15 @@ function ConnectedRecentPostFeed({ mode }: { mode: PostFeedMode }) {
               ? "Finding meaningful momentum…"
               : "Loading source-backed posts…"
         }
+      />
+    );
+  }
+
+  if (mode === "recent" && status.toString() === "Error") {
+    return (
+      <CurationErrorState
+        title="The public trail could not load."
+        body="Try again to reconnect recent source-backed posts."
       />
     );
   }

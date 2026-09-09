@@ -4,6 +4,8 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  CurationErrorBoundary,
+  CurationErrorState,
   CurationEmptyState,
   CurationLoading,
 } from "@/components/curation/curation-states";
@@ -12,7 +14,6 @@ import { SectionTabs } from "@/components/ui/section-tabs";
 import { useConvexAuth, useMutation, usePaginatedQuery } from "convex/react";
 import {
   ArrowTopRightIcon as ArrowUpRight,
-  ReaderIcon as BookMarked,
   GlobeIcon as Compass,
   BookmarkIcon as FolderHeart,
   GlobeIcon as Globe2,
@@ -24,7 +25,6 @@ import { type FormEvent, useState } from "react";
 
 const tabs = [
   { value: "your", label: "Your lists" },
-  { value: "shared", label: "Shared with you" },
   { value: "discover", label: "Discover" },
 ] as const;
 
@@ -36,7 +36,23 @@ export function ListsScreen({
   convexConfigured: boolean;
 }) {
   if (!convexConfigured) return <ListsSetup />;
-  return <ConnectedListsScreen />;
+  return (
+    <CurationErrorBoundary
+      fallback={(reset) => (
+        <CurationShell active="Lists" eyebrow="lists" title="Curated trails">
+          <div className="p-5 sm:p-7">
+            <CurationErrorState
+              title="Lists could not load."
+              body="Try again to reconnect your saved trails."
+              onRetry={reset}
+            />
+          </div>
+        </CurationShell>
+      )}
+    >
+      <ConnectedListsScreen />
+    </CurationErrorBoundary>
+  );
 }
 
 function ConnectedListsScreen() {
@@ -65,7 +81,6 @@ function ConnectedListsScreen() {
           {activeTab === "your" ? (
             <YourLists isAuthenticated={isAuthenticated} />
           ) : null}
-          {activeTab === "shared" ? <SharedLists /> : null}
           {activeTab === "discover" ? (
             <DiscoverLists
               lists={discovered.results}
@@ -112,13 +127,19 @@ function ConnectedYourLists() {
       {lists.results.length === 0 && lists.status === "LoadingFirstPage" ? (
         <CurationLoading label="Loading your lists…" />
       ) : null}
+      {lists.status.toString() === "Error" ? (
+        <CurationErrorState
+          title="Your lists could not load."
+          body="Try again to reconnect your private trail."
+        />
+      ) : null}
       {lists.results.length > 0 ? (
         <div className="grid gap-3 sm:grid-cols-2">
           {lists.results.map((list) => (
             <ListCard key={list._id} list={list} />
           ))}
         </div>
-      ) : lists.status !== "LoadingFirstPage" ? (
+      ) : lists.status !== "LoadingFirstPage" && lists.status.toString() !== "Error" ? (
         <CurationEmptyState
           icon={FolderHeart}
           eyebrow="No lists yet"
@@ -276,20 +297,6 @@ function CreateListForm({ onCreated }: { onCreated: () => void }) {
   );
 }
 
-function SharedLists() {
-  return (
-    <CurationEmptyState
-      className="mt-5"
-      icon={BookMarked}
-      eyebrow="Shared lists"
-      title="Nothing has been shared with you."
-      body="When someone sends you a public trail or invites you to a private one, it will appear here. Private list membership will never leak into public discovery."
-      action="Explore public trails"
-      actionHref="/lists"
-    />
-  );
-}
-
 function DiscoverLists({
   lists,
   status,
@@ -320,6 +327,11 @@ function DiscoverLists({
         </div>
       ) : status === "LoadingFirstPage" ? (
         <CurationLoading label="Loading public trails…" />
+      ) : status.toString() === "Error" ? (
+        <CurationErrorState
+          title="Public trails could not load."
+          body="Try again to refresh discovery."
+        />
       ) : (
         <div className="rounded-xl border border-dashed border-black/[0.14] p-5 dark:border-white/[0.14]">
           <div className="flex items-start gap-3">

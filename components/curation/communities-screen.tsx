@@ -5,12 +5,19 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  CurationErrorBoundary,
+  CurationErrorState,
   CurationEmptyState,
   CurationLoading,
 } from "@/components/curation/curation-states";
 import { CurationShell } from "@/components/curation/curation-shell";
 import { SectionTabs } from "@/components/ui/section-tabs";
-import { useConvexAuth, useMutation, usePaginatedQuery } from "convex/react";
+import {
+  useConvexAuth,
+  useMutation,
+  usePaginatedQuery,
+  useQuery,
+} from "convex/react";
 import {
   ArrowTopRightIcon as ArrowUpRight,
   GlobeIcon as Globe2,
@@ -35,7 +42,27 @@ export function CommunitiesScreen({
   convexConfigured: boolean;
 }) {
   if (!convexConfigured) return <CommunitiesSetup />;
-  return <ConnectedCommunitiesScreen />;
+  return (
+    <CurationErrorBoundary
+      fallback={(reset) => (
+        <CurationShell
+          active="Communities"
+          eyebrow="communities"
+          title="Technical circles"
+        >
+          <div className="p-5 sm:p-7">
+            <CurationErrorState
+              title="Communities could not load."
+              body="Try again to reconnect discovery."
+              onRetry={reset}
+            />
+          </div>
+        </CurationShell>
+      )}
+    >
+      <ConnectedCommunitiesScreen />
+    </CurationErrorBoundary>
+  );
 }
 
 function ConnectedCommunitiesScreen() {
@@ -116,6 +143,11 @@ function DiscoverCommunities({
         </div>
       ) : status === "LoadingFirstPage" ? (
         <CurationLoading label="Loading public circles…" />
+      ) : status.toString() === "Error" ? (
+        <CurationErrorState
+          title="Public circles could not load."
+          body="Try again to refresh discovery."
+        />
       ) : (
         <div className="mt-5 rounded-xl border border-dashed border-black/[0.14] p-5 dark:border-white/[0.14]">
           <div className="flex items-start gap-3">
@@ -161,17 +193,27 @@ function CommunityCard({
 }) {
   const join = useMutation(api.curation.joinCommunity);
   const leave = useMutation(api.curation.leaveCommunity);
-  const [joined, setJoined] = useState(false);
+  const communityId = community._id as Id<"communities">;
+  const membership = useQuery(
+    api.curation.membershipState,
+    isAuthenticated ? { communityId } : "skip",
+  );
+  const joined = membership?.status === "active";
   const [pending, setPending] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   async function toggle() {
     if (!isAuthenticated || pending) return;
     setPending(true);
+    setActionError(null);
     try {
       if (joined)
-        await leave({ communityId: community._id as Id<"communities"> });
-      else await join({ communityId: community._id as Id<"communities"> });
-      setJoined((value) => !value);
+        await leave({ communityId });
+      else await join({ communityId });
+    } catch (error) {
+      setActionError(
+        error instanceof Error ? error.message : "Membership could not be updated",
+      );
     } finally {
       setPending(false);
     }
@@ -195,22 +237,22 @@ function CommunityCard({
         {community.description || "Source-backed discussion"}
       </p>
       <div className="mt-4 flex items-center justify-between gap-3">
-        <Button
-          type="button"
-          variant={joined ? "secondary" : "outline"}
-          size="sm"
-          className="rounded-md"
-          onClick={() => void toggle()}
-          disabled={!isAuthenticated || pending}
-        >
-          {!isAuthenticated
-            ? "Sign in to join"
-            : pending
-              ? "Saving…"
-              : joined
-                ? "Joined"
-                : "Join"}
-        </Button>
+        {!isAuthenticated ? (
+          <Button asChild variant="outline" size="sm" className="rounded-md">
+            <Link href="/signin">Sign in to join</Link>
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant={joined ? "secondary" : "outline"}
+            size="sm"
+            className="rounded-md"
+            onClick={() => void toggle()}
+            disabled={pending || membership === undefined}
+          >
+            {pending ? "Saving…" : joined ? "Joined" : "Join"}
+          </Button>
+        )}
         <Link
           href={`/communities/${community._id}`}
           className="text-xs font-semibold text-foreground hover:underline"
@@ -218,6 +260,11 @@ function CommunityCard({
           Open
         </Link>
       </div>
+      {actionError ? (
+        <p role="alert" className="mt-3 text-xs text-destructive">
+          {actionError}
+        </p>
+      ) : null}
     </article>
   );
 }
@@ -269,6 +316,11 @@ function ConnectedFollowingCommunities() {
         </div>
       ) : communities.status === "LoadingFirstPage" ? (
         <CurationLoading label="Loading your circles…" />
+      ) : communities.status.toString() === "Error" ? (
+        <CurationErrorState
+          title="Your circles could not load."
+          body="Try again to refresh your memberships."
+        />
       ) : (
         <CurationEmptyState
           icon={Users}

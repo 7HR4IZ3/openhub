@@ -1,7 +1,11 @@
 "use client";
 
 import { CurationShell } from "@/components/curation/curation-shell";
-import { CurationEmptyState } from "@/components/curation/curation-states";
+import {
+  CurationEmptyState,
+  CurationErrorBoundary,
+  CurationErrorState,
+} from "@/components/curation/curation-states";
 import {
   RecentPostFeed,
   type PostFeedMode,
@@ -87,7 +91,17 @@ export function HomeScreen({
               Recommended repositories
             </summary>
             <div className="pt-4">
-              <RecommendationsPanel convexConfigured />
+              <CurationErrorBoundary
+                fallback={(reset) => (
+                  <CurationErrorState
+                    title="Recommendations could not load."
+                    body="Try again to refresh discovery."
+                    onRetry={reset}
+                  />
+                )}
+              >
+                <RecommendationsPanel convexConfigured />
+              </CurationErrorBoundary>
             </div>
           </details>
         </section>
@@ -100,7 +114,17 @@ export function HomeScreen({
           onChange={setMode}
         >
           <section className="px-5 py-6 sm:px-8">
-            <RecentPostFeed convexConfigured mode={mode} />
+            <CurationErrorBoundary
+              fallback={(reset) => (
+                <CurationErrorState
+                  title="Your feed could not load."
+                  body="Try again to reconnect the source-backed trail."
+                  onRetry={reset}
+                />
+              )}
+            >
+              <RecentPostFeed convexConfigured mode={mode} />
+            </CurationErrorBoundary>
           </section>
         </SectionTabs>
       ) : (

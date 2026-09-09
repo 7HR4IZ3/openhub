@@ -16,7 +16,7 @@ import type {
   DiffDisplayContext,
   SourceContext,
 } from "@/lib/source-references";
-import { useAction, useMutation } from "convex/react";
+import { useAction, useConvexAuth, useMutation } from "convex/react";
 import {
   ArrowTopRightIcon as ArrowUpRight,
   FileTextIcon as FileCode2,
@@ -94,6 +94,7 @@ export function PostComposer({
       onPublish={undefined}
       publishError={null}
       isPublishing={false}
+      publishMode="unavailable"
     />
   );
 }
@@ -110,6 +111,7 @@ function ConnectedPostComposer({
   communityId?: string;
 }) {
   const router = useRouter();
+  const { isAuthenticated, isLoading: isAuthLoading } = useConvexAuth();
   const createPost = useMutation(api.posts.create);
   const createSource = useAction(api.posts.createSource);
   const createDiff = useAction(api.posts.createDiff);
@@ -166,6 +168,9 @@ function ConnectedPostComposer({
       onPublish={publish}
       publishError={publishError}
       isPublishing={isPublishing}
+      publishMode={
+        isAuthLoading ? "checking" : isAuthenticated ? "ready" : "signed-out"
+      }
     />
   );
 }
@@ -178,6 +183,7 @@ function PostComposerForm({
   onPublish,
   publishError,
   isPublishing,
+  publishMode,
 }: {
   source: SourceContext | null;
   diff: DiffDisplayContext | null;
@@ -186,6 +192,7 @@ function PostComposerForm({
   onPublish: ((input: CreatePostInput) => Promise<void>) | undefined;
   publishError: string | null;
   isPublishing: boolean;
+  publishMode: "unavailable" | "signed-out" | "checking" | "ready";
 }) {
   const [postType, setPostType] = useState<PostType>(
     source ? "snippet" : "text",
@@ -319,21 +326,28 @@ function PostComposerForm({
                     <option value="private">Only me</option>
                   </select>
                 </label>
-                <Button
-                  type="submit"
-                  disabled={
-                    !canPublish || onPublish === undefined || isPublishing
-                  }
-                >
-                  {onPublish === undefined
-                    ? "Connect to publish"
-                    : isPublishing
-                      ? "Publishing…"
-                      : "Publish"}
-                  {onPublish !== undefined ? (
+                {publishMode === "ready" ? (
+                  <Button
+                    type="submit"
+                    disabled={!canPublish || isPublishing}
+                  >
+                    {isPublishing ? "Publishing…" : "Publish"}
                     <Send className="h-4 w-4" />
-                  ) : null}
-                </Button>
+                  </Button>
+                ) : publishMode === "checking" ? (
+                  <Button type="button" disabled>
+                    Checking account…
+                  </Button>
+                ) : (
+                  <Button asChild>
+                    <Link href="/signin">
+                      {publishMode === "signed-out"
+                        ? "Sign in to publish"
+                        : "Connect to publish"}
+                      <ArrowUpRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                )}
               </div>
             </section>
           </form>

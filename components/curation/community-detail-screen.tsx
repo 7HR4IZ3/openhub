@@ -3,6 +3,8 @@
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import {
+  CurationErrorBoundary,
+  CurationErrorState,
   CurationEmptyState,
   CurationLoading,
 } from "@/components/curation/curation-states";
@@ -33,7 +35,27 @@ export function CommunityDetailScreen({
 }) {
   if (!process.env.NEXT_PUBLIC_CONVEX_URL) return <CommunityDetailUnavailable />;
   return (
-    <ConnectedCommunityDetail communityId={communityId as Id<"communities">} />
+    <CurationErrorBoundary
+      fallback={(reset) => (
+        <CurationShell
+          active="Communities"
+          eyebrow="community"
+          title="Technical circle"
+        >
+          <div className="p-5 sm:p-7">
+            <CurationErrorState
+              title="This circle could not load."
+              body="Try again to reconnect the discussion and membership."
+              onRetry={reset}
+            />
+          </div>
+        </CurationShell>
+      )}
+    >
+      <ConnectedCommunityDetail
+        communityId={communityId as Id<"communities">}
+      />
+    </CurationErrorBoundary>
   );
 }
 
@@ -242,7 +264,16 @@ function ConnectedCommunityDetail({
             <CurationLoading label="Loading community context…" />
           </div>
         ) : null}
-        {posts.results.length === 0 && posts.status !== "LoadingFirstPage" ? (
+        {posts.status.toString() === "Error" ? (
+          <CurationErrorState
+            className="mt-5"
+            title="Community posts could not load."
+            body="Try again to reconnect this discussion."
+          />
+        ) : null}
+        {posts.results.length === 0 &&
+        posts.status !== "LoadingFirstPage" &&
+        posts.status.toString() !== "Error" ? (
           <CurationEmptyState
             className="mt-5"
             icon={Code2}

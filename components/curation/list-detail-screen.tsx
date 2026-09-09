@@ -3,6 +3,8 @@
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import {
+  CurationErrorBoundary,
+  CurationErrorState,
   CurationEmptyState,
   CurationLoading,
 } from "@/components/curation/curation-states";
@@ -20,7 +22,23 @@ import Link from "next/link";
 
 export function ListDetailScreen({ listId }: { listId: string }) {
   if (!process.env.NEXT_PUBLIC_CONVEX_URL) return <ListDetailUnavailable />;
-  return <ConnectedListDetail listId={listId as Id<"lists">} />;
+  return (
+    <CurationErrorBoundary
+      fallback={(reset) => (
+        <CurationShell active="Lists" eyebrow="list" title="Curated trail">
+          <div className="p-5 sm:p-7">
+            <CurationErrorState
+              title="This trail could not load."
+              body="Try again to reconnect the list and its items."
+              onRetry={reset}
+            />
+          </div>
+        </CurationShell>
+      )}
+    >
+      <ConnectedListDetail listId={listId as Id<"lists">} />
+    </CurationErrorBoundary>
+  );
 }
 
 function ListDetailUnavailable() {
@@ -57,6 +75,19 @@ function ConnectedListDetail({ listId }: { listId: Id<"lists"> }) {
       <CurationShell active="Lists" eyebrow="list" title="Curated trail">
         <div className="p-5 sm:p-7">
           <CurationLoading label="Loading this trail…" />
+        </div>
+      </CurationShell>
+    );
+  }
+
+  if (items.status.toString() === "Error") {
+    return (
+      <CurationShell active="Lists" eyebrow="list" title="Curated trail">
+        <div className="p-5 sm:p-7">
+          <CurationErrorState
+            title="This trail could not load."
+            body="Try again to reconnect the list items."
+          />
         </div>
       </CurationShell>
     );
@@ -120,7 +151,9 @@ function ConnectedListDetail({ listId }: { listId: Id<"lists"> }) {
             {items.results.length} loaded
           </span>
         </div>
-        {items.results.length === 0 && items.status !== "LoadingFirstPage" ? (
+        {items.results.length === 0 &&
+        items.status !== "LoadingFirstPage" &&
+        items.status.toString() !== "Error" ? (
           <CurationEmptyState
             className="mt-5"
             icon={FolderHeart}

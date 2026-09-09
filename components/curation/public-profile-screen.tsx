@@ -3,6 +3,8 @@
 import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
 import {
+  CurationErrorBoundary,
+  CurationErrorState,
   CurationEmptyState,
   CurationLoading,
 } from "@/components/curation/curation-states";
@@ -33,7 +35,23 @@ import { useState } from "react";
 
 export function PublicProfileScreen({ handle }: { handle: string }) {
   if (!process.env.NEXT_PUBLIC_CONVEX_URL) return <PublicProfileUnavailable />;
-  return <PublicProfileLookup handle={handle} />;
+  return (
+    <CurationErrorBoundary
+      fallback={(reset) => (
+        <CurationShell active="Profile" eyebrow="profile" title="Developer profile">
+          <div className="p-5 sm:p-7">
+            <CurationErrorState
+              title="This profile could not load."
+              body="Try again to reconnect the developer trail."
+              onRetry={reset}
+            />
+          </div>
+        </CurationShell>
+      )}
+    >
+      <PublicProfileLookup handle={handle} />
+    </CurationErrorBoundary>
+  );
 }
 
 function PublicProfileLookup({ handle }: { handle: string }) {
@@ -253,7 +271,16 @@ function ConnectedPublicProfile({ profile }: { profile: Doc<"profiles"> }) {
             <CurationLoading label="Loading public posts…" />
           </div>
         ) : null}
-        {posts.results.length === 0 && posts.status !== "LoadingFirstPage" ? (
+        {posts.status.toString() === "Error" ? (
+          <CurationErrorState
+            className="mt-5"
+            title="Public posts could not load."
+            body="Try again to reconnect this developer trail."
+          />
+        ) : null}
+        {posts.results.length === 0 &&
+        posts.status !== "LoadingFirstPage" &&
+        posts.status.toString() !== "Error" ? (
           <CurationEmptyState
             className="mt-5"
             icon={Code2}

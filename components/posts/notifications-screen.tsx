@@ -14,6 +14,8 @@ import {
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import {
+  CurationErrorState,
+  CurationErrorBoundary,
   CurationEmptyState,
   CurationLoading,
 } from "@/components/curation/curation-states";
@@ -26,7 +28,27 @@ export function NotificationsScreen({
   convexConfigured: boolean;
 }) {
   if (!convexConfigured) return <NotificationsSetup />;
-  return <ConnectedNotifications />;
+  return (
+    <CurationErrorBoundary
+      fallback={(reset) => (
+        <CurationShell
+          active="Notifications"
+          eyebrow="notifications"
+          title="Useful updates"
+        >
+          <div className="p-5 sm:p-7">
+            <CurationErrorState
+              title="Notifications could not load."
+              body="Try again to reconnect your private activity."
+              onRetry={reset}
+            />
+          </div>
+        </CurationShell>
+      )}
+    >
+      <ConnectedNotifications />
+    </CurationErrorBoundary>
+  );
 }
 
 function ConnectedNotifications() {
@@ -101,6 +123,23 @@ function ConnectedNotifications() {
         title="Useful updates"
       >
         <CurationLoading label="Loading your notifications…" />
+      </CurationShell>
+    );
+  }
+
+  if (status.toString() === "Error") {
+    return (
+      <CurationShell
+        active="Notifications"
+        eyebrow="notifications"
+        title="Useful updates"
+      >
+        <div className="p-5 sm:p-7">
+          <CurationErrorState
+            title="Notifications could not load."
+            body="Try again to reconnect your private activity."
+          />
+        </div>
       </CurationShell>
     );
   }

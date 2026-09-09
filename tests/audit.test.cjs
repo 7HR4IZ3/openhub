@@ -10,17 +10,26 @@ function load(relative, extra = {}) {
   const filename = path.resolve(relative);
   const loadedModule = { exports: {} };
   const validator = new Proxy(() => validator, { get: () => validator });
+  const anyApi = new Proxy({}, { get: () => anyApi });
   const stubs = {
     "server-only": {},
     "convex/values": { v: validator },
     "@convex-dev/auth/server": { getAuthUserId: async (ctx) => ctx.userId ?? null },
-    "./_generated/server": { query: (x) => x, mutation: (x) => x },
+    "./_generated/api": { api: anyApi, internal: anyApi, components: anyApi },
+    "./_generated/server": {
+      query: (x) => x,
+      mutation: (x) => x,
+      action: (x) => x,
+      internalQuery: (x) => x,
+      internalMutation: (x) => x,
+      internalAction: (x) => x,
+    },
   };
   const code = ts.transpileModule(fs.readFileSync(filename, "utf8"), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText;
   vm.runInNewContext(code, {
-    exports: loadedModule.exports, module: loadedModule, console, process, URL, ...extra,
+    exports: loadedModule.exports, module: loadedModule, console, process, URL, TextEncoder, ...extra,
     require: (id) => id in stubs ? stubs[id] : id.startsWith(".")
       ? load(path.resolve(path.dirname(filename), `${id}.ts`), extra) : require(id),
   }, { filename });
@@ -61,14 +70,14 @@ test("even the author cannot repost private content", async () => {
 
 test("viewer repost state never uses a unique query on repeatable quotes", async () => {
   const db = {
-    get: async () => ({ _id: "post", visibility: "public", likeCount: 0, repostCount: 2 }),
+    get: async () => ({ _id: "post", visibility: "public", body: "hello", likeCount: 0, repostCount: 2 }),
     query: () => ({ withIndex: (_name, fn) => {
       const index = { eq: (key, value) => {
         assert.notEqual(value, "quote", "quote rows are not unique per viewer");
         return index;
       } };
       fn(index);
-      return { unique: async () => null };
+      return { unique: async () => null, order: () => ({ take: async () => [] }) };
     } }),
   };
   const result = await social.viewerState.handler({ db, userId: "reader" }, { postId: "post" });

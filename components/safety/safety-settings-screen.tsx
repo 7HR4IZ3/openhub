@@ -3,6 +3,8 @@
 import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import {
+  CurationErrorBoundary,
+  CurationErrorState,
   CurationEmptyState,
   CurationLoading,
   CurationStatus,
@@ -25,7 +27,27 @@ export function SafetySettingsScreen({
   convexConfigured: boolean;
 }) {
   if (!convexConfigured) return <SafetySetup />;
-  return <AuthenticatedSafetySettings />;
+  return (
+    <CurationErrorBoundary
+      fallback={(reset) => (
+        <CurationShell
+          active="Profile"
+          eyebrow="safety"
+          title="Safety and control"
+        >
+          <div className="p-5 sm:p-7">
+            <CurationErrorState
+              title="Safety settings could not load."
+              body="Try again to reconnect your private controls."
+              onRetry={reset}
+            />
+          </div>
+        </CurationShell>
+      )}
+    >
+      <AuthenticatedSafetySettings />
+    </CurationErrorBoundary>
+  );
 }
 
 function AuthenticatedSafetySettings() {
@@ -164,7 +186,15 @@ function ConnectedSafetySettings() {
               <CurationLoading label="Loading blocks…" />
             ) : null}
             {blocks.results.length === 0 &&
-            blocks.status !== "LoadingFirstPage" ? (
+            blocks.status.toString() === "Error" ? (
+              <CurationErrorState
+                title="Blocked accounts could not load."
+                body="Try again to refresh this safety list."
+              />
+            ) : null}
+            {blocks.results.length === 0 &&
+            blocks.status !== "LoadingFirstPage" &&
+            blocks.status.toString() !== "Error" ? (
               <p className="text-sm text-muted-foreground">
                 No blocked accounts.
               </p>
@@ -216,7 +246,15 @@ function ConnectedSafetySettings() {
               <CurationLoading label="Loading mutes…" />
             ) : null}
             {mutes.results.length === 0 &&
-            mutes.status !== "LoadingFirstPage" ? (
+            mutes.status.toString() === "Error" ? (
+              <CurationErrorState
+                title="Muted targets could not load."
+                body="Try again to refresh this safety list."
+              />
+            ) : null}
+            {mutes.results.length === 0 &&
+            mutes.status !== "LoadingFirstPage" &&
+            mutes.status.toString() !== "Error" ? (
               <p className="text-sm text-muted-foreground">No muted targets.</p>
             ) : null}
           </div>
@@ -289,7 +327,15 @@ function ConnectedSafetySettings() {
               </div>
             ))}
             {filters.results.length === 0 &&
-            filters.status !== "LoadingFirstPage" ? (
+            filters.status.toString() === "Error" ? (
+              <CurationErrorState
+                title="Keyword filters could not load."
+                body="Try again to refresh this safety list."
+              />
+            ) : null}
+            {filters.results.length === 0 &&
+            filters.status !== "LoadingFirstPage" &&
+            filters.status.toString() !== "Error" ? (
               <p className="text-sm text-muted-foreground">
                 No keyword filters.
               </p>

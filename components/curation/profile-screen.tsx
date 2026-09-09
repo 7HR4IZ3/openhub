@@ -4,6 +4,8 @@ import { api } from "@/convex/_generated/api";
 import type { Doc } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import {
+  CurationErrorBoundary,
+  CurationErrorState,
   CurationEmptyState,
   CurationLoading,
 } from "@/components/curation/curation-states";
@@ -63,7 +65,27 @@ export function ProfileScreen({
     return <ProfileSetup />;
   }
 
-  return <ConnectedProfileScreen />;
+  return (
+    <CurationErrorBoundary
+      fallback={(reset) => (
+        <CurationShell
+          active="Profile"
+          eyebrow="profile"
+          title="Developer identity"
+        >
+          <div className="p-5 sm:p-7">
+            <CurationErrorState
+              title="Your profile could not load."
+              body="Try again to reconnect your repositories and posts."
+              onRetry={reset}
+            />
+          </div>
+        </CurationShell>
+      )}
+    >
+      <ConnectedProfileScreen />
+    </CurationErrorBoundary>
+  );
 }
 
 function ConnectedProfileScreen() {
@@ -281,7 +303,16 @@ function ProfileContent({ profile }: { profile: Profile }) {
               <CurationLoading label="Loading your public posts…" />
             </div>
           ) : null}
-          {posts.results.length === 0 && posts.status !== "LoadingFirstPage" ? (
+          {posts.status.toString() === "Error" ? (
+            <CurationErrorState
+              className="mt-5"
+              title="Your posts could not load."
+              body="Try again to reconnect your public writing."
+            />
+          ) : null}
+          {posts.results.length === 0 &&
+          posts.status !== "LoadingFirstPage" &&
+          posts.status.toString() !== "Error" ? (
             <CurationEmptyState
               className="mt-5"
               icon={FileCode2}
