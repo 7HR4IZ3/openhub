@@ -181,15 +181,20 @@ export function CurationShell({
             <span className="sr-only">{label}</span>
           </Link>
         ))}
-        <Link
-          href="/communities"
-          aria-label="More discovery"
-          title="More discovery"
-          className="v2-mobile-link flex min-h-12 min-w-0 items-center justify-center rounded-full text-muted-foreground transition-colors"
-        >
-          <MixerHorizontalIcon className="h-5 w-5" aria-hidden="true" />
-          <span className="sr-only">More discovery</span>
-        </Link>
+        <details className="v2-mobile-more relative">
+          <summary
+            aria-label="More discovery"
+            title="More discovery"
+            className="v2-mobile-link flex min-h-12 min-w-0 cursor-pointer list-none items-center justify-center rounded-full text-muted-foreground transition-colors"
+          >
+            <MixerHorizontalIcon className="h-5 w-5" aria-hidden="true" />
+            <span className="sr-only">More discovery</span>
+          </summary>
+          <div className="v2-mobile-more-menu absolute bottom-14 right-2 min-w-40 rounded-lg border border-border bg-card p-1 shadow-lg">
+            <Link href="/communities" className="block rounded-md px-3 py-2 text-sm hover:bg-secondary">Communities</Link>
+            <Link href="/bounties" className="block rounded-md px-3 py-2 text-sm hover:bg-secondary">Bounties</Link>
+          </div>
+        </details>
       </nav>
     </div>
   );
