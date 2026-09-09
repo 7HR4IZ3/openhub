@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import {
   CurationEmptyState,
   CurationLoading,
-  CurationStatus,
 } from "@/components/curation/curation-states";
 import {
   CurationRail,
@@ -29,7 +28,6 @@ import {
   FileTextIcon as FileCode2,
   GitHubLogoIcon as Github,
   GlobeIcon as Globe2,
-  Link2Icon as Link2,
   UpdateIcon as LoaderCircle,
   GlobeIcon as Map,
   ReloadIcon as RefreshCw,
@@ -99,26 +97,18 @@ function ProfileSetup() {
       active="Profile"
       eyebrow="profile"
       title="Developer identity"
-      description="Your profile is where a repository trail becomes a point of view."
     >
       <div className="p-5 sm:p-7">
-        <CurationStatus
-          tone="accent"
-          title="GitHub profile import is waiting to connect"
-          body="The UI is ready, but profile reads stay off until this environment has a Convex deployment. Nothing is written while the backend is unavailable."
-        />
         <CurationEmptyState
-          className="mt-5"
           icon={Github}
-          eyebrow="Build your trail"
-          title="Bring the work you already do."
-          body="Connect GitHub to import your name, avatar, public profile, interests, and repository context. OpenHub never edits your repositories."
+          eyebrow="Unavailable"
+          title="Connect GitHub to build your profile."
+          body="Your public source trail will appear here after sign-in."
           action="Continue with GitHub"
           actionHref="/signin"
-          secondaryAction="Browse first"
+          secondaryAction="Browse"
           secondaryHref="/explore"
         />
-        <ProfileSectionsPreview />
       </div>
     </CurationShell>
   );
@@ -190,8 +180,7 @@ function ProfileContent({ profile }: { profile: Profile }) {
       active="Profile"
       eyebrow="profile"
       title="Your developer trail"
-      description="A living profile for the repositories you study, the context you add, and the people you learn with."
-      aside={<ProfileRail profile={profile} />}
+      description="Your repositories, context, and contributions."
     >
       <div>
         <ProfileHero
@@ -827,72 +816,5 @@ function SignalCard({
         Coming later
       </span>
     </article>
-  );
-}
-
-function ProfileSectionsPreview() {
-  return (
-    <section
-      className="mt-5 rounded-xl border border-border p-5 sm:p-6"
-      aria-labelledby="profile-preview-heading"
-    >
-      <div className="flex items-center gap-2">
-        <Link2 className="h-4 w-4 text-foreground" />
-        <h2 id="profile-preview-heading" className="text-sm font-semibold">
-          Your profile will bring together
-        </h2>
-      </div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        {[
-          ["Source trail", "Repositories, files, and the lines you return to."],
-          [
-            "Social context",
-            "Posts, snippets, questions, and thoughtful reviews.",
-          ],
-          [
-            "Your point of view",
-            "Interests, portfolio links, and availability.",
-          ],
-          [
-            "Trust over hype",
-            "Contribution signals, endorsements, and achievements.",
-          ],
-        ].map(([title, body]) => (
-          <div
-            key={title}
-            className="rounded-xl bg-background p-4 dark:bg-background"
-          >
-            <p className="text-sm font-semibold">{title}</p>
-            <p className="mt-1 text-sm leading-5 text-muted-foreground">
-              {body}
-            </p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function ProfileRail({ profile }: { profile: Profile }) {
-  return (
-    <>
-      <section className="rounded-xl bg-secondary p-5 dark:bg-secondary">
-        <div className="flex items-center gap-2">
-          <Github className="h-4 w-4" />
-          <h2 className="text-sm font-semibold">Imported from GitHub</h2>
-        </div>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          {profile.githubLogin
-            ? `@${profile.githubLogin} is the source identity for this profile.`
-            : "Your GitHub identity is the source for this profile."}
-        </p>
-        <Link
-          href="/explore"
-          className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-foreground hover:underline"
-        >
-          Continue exploring <ArrowUpRight className="h-3.5 w-3.5" />
-        </Link>
-      </section>
-    </>
   );
 }

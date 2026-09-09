@@ -6,12 +6,8 @@ import { Input } from "@/components/ui/input";
 import {
   CurationEmptyState,
   CurationLoading,
-  CurationStatus,
 } from "@/components/curation/curation-states";
-import {
-  CurationRail,
-  CurationShell,
-} from "@/components/curation/curation-shell";
+import { CurationShell } from "@/components/curation/curation-shell";
 import { SectionTabs } from "@/components/ui/section-tabs";
 import { useConvexAuth, useMutation, usePaginatedQuery } from "convex/react";
 import {
@@ -22,7 +18,6 @@ import {
   GlobeIcon as Globe2,
   LockClosedIcon as LockKeyhole,
   PlusIcon as Plus,
-  MagicWandIcon as Sparkles,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { type FormEvent, useState } from "react";
@@ -59,7 +54,6 @@ function ConnectedListsScreen() {
       eyebrow="lists"
       title="Curated trails"
       description="Collect repositories, people, posts, and source references into a list with a point of view."
-      aside={<ListsRail />}
     >
       <SectionTabs
         label="List views"
@@ -424,25 +418,17 @@ function ListsSetup() {
       active="Lists"
       eyebrow="lists"
       title="Curated trails"
-      description="Collect repositories, people, posts, and source references into a list with a point of view."
-      aside={<ListsRail />}
     >
       <div className="p-5 sm:p-7">
-        <CurationStatus
-          tone="accent"
-          title="Connect Convex to create lists"
-          body="Your lists are private by default. The interface stays read-only until the backend is connected."
-        />
         <CurationEmptyState
-          className="mt-5"
           icon={FolderHeart}
-          eyebrow="Build your trail"
-          title="Give your next rabbit hole a shape."
-          body="Browse repositories now, then connect GitHub when you are ready to save a path through the source."
-          action="Browse repositories"
-          actionHref="/explore"
-          secondaryAction="Connect GitHub"
-          secondaryHref="/signin"
+          eyebrow="Unavailable"
+          title="Connect to save lists."
+          body="Browse public repositories now, then save a trail after sign-in."
+          action="Connect GitHub"
+          actionHref="/signin"
+          secondaryAction="Browse"
+          secondaryHref="/explore"
         />
       </div>
     </CurationShell>
@@ -474,26 +460,5 @@ function ListVisibilityCard({
         Use the create button above
       </p>
     </article>
-  );
-}
-
-function ListsRail() {
-  return (
-    <>
-      <CurationRail />
-      <section className="rounded-xl border border-border p-5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-          List rules
-        </p>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          Public lists keep attribution and source links. Private lists stay out
-          of feeds, search, and recommendations.
-        </p>
-        <div className="mt-4 flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-          <Sparkles className="h-3.5 w-3.5 text-foreground" />
-          Make the path useful.
-        </div>
-      </section>
-    </>
   );
 }

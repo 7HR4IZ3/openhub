@@ -7,10 +7,7 @@ import {
   CurationLoading,
   CurationStatus,
 } from "@/components/curation/curation-states";
-import {
-  CurationRail,
-  CurationShell,
-} from "@/components/curation/curation-shell";
+import { CurationShell } from "@/components/curation/curation-shell";
 import { Input } from "@/components/ui/input";
 import { useConvexAuth, useMutation, usePaginatedQuery } from "convex/react";
 import {
@@ -110,7 +107,6 @@ function ConnectedSafetySettings() {
       eyebrow="safety"
       title="Safety and control"
       description="Shape what reaches your trail. Blocking and muting are private settings and never appear in public profiles."
-      aside={<CurationRail />}
     >
       <section className="border-b border-border p-5 sm:p-7">
         <div className="flex items-start gap-3 rounded-xl bg-secondary p-5 dark:bg-secondary">
@@ -360,12 +356,17 @@ function SafetySetup() {
       active="Profile"
       eyebrow="safety"
       title="Safety and control"
-      aside={<CurationRail />}
     >
       <div className="p-5 sm:p-7">
-        <CurationStatus
-          title="Safety settings are unavailable right now"
-          body="Please return later to manage your settings. Public repository browsing is still available."
+        <CurationEmptyState
+          icon={ShieldCheck}
+          eyebrow="Unavailable"
+          title="Connect to manage safety."
+          body="Blocks, mutes, and keyword filters are private account settings."
+          action="Connect GitHub"
+          actionHref="/signin"
+          secondaryAction="Explore"
+          secondaryHref="/explore"
         />
       </div>
     </CurationShell>
@@ -377,7 +378,6 @@ function SafetySignIn() {
       active="Profile"
       eyebrow="safety"
       title="Safety and control"
-      aside={<CurationRail />}
     >
       <CurationEmptyState
         className="m-5 sm:m-7"

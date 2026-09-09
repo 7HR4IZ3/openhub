@@ -13,6 +13,7 @@ import {
   PersonIcon,
   ChatBubbleIcon,
   ArrowTopRightIcon,
+  MixerHorizontalIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -62,7 +63,7 @@ export function CurationShell({
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
-      <div className="v2-shell-grid mx-auto grid min-h-[100dvh] max-w-[1440px] lg:grid-cols-[56px_minmax(0,1fr)] xl:grid-cols-[56px_minmax(0,1fr)_240px]">
+      <div className="v2-shell-grid mx-auto grid min-h-[100dvh] max-w-[1440px] lg:grid-cols-[56px_minmax(0,1fr)]">
         <aside className="v2-rail sticky top-0 hidden h-[100dvh] flex-col overflow-y-auto px-2 py-5 lg:flex">
           <Link href="/home" aria-label="OpenHub home" className="v2-brand-link">
             <OpenHubMark compact className="v2-brand" />
@@ -154,14 +155,14 @@ export function CurationShell({
           {description ? <p className="sr-only">{description}</p> : null}
           {children}
         </main>
-        <aside className="v2-side-column hidden px-6 py-7 xl:block">
-          <div className="sticky top-7 space-y-8">
-            {aside ?? <CurationRail />}
-          </div>
-        </aside>
+        {aside ? (
+          <aside className="v2-side-column hidden px-6 py-7 xl:block">
+            <div className="sticky top-7 space-y-8">{aside}</div>
+          </aside>
+        ) : null}
       </div>
       <nav
-        className="v2-mobile-nav mobile-navigation fixed inset-x-0 bottom-0 z-20 grid grid-cols-6 border-t bg-card px-2 pt-1 lg:hidden"
+        className="v2-mobile-nav mobile-navigation fixed inset-x-0 bottom-0 z-20 grid grid-cols-7 border-t bg-card px-2 pt-1 lg:hidden"
         aria-label="Mobile navigation"
       >
         {mobileNavigation.map(({ label, href, icon: Icon }) => (
@@ -180,6 +181,15 @@ export function CurationShell({
             <span className="sr-only">{label}</span>
           </Link>
         ))}
+        <Link
+          href="/communities"
+          aria-label="More discovery"
+          title="More discovery"
+          className="v2-mobile-link flex min-h-12 min-w-0 items-center justify-center rounded-full text-muted-foreground transition-colors"
+        >
+          <MixerHorizontalIcon className="h-5 w-5" aria-hidden="true" />
+          <span className="sr-only">More discovery</span>
+        </Link>
       </nav>
     </div>
   );
@@ -188,19 +198,16 @@ export function CurationShell({
 export function CurationRail() {
   return (
     <>
-      <section>
-        <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-          Explore
-        </h2>
-        <Link
-          href="/explore"
-          className="mt-3 inline-flex min-h-10 items-center gap-2 text-sm font-medium hover:underline"
-        >
-          Repositories <ArrowTopRightIcon />
-        </Link>
-      </section>
-      <section className="border-t pt-6">
-        <div className="space-y-1">
+      <section className="v2-context-links">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+            Elsewhere
+          </h2>
+          <Link href="/explore" aria-label="Explore repositories" title="Explore repositories">
+            <ArrowTopRightIcon className="h-4 w-4 text-muted-foreground" />
+          </Link>
+        </div>
+        <div className="mt-3 grid gap-1">
           {[
             ["/lists", "Lists"],
             ["/communities", "Communities"],
@@ -209,17 +216,14 @@ export function CurationRail() {
             <Link
               key={href}
               href={href}
-              className="flex min-h-11 items-center justify-between gap-3 text-sm hover:underline"
+              className="flex min-h-9 items-center justify-between gap-3 text-sm text-muted-foreground hover:text-foreground"
             >
               {label}
-              <ArrowTopRightIcon className="text-muted-foreground" />
+              <ArrowTopRightIcon className="h-3.5 w-3.5" />
             </Link>
           ))}
         </div>
       </section>
-      <p className="border-t pt-5 text-xs leading-5 text-muted-foreground">
-        Source attribution preserved.
-      </p>
     </>
   );
 }

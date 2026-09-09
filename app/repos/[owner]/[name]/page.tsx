@@ -4,7 +4,6 @@ import {
   ArrowLeftIcon as ArrowLeft,
   ArrowTopRightIcon as ArrowUpRight,
   GitHubLogoIcon as Github,
-  LockClosedIcon as LockKeyhole,
 } from "@radix-ui/react-icons";
 
 import { RepositoryWorkspace } from "@/components/repository/repository-workspace";
@@ -39,7 +38,7 @@ export default async function RepositoryPage({
     return process.env.NEXT_PUBLIC_CONVEX_URL ? (
       <PrivateRepositoryRoute owner={owner} name={name} />
     ) : (
-      <RepositoryUnavailable />
+      <RepositoryUnavailable owner={owner} name={name} />
     );
   }
 
@@ -52,7 +51,7 @@ export default async function RepositoryPage({
     );
   }
   if (result.kind === "error") {
-    return <RepositoryError />;
+    return <RepositoryError owner={owner} name={name} />;
   }
 
   return (
@@ -63,12 +62,13 @@ export default async function RepositoryPage({
       treePath={result.treePath}
       entries={result.entries}
       file={result.file}
+      fileError={result.fileError}
       surfaces={result.surfaces}
     />
   );
 }
 
-function RepositoryUnavailable() {
+function RepositoryUnavailable({ owner, name }: { owner: string; name: string }) {
   return (
     <main className="min-h-[100dvh] bg-background px-5 py-8 dark:bg-background md:px-8 md:py-10">
       <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-3xl flex-col">
@@ -79,48 +79,21 @@ function RepositoryUnavailable() {
           <ArrowLeft className="h-4 w-4" />
           Back to explore
         </Link>
-        <section className="my-auto py-20">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary dark:bg-white/[0.08]">
-            <Github className="h-5 w-5 text-foreground" />
+        <section className="my-auto py-16">
+          <div className="flex items-center gap-3 text-muted-foreground"><Github className="h-5 w-5" /><span className="font-mono text-sm">{owner}/{name}</span></div>
+          <h1 className="mt-5 text-3xl font-semibold tracking-[-0.04em]">GitHub source is unavailable.</h1>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">The public provider is not configured for this deployment.</p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <Button asChild className="rounded-md"><Link href="/explore">Back to explore <ArrowUpRight className="h-4 w-4" /></Link></Button>
+            <Button asChild variant="outline" className="rounded-md bg-transparent"><a href={`https://github.com/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`} target="_blank" rel="noreferrer">Open on GitHub</a></Button>
           </div>
-          <p className="mt-8 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            GitHub provider
-          </p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] sm:text-6xl">
-            The reading room is waiting for its source.
-          </h1>
-          <p className="mt-6 max-w-xl text-lg leading-8 text-muted-foreground">
-            Repository browsing is implemented, but this deployment still needs
-            its server-side public GitHub credential before it can request
-            source.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild className="rounded-md">
-              <Link href="/explore">
-                Return to discovery
-                <ArrowUpRight className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="rounded-md bg-transparent"
-            >
-              <Link href="/signin">Connect GitHub</Link>
-            </Button>
-          </div>
-          <p className="mt-8 flex items-start gap-2 text-sm leading-6 text-muted-foreground">
-            <LockKeyhole className="mt-1 h-4 w-4 shrink-0" />
-            The credential belongs on the server only. It is never sent to this
-            page.
-          </p>
         </section>
       </div>
     </main>
   );
 }
 
-function RepositoryError() {
+function RepositoryError({ owner, name }: { owner: string; name: string }) {
   return (
     <main className="min-h-[100dvh] bg-background px-5 py-8 dark:bg-background md:px-8 md:py-10">
       <div className="mx-auto max-w-2xl">
@@ -131,14 +104,15 @@ function RepositoryError() {
           <ArrowLeft className="h-4 w-4" />
           Back to explore
         </Link>
-        <h1 className="mt-20 text-4xl font-semibold tracking-[-0.05em]">
-          GitHub could not open this repository.
-        </h1>
-        <p className="mt-5 text-base leading-7 text-muted-foreground">
-          The provider request failed or the selected source is no longer
-          available. Try again, or open the original repository directly on
-          GitHub.
-        </p>
+        <div className="mt-16 rounded-lg border border-border p-5">
+          <p className="font-mono text-sm text-muted-foreground">{owner}/{name}</p>
+          <h1 className="mt-3 text-2xl font-semibold tracking-[-0.04em]">GitHub could not open this repository.</h1>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">Try again or open the original source.</p>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <Button asChild className="rounded-md"><Link href={`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`}>Retry</Link></Button>
+            <Button asChild variant="outline" className="rounded-md bg-transparent"><a href={`https://github.com/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`} target="_blank" rel="noreferrer">Open on GitHub</a></Button>
+          </div>
+        </div>
       </div>
     </main>
   );

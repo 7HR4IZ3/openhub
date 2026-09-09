@@ -4,7 +4,6 @@ import {
   ArrowLeftIcon as ArrowLeft,
   ArrowTopRightIcon as ArrowUpRight,
   DotFilledIcon as CircleDot,
-  LockClosedIcon as LockKeyhole,
 } from "@radix-ui/react-icons";
 
 import { RepositoryWorkspace } from "@/components/repository/repository-workspace";
@@ -43,11 +42,11 @@ export default async function PublicProviderRepositoryPage({
     notFound();
 
   const adapter = getPublicProvider(provider);
-  if (!adapter) return <ProviderUnavailable provider={provider} />;
+  if (!adapter) return <ProviderUnavailable provider={provider} owner={owner} name={name} />;
   const result = await loadRepositoryView(adapter, owner, name, query);
   if (result.kind === "not-found") notFound();
   if (result.kind === "error")
-    return <ProviderError provider={adapter.displayName} />;
+    return <ProviderError provider={adapter.displayName} owner={owner} name={name} />;
 
   return (
     <RepositoryWorkspace
@@ -57,6 +56,7 @@ export default async function PublicProviderRepositoryPage({
       treePath={result.treePath}
       entries={result.entries}
       file={result.file}
+      fileError={result.fileError}
       surfaces={result.surfaces}
       workspaceBasePath={`/repos/${provider}/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`}
     />
@@ -80,7 +80,7 @@ function decodeSegment(value: string) {
   }
 }
 
-function ProviderUnavailable({ provider }: { provider: ProviderId }) {
+function ProviderUnavailable({ provider, owner, name }: { provider: ProviderId; owner: string; name: string }) {
   return (
     <main className="min-h-[100dvh] bg-background px-5 py-8 dark:bg-background md:px-8 md:py-10">
       <div className="mx-auto max-w-3xl">
@@ -90,30 +90,19 @@ function ProviderUnavailable({ provider }: { provider: ProviderId }) {
         >
           <ArrowLeft className="h-4 w-4" /> Back to explore
         </Link>
-        <section className="my-auto py-24">
-          <CircleDot className="h-6 w-6 text-foreground" />
-          <p className="mt-8 text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-            {provider} provider
-          </p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.05em] sm:text-6xl">
-            This reading room is not connected yet.
-          </h1>
-          <p className="mt-6 max-w-xl text-lg leading-8 text-muted-foreground">
-            OpenHub can search this provider, but this deployment has not
-            enabled its public repository adapter.
-          </p>
-          <Button asChild className="mt-8 rounded-md">
-            <Link href="/explore">
-              Return to discovery <ArrowUpRight className="h-4 w-4" />
-            </Link>
-          </Button>
+        <section className="my-auto py-16">
+          <CircleDot className="h-5 w-5 text-muted-foreground" />
+          <p className="mt-4 font-mono text-sm text-muted-foreground">{provider} · {owner}/{name}</p>
+          <h1 className="mt-4 text-3xl font-semibold tracking-[-0.04em]">Provider unavailable.</h1>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">This source adapter is not enabled for the current deployment.</p>
+          <div className="mt-6 flex flex-wrap gap-2"><Button asChild className="rounded-md"><Link href="/explore">Back to explore <ArrowUpRight className="h-4 w-4" /></Link></Button><Button asChild variant="outline" className="rounded-md bg-transparent"><a href={providerUrl(provider, owner, name)} target="_blank" rel="noreferrer">Open source</a></Button></div>
         </section>
       </div>
     </main>
   );
 }
 
-function ProviderError({ provider }: { provider: string }) {
+function ProviderError({ provider, owner, name }: { provider: string; owner: string; name: string }) {
   return (
     <main className="min-h-[100dvh] bg-background px-5 py-8 dark:bg-background md:px-8 md:py-10">
       <div className="mx-auto max-w-2xl">
@@ -123,18 +112,23 @@ function ProviderError({ provider }: { provider: string }) {
         >
           <ArrowLeft className="h-4 w-4" /> Back to explore
         </Link>
-        <h1 className="mt-20 text-4xl font-semibold tracking-[-0.05em]">
-          {provider} could not open this repository.
-        </h1>
-        <p className="mt-5 text-base leading-7 text-muted-foreground">
-          The provider request failed or the selected source is no longer
-          available. Try again or open the original repository directly.
-        </p>
-        <p className="mt-8 flex items-center gap-2 text-sm text-muted-foreground">
-          <LockKeyhole className="h-4 w-4" /> OpenHub never edits or executes
-          provider source.
-        </p>
+        <div className="mt-16 rounded-lg border border-border p-5">
+          <p className="font-mono text-sm text-muted-foreground">{provider} · {owner}/{name}</p>
+          <h1 className="mt-3 text-2xl font-semibold tracking-[-0.04em]">Could not open this repository.</h1>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">Try again or open the original source.</p>
+          <div className="mt-5 flex flex-wrap gap-2"><Button asChild className="rounded-md"><Link href={`/repos/${encodeURIComponent(provider.toLowerCase())}/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`}>Retry</Link></Button><Button asChild variant="outline" className="rounded-md bg-transparent"><a href={providerUrl(provider.toLowerCase() as ProviderId, owner, name)} target="_blank" rel="noreferrer">Open source</a></Button></div>
+        </div>
       </div>
     </main>
   );
+}
+
+function providerUrl(provider: ProviderId, owner: string, name: string) {
+  const origins: Record<ProviderId, string> = {
+    github: "https://github.com",
+    gitlab: "https://gitlab.com",
+    bitbucket: "https://bitbucket.org",
+    codeberg: "https://codeberg.org",
+  };
+  return `${origins[provider]}/${encodeURIComponent(owner)}/${encodeURIComponent(name)}`;
 }

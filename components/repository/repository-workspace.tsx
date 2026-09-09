@@ -71,6 +71,7 @@ type RepositoryWorkspaceProps = {
   treePath: string;
   entries: RepositoryTreeEntry[];
   file: RepositoryFile | null;
+  fileError?: string | null;
   surfaces: RepositorySurfaces;
   workspaceBasePath?: string;
 };
@@ -132,6 +133,7 @@ function RepositoryWorkspaceView({
   treePath,
   entries,
   file,
+  fileError,
   surfaces,
   workspaceBasePath,
   storedRepositoryId,
@@ -392,6 +394,20 @@ function RepositoryWorkspaceView({
             </aside>
 
             <div className="gh-page-main">
+              {fileError ? (
+                <div className="gh-file-error" role="alert">
+                  <div>
+                    <strong>File unavailable</strong>
+                    <p>{fileError}</p>
+                  </div>
+                  <Link
+                    href={workspaceHref(basePath, sourceRef, currentPath)}
+                    className="gh-link"
+                  >
+                    Retry
+                  </Link>
+                </div>
+              ) : null}
               {file || treePath ? (
                 <RepositoryBreadcrumb
                   repository={repository}

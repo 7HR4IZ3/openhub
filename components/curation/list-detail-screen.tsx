@@ -6,10 +6,7 @@ import {
   CurationEmptyState,
   CurationLoading,
 } from "@/components/curation/curation-states";
-import {
-  CurationRail,
-  CurationShell,
-} from "@/components/curation/curation-shell";
+import { CurationShell } from "@/components/curation/curation-shell";
 import { Button } from "@/components/ui/button";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import {
@@ -22,7 +19,26 @@ import {
 import Link from "next/link";
 
 export function ListDetailScreen({ listId }: { listId: string }) {
+  if (!process.env.NEXT_PUBLIC_CONVEX_URL) return <ListDetailUnavailable />;
   return <ConnectedListDetail listId={listId as Id<"lists">} />;
+}
+
+function ListDetailUnavailable() {
+  return (
+    <CurationShell active="Lists" eyebrow="list" title="Curated trail">
+      <CurationEmptyState
+        className="m-5 sm:m-7"
+        icon={FolderHeart}
+        eyebrow="Lists unavailable"
+        title="Connect to open this list."
+        body="This list needs a connected account before its private items can load."
+        action="Connect GitHub"
+        actionHref="/signin"
+        secondaryAction="Browse lists"
+        secondaryHref="/lists"
+      />
+    </CurationShell>
+  );
 }
 
 function ConnectedListDetail({ listId }: { listId: Id<"lists"> }) {
@@ -70,7 +86,6 @@ function ConnectedListDetail({ listId }: { listId: Id<"lists"> }) {
       eyebrow="list"
       title={list.title}
       description={list.description || "A source trail through software."}
-      aside={<CurationRail />}
     >
       <div className="border-b border-border p-5 sm:p-7">
         <Link
@@ -90,10 +105,6 @@ function ConnectedListDetail({ listId }: { listId: Id<"lists"> }) {
             <LockKeyhole className="ml-2 h-3.5 w-3.5" />
           )}
         </div>
-        <p className="mt-4 text-sm leading-6 text-muted-foreground">
-          Every item keeps its original source boundary. If a repository or post
-          becomes private later, it disappears from this trail.
-        </p>
       </div>
       <section className="p-5 sm:p-7" aria-labelledby="list-items-heading">
         <div className="flex items-end justify-between gap-3">
@@ -101,11 +112,8 @@ function ConnectedListDetail({ listId }: { listId: Id<"lists"> }) {
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
               Trail items
             </p>
-            <h2
-              id="list-items-heading"
-              className="mt-2 text-xl font-semibold tracking-[-0.035em]"
-            >
-              Follow the path
+            <h2 id="list-items-heading" className="mt-2 text-xl font-semibold tracking-[-0.035em]">
+              Items
             </h2>
           </div>
           <span className="text-xs text-muted-foreground">

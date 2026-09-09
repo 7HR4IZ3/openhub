@@ -7,7 +7,6 @@ import {
   ArrowLeftIcon as ArrowLeft,
   GitHubLogoIcon as Github,
   LockClosedIcon as LockKeyhole,
-  MagicWandIcon as Sparkles,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useState } from "react";
@@ -15,18 +14,14 @@ import { useState } from "react";
 export default function SignInPage() {
   return (
     <main className="min-h-[100dvh] bg-background">
-      <div className="mx-auto grid min-h-[100dvh] w-full max-w-6xl items-center gap-12 px-5 py-10 md:grid-cols-[1fr_0.8fr] md:px-8">
-        <div className="hidden self-stretch border-r border-border py-6 pr-16 md:flex md:flex-col md:justify-between">
+      <div className="mx-auto grid min-h-[100dvh] w-full max-w-4xl items-center gap-10 px-5 py-8 md:grid-cols-[1fr_0.85fr] md:px-8">
+        <div className="hidden self-stretch border-r border-border py-5 pr-12 md:flex md:flex-col md:justify-between">
           <Link href="/" aria-label="OpenHub home">
             <OpenHubMark />
           </Link>
           <div>
-            <p className="max-w-lg editorial-title text-5xl">
-              Your next rabbit hole starts with a repository.
-            </p>
-            <p className="mt-6 max-w-md leading-7 text-muted-foreground">
-              Follow the source, the people, and the conversations that make
-              software worth learning.
+            <p className="max-w-lg editorial-title text-4xl">
+              Explore the source behind the software.
             </p>
           </div>
           <p className="text-sm text-muted-foreground">
@@ -43,17 +38,11 @@ export default function SignInPage() {
               <ArrowLeft className="mr-1 inline h-4 w-4" /> Home
             </Link>
           </div>
-          <div className="mb-9">
+          <div className="mb-7">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               Enter OpenHub
             </p>
-            <h1 className="mt-3 editorial-title text-4xl">
-              Bring your GitHub trail.
-            </h1>
-            <p className="mt-4 leading-7 text-muted-foreground">
-              One account. Your profile, contributions, and the repositories you
-              can access.
-            </p>
+            <h1 className="mt-3 editorial-title text-3xl">Bring your GitHub trail.</h1>
           </div>
 
           {process.env.NEXT_PUBLIC_CONVEX_URL ? (
@@ -71,29 +60,12 @@ export default function SignInPage() {
               </Button>
             </div>
           )}
-          <Link
-            href="/explore"
-            className="mt-4 inline-flex min-h-11 items-center text-sm text-muted-foreground hover:text-foreground"
-          >
-            Continue browsing without an account
+          <Link href="/explore" className="mt-4 inline-flex min-h-10 items-center text-sm text-muted-foreground hover:text-foreground">
+            Browse without an account
           </Link>
-
-          <div className="mt-8 space-y-4 border-t border-border pt-6 text-sm text-muted-foreground">
-            <div className="flex gap-3">
-              <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-foreground" />
-              <span>OpenHub never edits or executes repository code.</span>
-            </div>
-            <div className="flex gap-3">
-              <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-foreground" />
-              <span>
-                AI explanations stay read-only and cite their sources.
-              </span>
-            </div>
-          </div>
-
-          <p className="mt-10 text-xs leading-5 text-muted-foreground">
-            By continuing, you agree to use OpenHub for constructive technical
-            discussion. GitHub remains the source of truth for repositories.
+          <p className="mt-6 flex items-center gap-2 border-t border-border pt-5 text-xs text-muted-foreground">
+            <LockKeyhole className="h-3.5 w-3.5 shrink-0 text-foreground" />
+            Read-only source access. GitHub remains the source of truth.
           </p>
         </div>
       </div>

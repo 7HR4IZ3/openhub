@@ -16,6 +16,7 @@ export type RepositoryViewResult =
       treePath: string;
       entries: RepositoryTreeEntry[];
       file: RepositoryFile | null;
+      fileError?: string | null;
       surfaces: RepositorySurfaces;
     }
   | { kind: "not-found" }
@@ -59,16 +60,23 @@ export async function loadRepositoryView(
     const requestedPath = safePath(readParam(query.path));
     let entries: RepositoryTreeEntry[] = [];
     let file: RepositoryFile | null = null;
+    let fileError: string | null = null;
     let treePath = requestedPath ?? "";
 
     if (requestedPath !== null) {
-      file = await provider.getFile({
-        owner,
-        name,
-        path: requestedPath,
-        ref: sourceRef,
-      });
+      try {
+        file = await provider.getFile({
+          owner,
+          name,
+          path: requestedPath,
+          ref: sourceRef,
+        });
+      } catch (error) {
+        console.error("Repository file failed", error);
+        fileError = "This file could not be loaded from the provider.";
+      }
       if (file !== null) treePath = parentDirectory(file.path);
+      else treePath = parentDirectory(requestedPath);
     }
 
     entries = await provider.getTree({
@@ -85,6 +93,7 @@ export async function loadRepositoryView(
       treePath,
       entries,
       file,
+      fileError,
       surfaces,
     };
   } catch (error) {

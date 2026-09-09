@@ -7,10 +7,7 @@ import {
   CurationEmptyState,
   CurationLoading,
 } from "@/components/curation/curation-states";
-import {
-  CurationRail,
-  CurationShell,
-} from "@/components/curation/curation-shell";
+import { CurationShell } from "@/components/curation/curation-shell";
 import { useConvexAuth, useMutation, usePaginatedQuery } from "convex/react";
 import {
   ArrowTopRightIcon as ArrowUpRight,
@@ -35,10 +32,10 @@ export function BountiesScreen({
         <div className="p-5 sm:p-7">
           <CurationEmptyState
             icon={CircleDollarSign}
-            eyebrow="Connect Convex"
-            title="External task listings will appear here."
-            body="OpenHub records task context and links out to the issue or payment provider. It never holds funds or executes payments."
-            action="Explore repositories"
+            eyebrow="No tasks yet"
+            title="Open tasks will appear here."
+            body="Browse a repository to find a concrete contribution path."
+            action="Browse repositories"
             actionHref="/explore"
           />
         </div>
@@ -61,7 +58,6 @@ function ConnectedBounties() {
       eyebrow="tasks"
       title="Tasks and bounties"
       description="Find concrete ways to contribute. OpenHub links to external issue and payment systems; it does not hold funds."
-      aside={<CurationRail />}
     >
       <section className="border-b border-border p-5 sm:p-7">
         <div className="flex flex-wrap items-end justify-between gap-4">

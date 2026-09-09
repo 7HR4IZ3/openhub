@@ -1527,6 +1527,25 @@
     display: none;
   }
 }
+
+.gh-file-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid hsl(var(--gh-border) / 0.7);
+  border-radius: 0.5rem;
+  background: hsl(var(--gh-surface));
+  color: hsl(var(--gh-fg));
+  font-size: 0.8rem;
+}
+
+.gh-file-error p {
+  margin-top: 0.15rem;
+  color: hsl(var(--gh-muted));
+}
 @media (max-width: 767px) {
   input:not([type="checkbox"]):not([type="radio"]),
   textarea,
@@ -1991,7 +2010,7 @@ body {
 
 @media (min-width: 1280px) {
   .v2-shell-grid {
-    grid-template-columns: 56px minmax(0, 1fr) 240px !important;
+    grid-template-columns: 56px minmax(0, 1fr) !important;
   }
 }
 

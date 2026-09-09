@@ -7,18 +7,13 @@ import { Input } from "@/components/ui/input";
 import {
   CurationEmptyState,
   CurationLoading,
-  CurationStatus,
 } from "@/components/curation/curation-states";
-import {
-  CurationRail,
-  CurationShell,
-} from "@/components/curation/curation-shell";
+import { CurationShell } from "@/components/curation/curation-shell";
 import { SectionTabs } from "@/components/ui/section-tabs";
 import { useConvexAuth, useMutation, usePaginatedQuery } from "convex/react";
 import {
   ArrowTopRightIcon as ArrowUpRight,
   GlobeIcon as Globe2,
-  LockClosedIcon as LockKeyhole,
   PlusIcon as Plus,
   MagnifyingGlassIcon as Search,
   PersonIcon as Users,
@@ -58,7 +53,6 @@ function ConnectedCommunitiesScreen() {
       eyebrow="communities"
       title="Technical circles"
       description="Find people who care about the same layer of software. Communities are for context and discussion, not group chat."
-      aside={<CommunitiesRail />}
     >
       <SectionTabs
         label="Community views"
@@ -433,48 +427,19 @@ function CommunitiesSetup() {
       active="Communities"
       eyebrow="communities"
       title="Technical circles"
-      description="Find people who care about the same layer of software."
-      aside={<CommunitiesRail />}
     >
       <div className="p-5 sm:p-7">
-        <CurationStatus
-          tone="accent"
-          title="Connect Convex to create communities"
-          body="Public browsing stays available. Membership and moderation require the connected backend."
-        />
         <CurationEmptyState
-          className="mt-5"
           icon={Users}
-          eyebrow="Build a circle"
-          title="Give a technical question a home."
-          body="Browse repositories now, then connect GitHub when you are ready to create a moderated space for source-backed discussion."
-          action="Browse repositories"
-          actionHref="/explore"
-          secondaryAction="Connect GitHub"
-          secondaryHref="/signin"
+          eyebrow="Unavailable"
+          title="Connect to join a circle."
+          body="Community discovery will appear after the account backend connects."
+          action="Connect GitHub"
+          actionHref="/signin"
+          secondaryAction="Browse"
+          secondaryHref="/explore"
         />
       </div>
     </CurationShell>
-  );
-}
-
-function CommunitiesRail() {
-  return (
-    <>
-      <CurationRail />
-      <section className="rounded-xl border border-border p-5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-          Community promise
-        </p>
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          Every circle should make it easier to understand a real repository.
-          Moderators can keep promotion, harassment, and low-context noise out.
-        </p>
-        <div className="mt-4 flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-          <LockKeyhole className="h-3.5 w-3.5" />
-          Private means private.
-        </div>
-      </section>
-    </>
   );
 }

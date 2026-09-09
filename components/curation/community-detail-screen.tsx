@@ -6,10 +6,7 @@ import {
   CurationEmptyState,
   CurationLoading,
 } from "@/components/curation/curation-states";
-import {
-  CurationRail,
-  CurationShell,
-} from "@/components/curation/curation-shell";
+import { CurationShell } from "@/components/curation/curation-shell";
 import { Button } from "@/components/ui/button";
 import { PostBody } from "@/components/posts/post-body";
 import {
@@ -34,8 +31,31 @@ export function CommunityDetailScreen({
 }: {
   communityId: string;
 }) {
+  if (!process.env.NEXT_PUBLIC_CONVEX_URL) return <CommunityDetailUnavailable />;
   return (
     <ConnectedCommunityDetail communityId={communityId as Id<"communities">} />
+  );
+}
+
+function CommunityDetailUnavailable() {
+  return (
+    <CurationShell
+      active="Communities"
+      eyebrow="community"
+      title="Technical circle"
+    >
+      <CurationEmptyState
+        className="m-5 sm:m-7"
+        icon={Users}
+        eyebrow="Communities unavailable"
+        title="Connect to open this circle."
+        body="This community needs a connected account before its discussion can load."
+        action="Connect GitHub"
+        actionHref="/signin"
+        secondaryAction="Browse communities"
+        secondaryHref="/communities"
+      />
+    </CurationShell>
   );
 }
 
@@ -115,7 +135,6 @@ function ConnectedCommunityDetail({
       eyebrow="community"
       title={community.name}
       description="A focused space for source-backed discussion."
-      aside={<CurationRail />}
     >
       <section className="border-b border-border p-5 sm:p-7">
         <Link
@@ -169,18 +188,8 @@ function ConnectedCommunityDetail({
         ) : null}
       </section>
       <section className="p-5 sm:p-7">
-        <div className="rounded-xl bg-secondary p-6 dark:bg-secondary sm:p-7">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground">
-            Discussion boundary
-          </p>
-          <h3 className="mt-3 text-xl font-semibold tracking-[-0.035em]">
-            Keep the source close.
-          </h3>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
-            Posts in this circle stay attached to the community boundary. Share
-            a source, question, review, or discussion for the next reader.
-          </p>
-          <div className="mt-5 flex flex-wrap gap-2">
+        <div className="rounded-lg bg-secondary p-4 dark:bg-secondary sm:p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             {active ? (
               <Button asChild className="rounded-md">
                 <Link
@@ -199,6 +208,7 @@ function ConnectedCommunityDetail({
                 {isAuthenticated ? "Join to post" : "Sign in to join"}
               </Button>
             )}
+            <span className="text-xs text-muted-foreground">{posts.results.length} posts</span>
           </div>
         </div>
         <div className="mt-5 grid gap-3 sm:grid-cols-3">

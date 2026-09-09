@@ -1,29 +1,30 @@
 "use client";
 
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { DesktopIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { useTheme } from "next-themes";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   return (
-    <ToggleGroup
-      type="single"
-      size="sm"
-      onValueChange={(value) => {
-        if (value) setTheme(value);
-      }}
-      value={theme}
-    >
-      <ToggleGroupItem value="light" aria-label="Light">
-        <SunIcon />
-      </ToggleGroupItem>
-      <ToggleGroupItem value="dark" aria-label="Dark">
-        <MoonIcon />
-      </ToggleGroupItem>
-      <ToggleGroupItem value="system" aria-label="System">
-        <DesktopIcon />
-      </ToggleGroupItem>
-    </ToggleGroup>
+    <label className="relative flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground">
+      <span className="sr-only">Appearance</span>
+      {theme === "dark" ? (
+        <MoonIcon className="h-4 w-4" aria-hidden="true" />
+      ) : theme === "system" ? (
+        <DesktopIcon className="h-4 w-4" aria-hidden="true" />
+      ) : (
+        <SunIcon className="h-4 w-4" aria-hidden="true" />
+      )}
+      <select
+        aria-label="Appearance"
+        value={theme ?? "system"}
+        onChange={(event) => setTheme(event.target.value)}
+        className="absolute inset-0 cursor-pointer opacity-0"
+      >
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="system">System</option>
+      </select>
+    </label>
   );
 }

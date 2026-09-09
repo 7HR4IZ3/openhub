@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  CurationShell,
-  CurationRail,
-} from "@/components/curation/curation-shell";
+import { CurationShell } from "@/components/curation/curation-shell";
 import { CurationEmptyState } from "@/components/curation/curation-states";
 import {
   RecentPostFeed,
@@ -37,7 +34,6 @@ export function HomeScreen({
       active="Home"
       eyebrow="home"
       title="Home"
-      aside={<CurationRail />}
     >
       <section className="v2-home-search border-b px-5 py-4 sm:px-8">
         <Link
@@ -96,27 +92,29 @@ export function HomeScreen({
           </details>
         </section>
       ) : null}
-      <SectionTabs
-        label="Home feed"
-        items={tabs}
-        value={mode}
-        onChange={setMode}
-      >
-        <section className="px-5 py-6 sm:px-8">
-          {convexConfigured ? (
+      {convexConfigured ? (
+        <SectionTabs
+          label="Home feed"
+          items={tabs}
+          value={mode}
+          onChange={setMode}
+        >
+          <section className="px-5 py-6 sm:px-8">
             <RecentPostFeed convexConfigured mode={mode} />
-          ) : (
-            <CurationEmptyState
-              icon={CodeIcon}
-              eyebrow="Public browsing is open"
-              title="Start with a repository."
-              body="The social feed is unavailable right now. You can still explore public repositories and read their source."
-              action="Explore repositories"
-              actionHref="/explore"
-            />
-          )}
+          </section>
+        </SectionTabs>
+      ) : (
+        <section className="px-5 py-6 sm:px-8">
+          <CurationEmptyState
+            icon={CodeIcon}
+            eyebrow="Feed unavailable"
+            title="Start with a repository."
+            body="Explore public source while the social feed is offline."
+            action="Explore repositories"
+            actionHref="/explore"
+          />
         </section>
-      </SectionTabs>
+      )}
     </CurationShell>
   );
 }

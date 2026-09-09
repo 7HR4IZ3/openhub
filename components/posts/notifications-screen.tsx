@@ -277,18 +277,17 @@ function NotificationsSetup() {
       active="Notifications"
       eyebrow="notifications"
       title="Useful updates"
-      description="A focused place for replies, mentions, and reactions that help you keep learning."
     >
       <CurationEmptyState
         className="m-5 sm:m-7"
         icon={Bell}
-        eyebrow="Backend connection needed"
-        title="Your notification trail is ready."
-        body="Connect the Convex deployment to load realtime updates. No notification data is requested while the backend is unavailable."
-        action="Explore repositories"
-        actionHref="/explore"
-        secondaryAction="Connect GitHub"
-        secondaryHref="/signin"
+        eyebrow="Unavailable"
+        title="Connect to see updates."
+        body="Replies and mentions will appear here once your account is connected."
+        action="Connect GitHub"
+        actionHref="/signin"
+        secondaryAction="Explore"
+        secondaryHref="/explore"
       />
     </CurationShell>
   );

@@ -6,10 +6,7 @@ import {
   CurationEmptyState,
   CurationLoading,
 } from "@/components/curation/curation-states";
-import {
-  CurationRail,
-  CurationShell,
-} from "@/components/curation/curation-shell";
+import { CurationShell } from "@/components/curation/curation-shell";
 import { ReputationPanel } from "@/components/curation/reputation-panel";
 import {
   RepositoryCard,
@@ -35,6 +32,11 @@ import Image from "next/image";
 import { useState } from "react";
 
 export function PublicProfileScreen({ handle }: { handle: string }) {
+  if (!process.env.NEXT_PUBLIC_CONVEX_URL) return <PublicProfileUnavailable />;
+  return <PublicProfileLookup handle={handle} />;
+}
+
+function PublicProfileLookup({ handle }: { handle: string }) {
   const profile = useQuery(api.profiles.byHandle, { handle });
   if (profile === undefined)
     return (
@@ -69,6 +71,24 @@ export function PublicProfileScreen({ handle }: { handle: string }) {
       </CurationShell>
     );
   return <ConnectedPublicProfile profile={profile} />;
+}
+
+function PublicProfileUnavailable() {
+  return (
+    <CurationShell active="Profile" eyebrow="profile" title="Developer profile">
+      <CurationEmptyState
+        className="m-5 sm:m-7"
+        icon={UserRound}
+        eyebrow="Profiles unavailable"
+        title="Connect to open this profile."
+        body="Public profiles need a connected account before their source trail can load."
+        action="Connect GitHub"
+        actionHref="/signin"
+        secondaryAction="Explore repositories"
+        secondaryHref="/explore"
+      />
+    </CurationShell>
+  );
 }
 
 function ConnectedPublicProfile({ profile }: { profile: Doc<"profiles"> }) {
@@ -112,7 +132,6 @@ function ConnectedPublicProfile({ profile }: { profile: Doc<"profiles"> }) {
       eyebrow="profile"
       title={profile.displayName}
       description={`@${profile.handle}`}
-      aside={<CurationRail />}
     >
       <section className="border-b border-border p-5 sm:p-7">
         <Link

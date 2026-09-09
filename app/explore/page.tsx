@@ -172,10 +172,23 @@ export default function ExplorePage() {
             />
           </>
         ) : (
-          <div className="py-8">
-            <p className="text-sm text-muted-foreground">
-              Search by project, language, or topic.
-            </p>
+          <div className="py-6">
+            <p className="text-sm text-muted-foreground">Try a project, language, or topic.</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {["react", "rust", "typescript", "design systems"].map((topic) => (
+                <button
+                  key={topic}
+                  type="button"
+                  className="rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  onClick={() => {
+                    setQuery(topic);
+                    void search(topic);
+                  }}
+                >
+                  {topic}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </section>
@@ -393,24 +406,21 @@ function RepositoryResultCard({
         {repository.primaryLanguage ? (
           <span>{repository.primaryLanguage}</span>
         ) : null}
-        <span className="inline-flex items-center gap-1">
+        <span className="inline-flex items-center gap-1" aria-label={`${repository.stars} stars`}>
           <StarIcon />
           {formatCount(repository.stars)}
         </span>
-        <span className="inline-flex items-center gap-1">
+        <span className="inline-flex items-center gap-1" aria-label={`${repository.forks} forks`}>
           <GitForkIcon />
           {formatCount(repository.forks)}
         </span>
-        {repository.licenseSpdxId ? (
-          <span>{repository.licenseSpdxId}</span>
-        ) : null}
       </div>
       {repository.topics.length > 0 ? (
         <div className="mt-4 flex flex-wrap gap-1.5">
           {repository.topics.slice(0, 4).map((topic) => (
             <span
               key={topic}
-              className="rounded-full bg-black/[0.05] px-2 py-1 text-[11px] text-muted-foreground dark:bg-white/[0.07]"
+              className="rounded-md bg-black/[0.05] px-2 py-1 text-[11px] text-muted-foreground dark:bg-white/[0.07]"
             >
               {topic}
             </span>
